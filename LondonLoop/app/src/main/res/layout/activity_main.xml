@@ -1,37 +1,18 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity" >
 
-    <TextView android:id="@+id/main_textview" android:text="@string/text_view" android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <!-- Set OnClickListener to trigger results when pressed -->
-    <Button
-        android:id="@+id/main_button"
+    <ListView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:text="@string/button" />
+        android:id="@+id/listSectionItems"
+        android:layout_centerInParent="true">
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="20dp"
-        android:src="@drawable/ic_launcher" />
-
-    <EditText
-        android:id="@+id/main_edittext"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:layout_marginLeft="20dp"
-        android:hint="@string/hint" />
-
-
-</LinearLayout>
+        </ListView>
+</RelativeLayout>
