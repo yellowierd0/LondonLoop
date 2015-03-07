@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">The London Loop</string>
+    
+    <string name="text_view">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="button">Update The TextView</string>
+    <string name="hint">A Name</string>
+
+    <!-- Section Details -->
+    <string name="section_start">Section Start: </string>
+    <string name="section_start_station">Nearest public transport station to start: </string>
+    <string name="section_end">Section Finish: </string>
+    <string name="section_end_station">Nearest public transport station to finish: </string>
+    <string name="section_distance">Section Distance: </string>
+
+    <!-- Section 9 : Kingston to Hatton Cross -->
+    <string name="nine_start">Kingston Bridge</string>
+    <string name="nine_start_station">Kingston (rail)</string>
+    <string name="nine_end">Hatton Cross</string>
+    <string name="nine_end_station">Hatton Cross (rail)</string>
+    <string name="nine_distance">8.5 miles</string>
+    <string name="nine_intro">This section of the LOOP features easy walking with some extensive green stretches on entirely level ground, mostly on grass and rough footpaths. There is one stile. There are cafés and pubs along the route. Points of interest on this section are Bushy Park, the Diana Fountain, Waterhouse Woodland Gardens, Crane Park, the Shot Tower and Hounslow Heath.</string>
+</resources>
