@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">LondonLoopApp</string>
+
+    <string name="title_walks">Walks</string>
+    <string name="title_maps">Maps</string>
+    <string name="title_stats">Statistics</string>
+
+    <string name="aim">AIM</string>
+    <string name="bebo">Bebo</string>
+    <string name="youtube">Youtube</string>
+    <string name="aim_description">AIM is a..</string>
+    <string name="bebo_description">Bebo is a..</string>
+    <string name="youtube_description">Youtube is a..</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_example">Example action</string>
+
+    <string name="action_settings">Settings</string>
+</resources>
