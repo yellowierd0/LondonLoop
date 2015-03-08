@@ -1,11 +1,12 @@
 package emma.londonloopapp;
 
-import android.support.v4.app.ListFragment;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +60,10 @@ public class WalksFragment extends ListFragment {
 // retrieve theListView item
         WalkViewItem item = mItems.get(position);
 // do something
-        Toast.makeText(getActivity(), item.title, Toast.LENGTH_SHORT).show();
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        Fragment fragment = new WalkDetailFragment();
+        fragmentManager.beginTransaction()
+                .replace(R.id.container, fragment)
+                .commit();
     }
 }
