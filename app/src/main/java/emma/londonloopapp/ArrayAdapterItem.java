@@ -29,9 +29,9 @@ public class ArrayAdapterItem extends ArrayAdapter<WalkViewItem> {
             convertView = inflater.inflate(R.layout.walk_item, parent, false);
             // initialize the view holder
             viewHolder = new ViewHolder();
-            viewHolder.ivIcon = (ImageView) convertView.findViewById(R.id.ivIcon);
-            viewHolder.tvTitle = (TextView) convertView.findViewById(R.id.tvTitle);
-            viewHolder.tvDescription = (TextView) convertView.findViewById(R.id.tvDescription);
+            viewHolder.walkImage = (ImageView) convertView.findViewById(R.id.ivIcon);
+            viewHolder.walkTitle = (TextView) convertView.findViewById(R.id.tvTitle);
+            viewHolder.walkDescription = (TextView) convertView.findViewById(R.id.tvDescription);
             convertView.setTag(viewHolder);
         } else {
             // recycle the already inflated view
@@ -39,16 +39,16 @@ public class ArrayAdapterItem extends ArrayAdapter<WalkViewItem> {
         }
         // update the item view
         WalkViewItem item = getItem(position);
-        viewHolder.ivIcon.setImageDrawable(item.icon);
-        viewHolder.tvTitle.setText(item.title);
-        viewHolder.tvDescription.setText(item.description);
+        viewHolder.walkImage.setImageDrawable(item.icon);
+        viewHolder.walkTitle.setText(item.title);
+        viewHolder.walkDescription.setText(item.description);
         return convertView;
     }
 
     private static class ViewHolder {
-        ImageView ivIcon;
-        TextView tvTitle;
-        TextView tvDescription;
+        ImageView walkImage;
+        TextView walkTitle;
+        TextView walkDescription;
     }
 
 }

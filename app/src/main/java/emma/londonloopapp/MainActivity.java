@@ -1,10 +1,11 @@
 package emma.londonloopapp;
 
 import android.app.Activity;
-import android.support.v4.app.ListFragment;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.ListFragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
@@ -13,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 
 public class MainActivity extends ActionBarActivity
@@ -56,19 +58,25 @@ public class MainActivity extends ActionBarActivity
             case 0:
                 listFragment = new WalksFragment();
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, listFragment)
+                        .add(R.id.container, listFragment)
+                        // Add this transaction to the back stack
+                        .addToBackStack("fragBack")
                         .commit();
                 break;
             case 1:
                 fragment = new MapsFragment();
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, fragment)
+                        .add(R.id.container, fragment)
+                        // Add this transaction to the back stack
+                        .addToBackStack("fragBack")
                         .commit();
                 break;
             case 2:
                 fragment = new StatsFragment();
                 fragmentManager.beginTransaction()
-                        .replace(R.id.container, fragment)
+                        .add(R.id.container, fragment)
+                        // Add this transaction to the back stack
+                        .addToBackStack("fragBack")
                         .commit();
                 break;
         }
@@ -125,9 +133,24 @@ public class MainActivity extends ActionBarActivity
         return super.onOptionsItemSelected(item);
     }
 
-    /**
-     * A placeholder fragment containing a simple view.
-     */
+    @Override
+    public void onBackPressed() {
+        if (getSupportFragmentManager().findFragmentByTag("fragBack") != null) {
+
+        } else {
+            super.onBackPressed();
+            return;
+        }
+        if (getSupportFragmentManager().getBackStackEntryCount() != 0) {
+            Toast.makeText(getApplicationContext(), "Test", Toast.LENGTH_LONG).show();
+            Fragment frag = getSupportFragmentManager().findFragmentByTag("fragBack");
+            FragmentTransaction transac = getSupportFragmentManager().beginTransaction().remove(frag);
+            transac.commit();
+        }
+    }
+        /**
+         * A placeholder fragment containing a simple view.
+         */
     public static class PlaceholderFragment extends Fragment {
         /**
          * The fragment argument representing the section number for this

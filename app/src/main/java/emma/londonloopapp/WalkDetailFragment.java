@@ -16,4 +16,5 @@ public class WalkDetailFragment extends Fragment {
 		
 		return rootView;
 	}
+
 }
