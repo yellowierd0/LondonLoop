@@ -14,9 +14,9 @@ import java.util.List;
  * Created by Emma on 26/01/2015.
  */
 
-public class ArrayAdapterItem extends ArrayAdapter<WalkViewItem> {
+public class ArrayAdapterItem extends ArrayAdapter<WalkItem> {
 
-    public ArrayAdapterItem(Context context, List<WalkViewItem> items) {
+    public ArrayAdapterItem(Context context, List<WalkItem> items) {
         super(context, R.layout.walk_item, items);
     }
 
@@ -30,15 +30,15 @@ public class ArrayAdapterItem extends ArrayAdapter<WalkViewItem> {
             // initialize the view holder
             viewHolder = new ViewHolder();
             viewHolder.walkImage = (ImageView) convertView.findViewById(R.id.ivIcon);
-            viewHolder.walkTitle = (TextView) convertView.findViewById(R.id.tvTitle);
-            viewHolder.walkDescription = (TextView) convertView.findViewById(R.id.tvDescription);
+            viewHolder.walkTitle = (TextView) convertView.findViewById(R.id.walkTitle);
+            viewHolder.walkDescription = (TextView) convertView.findViewById(R.id.walkDescription);
             convertView.setTag(viewHolder);
         } else {
             // recycle the already inflated view
             viewHolder = (ViewHolder) convertView.getTag();
         }
         // update the item view
-        WalkViewItem item = getItem(position);
+        WalkItem item = getItem(position);
         viewHolder.walkImage.setImageDrawable(item.icon);
         viewHolder.walkTitle.setText(item.title);
         viewHolder.walkDescription.setText(item.description);
