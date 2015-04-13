@@ -41,7 +41,7 @@ public class ArrayAdapterItem extends ArrayAdapter<WalkItem> {
         WalkItem item = getItem(position);
         viewHolder.walkImage.setImageDrawable(item.icon);
         viewHolder.walkTitle.setText(item.title);
-        viewHolder.walkDescription.setText(item.description);
+        viewHolder.walkDescription.setText(item.miles + "miles");
         return convertView;
     }
 
