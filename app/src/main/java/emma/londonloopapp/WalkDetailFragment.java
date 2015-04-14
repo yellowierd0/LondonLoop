@@ -3,6 +3,7 @@ package emma.londonloopapp;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +34,7 @@ public class WalkDetailFragment extends Fragment {
 
         title.setText(walkItem.getTitle());
         description.setText(walkItem.getDescription());
-
+        description.setMovementMethod(new ScrollingMovementMethod());
 
 
         return rootView;

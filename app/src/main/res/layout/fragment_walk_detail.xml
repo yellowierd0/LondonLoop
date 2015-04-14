@@ -7,10 +7,10 @@
     android:background="#ffffffff">
 
     <TextView
-        android:layout_width="wrap_content"
+        android:layout_width="340dp"
+        android:gravity="center"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="hello world"
         android:id="@+id/walkDetailTitle"
         android:layout_gravity="center_horizontal"/>
 
@@ -23,11 +23,12 @@
         android:src="@drawable/dummy"/>
 
     <TextView
-        android:layout_width="359dp"
+        android:layout_width="340dp"
         android:layout_height="wrap_content"
         android:id="@+id/walkDetailDescription"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="0.48"/>
+        android:layout_weight="0.48"
+        android:scrollbars = "vertical"/>
 
     <Button
         android:layout_width="236dp"
@@ -45,7 +46,8 @@
             android:layout_height="wrap_content"
             android:text="Previous Walk"
             android:id="@+id/previousButton"
-            android:layout_weight="0.5"/>
+            android:layout_weight="0.5"
+            android:onClick="previousDestruct"/>
 
         <Button
             android:layout_width="wrap_content"
@@ -53,7 +55,8 @@
             android:text="Next Walk"
             android:id="@+id/nextButton"
             android:layout_weight="0.5"
-            android:layout_gravity="right" />
+            android:layout_gravity="right"
+            android:onClick="nextButton"/>
 
     </LinearLayout>
 

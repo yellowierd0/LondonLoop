@@ -31,7 +31,7 @@ public class ArrayAdapterItem extends ArrayAdapter<WalkItem> {
             viewHolder = new ViewHolder();
             viewHolder.walkImage = (ImageView) convertView.findViewById(R.id.ivIcon);
             viewHolder.walkTitle = (TextView) convertView.findViewById(R.id.walkTitle);
-            viewHolder.walkDescription = (TextView) convertView.findViewById(R.id.walkDescription);
+            viewHolder.walkLength = (TextView) convertView.findViewById(R.id.walkLength);
             convertView.setTag(viewHolder);
         } else {
             // recycle the already inflated view
@@ -39,16 +39,16 @@ public class ArrayAdapterItem extends ArrayAdapter<WalkItem> {
         }
         // update the item view
         WalkItem item = getItem(position);
-        viewHolder.walkImage.setImageDrawable(item.icon);
-        viewHolder.walkTitle.setText(item.title);
-        viewHolder.walkDescription.setText(item.miles + "miles");
+        viewHolder.walkImage.setImageDrawable(item.getIcon());
+        viewHolder.walkTitle.setText(item.getTitle());
+        viewHolder.walkLength.setText(item.getMiles() + " miles (" + (double) Math.round(item.getMiles() * 1.6 * 100) / 100 + " kilometres)");
         return convertView;
     }
 
     private static class ViewHolder {
         ImageView walkImage;
         TextView walkTitle;
-        TextView walkDescription;
+        TextView walkLength;
     }
 
 }

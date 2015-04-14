@@ -6,13 +6,13 @@ import android.graphics.drawable.Drawable;
  * Created by Emma on 07/03/2015.
  */
 public class WalkItem {
-    public final int num;
-    public final Drawable icon; // the drawable for the ListView item ImageView
-    public final String title; // the text for the ListView item title
-    public final String description; // the text for the ListView item description
-    public final double miles; //distance for walk in miles
-    public final double latitude; //latitude of start point
-    public final double longitude; //longitude of start point
+    private final int num;
+    private final Drawable icon; // the drawable for the ListView item ImageView
+    private final String title; // the text for the ListView item title
+    private final String description; // the text for the ListView item description
+    private final double miles; //distance for walk in miles
+    private final double latitude; //latitude of start point
+    private final double longitude; //longitude of start point
 
     public WalkItem(int num, Drawable icon, String title, String description, double miles, double latitude, double longitude) {
         this.num = num;
