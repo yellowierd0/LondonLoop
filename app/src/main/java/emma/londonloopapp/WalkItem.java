@@ -23,4 +23,33 @@ public class WalkItem {
         this.latitude = latitude;
         this.longitude = longitude;
     }
+
+    public int getNum(){
+        return num;
+    }
+
+    public Drawable getIcon(){
+        return icon;
+    }
+
+    public String getTitle(){
+        return title;
+    }
+
+    public String getDescription(){
+        return description;
+    }
+
+    public double getMiles(){
+        return miles;
+    }
+
+    public double getLatitude(){
+        return latitude;
+    }
+
+    public double getLongitude(){
+        return longitude;
+    }
+
 }

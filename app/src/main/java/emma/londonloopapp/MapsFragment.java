@@ -1,6 +1,7 @@
 package emma.londonloopapp;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -21,6 +22,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsFragment extends Fragment {
 
+    private WalkList walkList;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private GoogleApiClient mGoogleApiClient;
 
@@ -29,6 +31,9 @@ public class MapsFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_maps, container, false);
+
+        Resources resources = getResources();
+        walkList = new WalkList(resources);
 
         setUpMapIfNeeded();
         return rootView;
@@ -104,64 +109,40 @@ public class MapsFragment extends Fragment {
         mMap.animateCamera(CameraUpdateFactory.zoomTo(10));
         //mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("You are here!").snippet("Consider yourself located"));
 
-
-        //locationList
-        String[] locationList = {getString(R.string.loop1),getString(R.string.loop2),
-                getString(R.string.loop3),getString(R.string.loop4),getString(R.string.loop5),
-                getString(R.string.loop6),getString(R.string.loop7),getString(R.string.loop8),
-                getString(R.string.loop9),getString(R.string.loop10),getString(R.string.loop11),
-                getString(R.string.loop12),getString(R.string.loop13),getString(R.string.loop14),
-                getString(R.string.loop15),getString(R.string.loop16),getString(R.string.loop17),
-                getString(R.string.loop18),getString(R.string.loop19),getString(R.string.loop20),
-                getString(R.string.loop21),getString(R.string.loop22),getString(R.string.loop23),
-                getString(R.string.loop24)};
-
-        //markerList
-        Double[][] markerList = {
-                {51.483144, 0.177975}, {51.441233, 0.148956}, {51.393209,0.069081},
-                {51.370944,0.004860}, {51.319035,-0.063420}, {51.315728,-0.136744},
-                {51.332148,-0.209290}, {51.351650,-0.250176}, {51.411854,-0.308274},
-                {51.469927,-0.409793}, {51.505117,-0.418654}, {51.550933,-0.483414},
-                {51.610477,-0.498761}, {51.623932,-0.427529}, {51.610702,-0.380326},
-                {51.653365,-0.281950}, {51.652244,-0.148998}, {51.668264,-0.028316},
-                {51.634306,0.012118}, {51.621468,0.078004}, {51.616860,0.183245},
-                {51.593421,0.234098}, {51.559197,0.236748}, {51.516886,0.191433}};
-
         // add locations of start/end points
-        addMarkers(locationList, markerList);
+        addMarkers(walkList);
 
     }
 
-    private void addMarkers(String[] locationList, Double[][] markerList){
+    private void addMarkers(final WalkList walkList){
 
         MarkerOptions markers[] = new MarkerOptions[24];
 
-        for (int i = 0; i < locationList.length ; i++){
+        for (int i = 0; i < walkList.getSize(); i++){
 
-            markers[i] = new MarkerOptions().position(new LatLng(markerList[i][0], markerList[i][1])).title(i+". "+locationList[i]);
+            WalkItem w = walkList.getWalk(i);
+
+            markers[i] = new MarkerOptions().position(new LatLng(w.getLatitude(), w.getLongitude())).title(w.getTitle());
 
             mMap.addMarker(markers[i]);
 
-            mMap.setOnInfoWindowClickListener(
-                    new GoogleMap.OnInfoWindowClickListener(){
-                        public void onInfoWindowClick(Marker marker){
 
-                            // retrieve theListView item
-                            //WalkViewItem item = mItems.get(position);
-                            // do something
-                            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                            Fragment fragment = new WalkDetailFragment();
-                            fragmentManager.beginTransaction()
-                                    .add(R.id.container, fragment)
-                                            // Add this transaction to the back stack
-                                    .addToBackStack("fragBack")
-                                    .commit();
-                        }
-                    }
-            );
         }
 
+        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                WalkDetailFragment wdf= WalkDetailFragment.newInstance(walkList.getIdFromTitle(marker.getTitle()));
+                System.out.println(marker.getTitle());
+                System.out.println(walkList.getIdFromTitle(marker.getTitle()));
+                fragmentManager.beginTransaction()
+                        .add(R.id.container, wdf)
+                                // Add this transaction to the back stack
+                        .addToBackStack("fragBack")
+                        .commit();
 
+            }});
 
     }
 

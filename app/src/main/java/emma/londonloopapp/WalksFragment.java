@@ -9,7 +9,7 @@ import android.widget.ListView;
 
 public class WalksFragment extends ListFragment {
 
-    WalkList walkList;
+    private WalkList walkList;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,7 +36,8 @@ public class WalksFragment extends ListFragment {
         WalkItem item = walkList.getWalks().get(position);
         // do something
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        WalkDetailFragment wdf= WalkDetailFragment.newInstance(item.num);
+        WalkDetailFragment wdf= WalkDetailFragment.newInstance(item.getNum()-1);
+
         fragmentManager.beginTransaction()
                 .add(R.id.container, wdf)
                 // Add this transaction to the back stack

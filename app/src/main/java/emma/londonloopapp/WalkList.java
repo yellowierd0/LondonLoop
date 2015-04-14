@@ -76,6 +76,19 @@ public class WalkList {
     }
 
     public WalkItem getWalk(int i){
-        return walks.get(i-1);
+        return walks.get(i);
+    }
+
+    public int getIdFromTitle(String title){
+        for (int i = 0; i < walks.size(); i++){
+            if (getWalk(i).getTitle().equals(title)){
+                return i;
+            }
+        }
+        return 0;
+    }
+
+    public int getSize(){
+        return walks.size();
     }
 }
