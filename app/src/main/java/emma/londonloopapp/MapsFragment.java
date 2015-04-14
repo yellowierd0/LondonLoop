@@ -139,7 +139,7 @@ public class MapsFragment extends Fragment {
                 fragmentManager.beginTransaction()
                         .add(R.id.container, wdf)
                                 // Add this transaction to the back stack
-                        .addToBackStack("fragBack")
+                        .addToBackStack("mapFrag")
                         .commit();
 
             }});

@@ -41,7 +41,7 @@ public class WalksFragment extends ListFragment {
         fragmentManager.beginTransaction()
                 .add(R.id.container, wdf)
                 // Add this transaction to the back stack
-                .addToBackStack("fragBack")
+                .addToBackStack("walksFragment")
                 .commit();
 
     }

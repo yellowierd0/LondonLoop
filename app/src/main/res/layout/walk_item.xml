@@ -20,6 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:padding="5dp"
+            android:layout_gravity="center_horizontal"
             android:contentDescription="icon description"
             android:scaleType="fitXY"
             android:layout_alignParentLeft="true" />
@@ -28,11 +29,15 @@
         <TextView android:id="@+id/walkTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:gravity="center"
             android:textAppearance="@android:style/TextAppearance.Medium"/>
         <!-- the description view -->
         <TextView android:id="@+id/walkLength"
             android:layout_below="@id/walkTitle"
+            android:padding="5dp"
             android:layout_width="match_parent"
+            android:gravity="center"
             android:layout_height="wrap_content"
             android:textAppearance="@android:style/TextAppearance.Small" />
 
