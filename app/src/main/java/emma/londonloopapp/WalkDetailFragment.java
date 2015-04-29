@@ -42,7 +42,7 @@ public class WalkDetailFragment extends Fragment {
                 // Perform action on click
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 WalkDetailFragment wdf;
-                if(walkItem.getNum()<walkList.getSize()) {
+                if(walkItem.getNum() < walkList.getSize()) {
                     wdf = WalkDetailFragment.newInstance(walkItem.getNum());
                 } else {
                     wdf = WalkDetailFragment.newInstance(0);
