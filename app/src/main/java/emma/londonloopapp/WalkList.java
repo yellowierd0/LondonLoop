@@ -12,13 +12,19 @@ public class WalkList {
 
     private List<WalkItem> walks; // WalkItem items list
 
+    private NodeList nl;
+
     public WalkList(Resources resources){
         walks = new ArrayList<>();
         setWalks(resources);
 
     }
 
+
+
     private void setWalks(Resources resources){
+
+
 
         walks.add(new WalkItem(1, resources.getDrawable(R.drawable.dummy), resources.getString(R.string.loop1),
                 resources.getString(R.string.loop1_description), 8.5, 51.483144, 0.177975));
@@ -91,4 +97,8 @@ public class WalkList {
     public int getSize(){
         return walks.size();
     }
+
+
 }
+
+
