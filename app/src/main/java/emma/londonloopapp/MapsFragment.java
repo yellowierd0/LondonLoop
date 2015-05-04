@@ -120,9 +120,9 @@ public class MapsFragment extends Fragment {
 
         for (int i = 0; i < walkList.getSize(); i++){
 
-            WalkItem w = walkList.getWalk(i);
+            SectionItem w = walkList.getWalk(i);
 
-            markers[i] = new MarkerOptions().position(new LatLng(w.getLatitude(), w.getLongitude())).title(w.getTitle());
+            //markers[i] = new MarkerOptions().position(new LatLng(w.getLatitude(), w.getLongitude())).title(w.getTitle());
 
             mMap.addMarker(markers[i]);
 

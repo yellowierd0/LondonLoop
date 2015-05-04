@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 public class WalkDetailFragment extends Fragment {
 
-    private WalkItem walkItem;
+    private SectionItem sectionItem;
     private WalkList walkList;
     private View walkDetailView;
 
@@ -27,13 +27,13 @@ public class WalkDetailFragment extends Fragment {
         Resources resources = getResources();
         walkList = new WalkList(resources);
 
-        final WalkItem walkItem = walkList.getWalk(walkNumber);
+        final SectionItem sectionItem = walkList.getWalk(walkNumber);
 
         TextView title = (TextView) rootView.findViewById(R.id.walkDetailTitle);
         TextView description = (TextView) rootView.findViewById(R.id.walkDetailDescription);
 
-        title.setText(walkItem.getTitle());
-        description.setText(walkItem.getDescription());
+        //title.setText(walkItem.getTitle());
+        description.setText(sectionItem.getDescription());
         description.setMovementMethod(new ScrollingMovementMethod());
 
         final Button nButton = (Button) rootView.findViewById(R.id.nextButton);
@@ -42,17 +42,18 @@ public class WalkDetailFragment extends Fragment {
                 // Perform action on click
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 WalkDetailFragment wdf;
-                if(walkItem.getNum() < walkList.getSize()) {
+                /*if(walkItem.getNum() < walkList.getSize()) {
                     wdf = WalkDetailFragment.newInstance(walkItem.getNum());
                 } else {
                     wdf = WalkDetailFragment.newInstance(0);
-                }
+                }*/
 
-                fragmentManager.beginTransaction()
+                /*fragmentManager.beginTransaction()
                         .add(R.id.container, wdf)
                                 // Add this transaction to the back stack
                         .addToBackStack("walkDetailFrag")
                         .commit();
+                        */
 
             }
         });
@@ -63,7 +64,7 @@ public class WalkDetailFragment extends Fragment {
                 // Perform action on click
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 WalkDetailFragment wdf;
-                if(walkItem.getNum() > 1) {
+                /*if(walkItem.getNum() > 1) {
                     wdf = WalkDetailFragment.newInstance(walkItem.getNum() - 2);
                 } else {
                     wdf = WalkDetailFragment.newInstance(walkList.getSize()-1);
@@ -73,7 +74,7 @@ public class WalkDetailFragment extends Fragment {
                         .add(R.id.container, wdf)
                                 // Add this transaction to the back stack
                         .addToBackStack("walkDetailFrag")
-                        .commit();
+                        .commit();*/
             }
         });
 

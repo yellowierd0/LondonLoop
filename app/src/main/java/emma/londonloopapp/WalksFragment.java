@@ -2,10 +2,8 @@ package emma.londonloopapp;
 
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
 import android.view.View;
-import android.widget.ListView;
 
 public class WalksFragment extends ListFragment {
 
@@ -30,13 +28,13 @@ public class WalksFragment extends ListFragment {
         getListView().setDivider(null);
     }
 
-    @Override
+    /*@Override/*
     public void onListItemClick(ListView l, View v, int position, long id) {
         // retrieve theListView item
-        WalkItem item = walkList.getWalks().get(position);
+        SectionItem item = walkList.getWalks().get(position);
         // do something
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        WalkDetailFragment wdf= WalkDetailFragment.newInstance(item.getNum()-1);
+        //WalkDetailFragment wdf= WalkDetailFragment.newInstance(item.getId()-1);
 
         fragmentManager.beginTransaction()
                 .add(R.id.container, wdf)
@@ -44,6 +42,6 @@ public class WalksFragment extends ListFragment {
                 .addToBackStack("walksFragment")
                 .commit();
 
-    }
+    }*/
 
 }

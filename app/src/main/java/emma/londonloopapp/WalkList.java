@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class WalkList {
 
-    private List<WalkItem> walks; // WalkItem items list
+    private List<SectionItem> walks; // WalkItem items list
 
     private NodeList nl;
 
@@ -26,7 +26,7 @@ public class WalkList {
 
 
 
-        walks.add(new WalkItem(1, resources.getDrawable(R.drawable.dummy), resources.getString(R.string.loop1),
+        /*walks.add(new WalkItem(1, resources.getDrawable(R.drawable.dummy), resources.getString(R.string.loop1),
                 resources.getString(R.string.loop1_description), 8.5, 51.483144, 0.177975));
         walks.add(new WalkItem(2, resources.getDrawable(R.drawable.dummy), resources.getString(R.string.loop2),
                 resources.getString(R.string.loop2_description), 7, 51.441233, 0.148956));
@@ -73,23 +73,23 @@ public class WalkList {
         walks.add(new WalkItem(23, resources.getDrawable(R.drawable.dummy), resources.getString(R.string.loop23),
                 resources.getString(R.string.loop23_description), 4, 51.559197,0.236748));
         walks.add(new WalkItem(24, resources.getDrawable(R.drawable.dummy), resources.getString(R.string.loop24),
-                resources.getString(R.string.loop24_description), 5, 51.516886,0.191433));
+                resources.getString(R.string.loop24_description), 5, 51.516886,0.191433));*/
 
     }
 
-    public List<WalkItem> getWalks(){
+    public List<SectionItem> getWalks(){
         return walks;
     }
 
-    public WalkItem getWalk(int i){
+    public SectionItem getWalk(int i){
         return walks.get(i);
     }
 
     public int getIdFromTitle(String title){
         for (int i = 0; i < walks.size(); i++){
-            if (getWalk(i).getTitle().equals(title)){
+            /*if (getWalk(i).getStartNode().equals(title)){
                 return i;
-            }
+            }*/
         }
         return 0;
     }

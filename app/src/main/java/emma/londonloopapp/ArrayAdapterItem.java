@@ -14,9 +14,9 @@ import java.util.List;
  * Created by Emma on 26/01/2015.
  */
 
-public class ArrayAdapterItem extends ArrayAdapter<WalkItem> {
+public class ArrayAdapterItem extends ArrayAdapter<SectionItem> {
 
-    public ArrayAdapterItem(Context context, List<WalkItem> items) {
+    public ArrayAdapterItem(Context context, List<SectionItem> items) {
         super(context, R.layout.walk_item, items);
     }
 
@@ -38,9 +38,9 @@ public class ArrayAdapterItem extends ArrayAdapter<WalkItem> {
             viewHolder = (ViewHolder) convertView.getTag();
         }
         // update the item view
-        WalkItem item = getItem(position);
+        SectionItem item = getItem(position);
         viewHolder.walkImage.setImageDrawable(item.getIcon());
-        viewHolder.walkTitle.setText(item.getTitle());
+        //viewHolder.walkTitle.setText(item.getStartNode());
         viewHolder.walkLength.setText(item.getMiles() + " miles (" + (double) Math.round(item.getMiles() * 1.6 * 100) / 100 + " kilometres)");
         return convertView;
     }
