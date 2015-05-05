@@ -1,6 +1,5 @@
 package emma.londonloopapp;
 
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -12,27 +11,26 @@ import android.widget.Button;
 import android.widget.TextView;
 
 public class WalkDetailFragment extends Fragment {
-
+    private final int WALK_NUMBERS = 24;
     private SectionItem sectionItem;
-    private WalkList walkList;
     private View walkDetailView;
+    private MySQLiteHelper db;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
 		View rootView = inflater.inflate(R.layout.fragment_walk_detail, container, false);
-        int walkNumber = getArguments().getInt("walkNumber", 0);
+        long walkNumber = getArguments().getLong("walkNumber", 0);
 
-        Resources resources = getResources();
-        walkList = new WalkList(resources);
+        db = new MySQLiteHelper(getActivity());
 
-        final SectionItem sectionItem = walkList.getWalk(walkNumber);
+        final SectionItem sectionItem = db.getSection(walkNumber + 1);
 
         TextView title = (TextView) rootView.findViewById(R.id.walkDetailTitle);
         TextView description = (TextView) rootView.findViewById(R.id.walkDetailDescription);
 
-        //title.setText(walkItem.getTitle());
+        title.setText(sectionItem.getId() + ". " + sectionItem.getStartNode().getName() + " to " + sectionItem.getEndNode().getName());
         description.setText(sectionItem.getDescription());
         description.setMovementMethod(new ScrollingMovementMethod());
 
@@ -42,18 +40,17 @@ public class WalkDetailFragment extends Fragment {
                 // Perform action on click
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 WalkDetailFragment wdf;
-                /*if(walkItem.getNum() < walkList.getSize()) {
-                    wdf = WalkDetailFragment.newInstance(walkItem.getNum());
+                if(sectionItem.getId() < WALK_NUMBERS) {
+                    wdf = WalkDetailFragment.newInstance(sectionItem.getId());
                 } else {
                     wdf = WalkDetailFragment.newInstance(0);
-                }*/
+                }
 
-                /*fragmentManager.beginTransaction()
+                fragmentManager.beginTransaction()
                         .add(R.id.container, wdf)
                                 // Add this transaction to the back stack
                         .addToBackStack("walkDetailFrag")
                         .commit();
-                        */
 
             }
         });
@@ -64,17 +61,16 @@ public class WalkDetailFragment extends Fragment {
                 // Perform action on click
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 WalkDetailFragment wdf;
-                /*if(walkItem.getNum() > 1) {
-                    wdf = WalkDetailFragment.newInstance(walkItem.getNum() - 2);
+                if(sectionItem.getId() > 1) {
+                    wdf = WalkDetailFragment.newInstance(sectionItem.getId() - 2);
                 } else {
-                    wdf = WalkDetailFragment.newInstance(walkList.getSize()-1);
+                    wdf = WalkDetailFragment.newInstance(23);
                 }
-
                 fragmentManager.beginTransaction()
                         .add(R.id.container, wdf)
                                 // Add this transaction to the back stack
                         .addToBackStack("walkDetailFrag")
-                        .commit();*/
+                        .commit();
             }
         });
 
@@ -82,11 +78,11 @@ public class WalkDetailFragment extends Fragment {
         return rootView;
 	}
 
-    public static WalkDetailFragment newInstance(int walk)
+    public static WalkDetailFragment newInstance(long walk)
     {
         WalkDetailFragment f = new WalkDetailFragment();
         final Bundle bdl = new Bundle(1);
-        bdl.putInt("walkNumber", walk);
+        bdl.putLong("walkNumber", walk);
         f.setArguments(bdl);
         return f;
 

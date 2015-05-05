@@ -41,6 +41,7 @@ public class MainActivity extends ActionBarActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         mNavigationDrawerFragment = (NavigationDrawerFragment)
@@ -56,7 +57,8 @@ public class MainActivity extends ActionBarActivity
         //new JSONParse(sectionUrl, MainActivity.this).execute();
 
         db = new MySQLiteHelper(getApplicationContext());
-
+        db.clearDB(db.getWritableDatabase());
+        db.onCreate(db.getWritableDatabase());
         createWalks();
 
         db.closeDB();
@@ -207,109 +209,114 @@ public class MainActivity extends ActionBarActivity
         }
     }
 
-    private void createWalks(){
-        NodeItem n1 = new NodeItem("Erith", 51.483144, 0.177975);
-        NodeItem n2 = new NodeItem("Old Bexley", 51.441233, 0.148956);
-        NodeItem n3 = new NodeItem("Jubilee Park", 51.393209, 0.069081);
-        NodeItem n4 = new NodeItem("West Wickham Common", 51.370944, 0.004860);
-        NodeItem n5 = new NodeItem("Hamsey Green", 51.319035, -0.063420);
-        NodeItem n6 = new NodeItem("Coulsdon South", 51.315728, -0.136744);
-        NodeItem n7 = new NodeItem("Banstead Downs", 51.332148, -0.209290);
-        NodeItem n8 = new NodeItem("Ewell", 51.351650, -0.250176);
-        NodeItem n9 = new NodeItem("Kingston Bridge", 51.411854, -0.308274);
-        NodeItem n10 = new NodeItem("Hatton Cross", 51.469927, -0.409793);
-        NodeItem n11 = new NodeItem("Hayes and Harlington", 51.505117, -0.418654);
-        NodeItem n12 = new NodeItem("Uxbridge Lock", 51.550933, -0.483414);
-        NodeItem n13 = new NodeItem("Harefield West", 51.610477, -0.498761);
-        NodeItem n14 = new NodeItem("Moor Park", 51.623932, -0.427529);
-        NodeItem n15 = new NodeItem("Hatch End", 51.610702, -0.380326);
-        NodeItem n16 = new NodeItem("Elstree", 51.653365, -0.281950);
-        NodeItem n17 = new NodeItem("Cockfosters", 51.652244, -0.148998);
-        NodeItem n18 = new NodeItem("Enfield Lock", 51.668264, -0.028316);
-        NodeItem n19 = new NodeItem("Chingford", 51.634306, 0.012118);
-        NodeItem n20 = new NodeItem("Chigwell", 51.621468, 0.078004);
-        NodeItem n21 = new NodeItem("Havering-atte-Bower", 51.616860, 0.183245);
-        NodeItem n22 = new NodeItem("Harold Wood", 51.593421, 0.234098);
-        NodeItem n23 = new NodeItem("Upminster Bridge", 51.559197, 0.236748);
-        NodeItem n24 = new NodeItem("Rainham", 51.516886, 0.191433);
-        NodeItem n25 = new NodeItem("Purfleet", 51.480946, 0.236477);
+    public MySQLiteHelper getDB(){
+        return db;
+    }
 
-        long node1_id = db.createNode(n1);
-        long node2_id = db.createNode(n2);
-        long node3_id = db.createNode(n3);
-        long node4_id = db.createNode(n4);
-        long node5_id = db.createNode(n5);
-        long node6_id = db.createNode(n6);
-        long node7_id = db.createNode(n7);
-        long node8_id = db.createNode(n8);
-        long node9_id = db.createNode(n9);
-        long node10_id = db.createNode(n10);
-        long node11_id = db.createNode(n11);
-        long node12_id = db.createNode(n12);
-        long node13_id = db.createNode(n13);
-        long node14_id = db.createNode(n14);
-        long node15_id = db.createNode(n15);
-        long node16_id = db.createNode(n16);
-        long node17_id = db.createNode(n17);
-        long node18_id = db.createNode(n18);
-        long node19_id = db.createNode(n19);
-        long node20_id = db.createNode(n20);
-        long node21_id = db.createNode(n21);
-        long node22_id = db.createNode(n22);
-        long node23_id = db.createNode(n23);
-        long node24_id = db.createNode(n24);
-        long node25_id = db.createNode(n25);
+    private void createWalks(){
+
+        NodeItem n1 = new NodeItem(1, "Erith", 51.483144, 0.177975);
+        NodeItem n2 = new NodeItem(2, "Old Bexley", 51.441233, 0.148956);
+        NodeItem n3 = new NodeItem(3, "Jubilee Park", 51.393209, 0.069081);
+        NodeItem n4 = new NodeItem(4, "West Wickham Common", 51.370944, 0.004860);
+        NodeItem n5 = new NodeItem(5, "Hamsey Green", 51.319035, -0.063420);
+        NodeItem n6 = new NodeItem(6, "Coulsdon South", 51.315728, -0.136744);
+        NodeItem n7 = new NodeItem(7, "Banstead Downs", 51.332148, -0.209290);
+        NodeItem n8 = new NodeItem(8, "Ewell", 51.351650, -0.250176);
+        NodeItem n9 = new NodeItem(9, "Kingston Bridge", 51.411854, -0.308274);
+        NodeItem n10 = new NodeItem(10, "Hatton Cross", 51.469927, -0.409793);
+        NodeItem n11 = new NodeItem(11, "Hayes and Harlington", 51.505117, -0.418654);
+        NodeItem n12 = new NodeItem(12, "Uxbridge Lock", 51.550933, -0.483414);
+        NodeItem n13 = new NodeItem(13, "Harefield West", 51.610477, -0.498761);
+        NodeItem n14 = new NodeItem(14, "Moor Park", 51.623932, -0.427529);
+        NodeItem n15 = new NodeItem(15, "Hatch End", 51.610702, -0.380326);
+        NodeItem n16 = new NodeItem(16, "Elstree", 51.653365, -0.281950);
+        NodeItem n17 = new NodeItem(17, "Cockfosters", 51.652244, -0.148998);
+        NodeItem n18 = new NodeItem(18, "Enfield Lock", 51.668264, -0.028316);
+        NodeItem n19 = new NodeItem(19, "Chingford", 51.634306, 0.012118);
+        NodeItem n20 = new NodeItem(20, "Chigwell", 51.621468, 0.078004);
+        NodeItem n21 = new NodeItem(21, "Havering-atte-Bower", 51.616860, 0.183245);
+        NodeItem n22 = new NodeItem(22, "Harold Wood", 51.593421, 0.234098);
+        NodeItem n23 = new NodeItem(23, "Upminster Bridge", 51.559197, 0.236748);
+        NodeItem n24 = new NodeItem(24, "Rainham", 51.516886, 0.191433);
+        NodeItem n25 = new NodeItem(25, "Purfleet", 51.480946, 0.236477);
+
+        db.createNode(n1);
+        db.createNode(n2);
+        db.createNode(n3);
+        db.createNode(n4);
+        db.createNode(n5);
+        db.createNode(n6);
+        db.createNode(n7);
+        db.createNode(n8);
+        db.createNode(n9);
+        db.createNode(n10);
+        db.createNode(n11);
+        db.createNode(n12);
+        db.createNode(n13);
+        db.createNode(n14);
+        db.createNode(n15);
+        db.createNode(n16);
+        db.createNode(n17);
+        db.createNode(n18);
+        db.createNode(n19);
+        db.createNode(n20);
+        db.createNode(n21);
+        db.createNode(n22);
+        db.createNode(n23);
+        db.createNode(n24);
+        db.createNode(n25);
 
         Resources resources = getResources();
 
-        SectionItem s1 = new SectionItem(node1_id, node2_id, resources.getString(R.string.loop1_description), 8.5, null);
-        SectionItem s2 = new SectionItem(node2_id, node3_id, resources.getString(R.string.loop2_description), 7, null);
-        SectionItem s3 = new SectionItem(node3_id, node4_id, resources.getString(R.string.loop3_description), 9, null);
-        SectionItem s4 = new SectionItem(node4_id, node5_id, resources.getString(R.string.loop4_description), 10, null);
-        SectionItem s5 = new SectionItem(node5_id, node6_id, resources.getString(R.string.loop5_description), 6, null);
-        SectionItem s6 = new SectionItem(node6_id, node7_id, resources.getString(R.string.loop6_description), 4.5, null);
-        SectionItem s7 = new SectionItem(node7_id, node8_id, resources.getString(R.string.loop7_description), 3.5, null);
-        SectionItem s8 = new SectionItem(node8_id, node9_id, resources.getString(R.string.loop8_description), 7.3, null);
-        SectionItem s9 = new SectionItem(node9_id, node10_id, resources.getString(R.string.loop9_description), 8.5, null);
-        SectionItem s10 = new SectionItem(node10_id, node11_id, resources.getString(R.string.loop10_description), 3.5, null);
-        SectionItem s11 = new SectionItem(node11_id, node12_id, resources.getString(R.string.loop11_description), 7.5, null);
-        SectionItem s12 = new SectionItem(node12_id, node13_id, resources.getString(R.string.loop12_description), 4.5, null);
-        SectionItem s13 = new SectionItem(node13_id, node14_id, resources.getString(R.string.loop13_description), 5, null);
-        SectionItem s14 = new SectionItem(node14_id, node15_id, resources.getString(R.string.loop14_description), 3.8, null);
-        SectionItem s15 = new SectionItem(node15_id, node16_id, resources.getString(R.string.loop15_description), 10, null);
-        SectionItem s16 = new SectionItem(node16_id, node17_id, resources.getString(R.string.loop16_description), 10, null);
-        SectionItem s17 = new SectionItem(node17_id, node18_id, resources.getString(R.string.loop17_description), 9.5, null);
-        SectionItem s18 = new SectionItem(node18_id, node19_id, resources.getString(R.string.loop18_description), 4, null);
-        SectionItem s19 = new SectionItem(node19_id, node20_id, resources.getString(R.string.loop19_description), 4, null);
-        SectionItem s20 = new SectionItem(node20_id, node21_id, resources.getString(R.string.loop20_description), 6, null);
-        SectionItem s21 = new SectionItem(node21_id, node22_id, resources.getString(R.string.loop21_description), 4.3, null);
-        SectionItem s22 = new SectionItem(node22_id, node23_id, resources.getString(R.string.loop22_description), 4, null);
-        SectionItem s23 = new SectionItem(node23_id, node24_id, resources.getString(R.string.loop23_description), 4, null);
-        SectionItem s24 = new SectionItem(node24_id, node25_id, resources.getString(R.string.loop24_description), 5, null);
+        SectionItem s1 = new SectionItem(1, n1, n2, resources.getString(R.string.loop1_description), 8.5, null);
+        SectionItem s2 = new SectionItem(2, n2, n3, resources.getString(R.string.loop2_description), 7, null);
+        SectionItem s3 = new SectionItem(3, n3, n4, resources.getString(R.string.loop3_description), 9, null);
+        SectionItem s4 = new SectionItem(4, n4, n5, resources.getString(R.string.loop4_description), 10, null);
+        SectionItem s5 = new SectionItem(5, n5, n6, resources.getString(R.string.loop5_description), 6, null);
+        SectionItem s6 = new SectionItem(6, n6, n7, resources.getString(R.string.loop6_description), 4.5, null);
+        SectionItem s7 = new SectionItem(7, n7, n8, resources.getString(R.string.loop7_description), 3.5, null);
+        SectionItem s8 = new SectionItem(8, n8, n9, resources.getString(R.string.loop8_description), 7.3, null);
+        SectionItem s9 = new SectionItem(9, n9, n10, resources.getString(R.string.loop9_description), 8.5, null);
+        SectionItem s10 = new SectionItem(10, n10, n11, resources.getString(R.string.loop10_description), 3.5, null);
+        SectionItem s11 = new SectionItem(11, n11, n12, resources.getString(R.string.loop11_description), 7.5, null);
+        SectionItem s12 = new SectionItem(12, n12, n13, resources.getString(R.string.loop12_description), 4.5, null);
+        SectionItem s13 = new SectionItem(13, n13, n14, resources.getString(R.string.loop13_description), 5, null);
+        SectionItem s14 = new SectionItem(14, n14, n15, resources.getString(R.string.loop14_description), 3.8, null);
+        SectionItem s15 = new SectionItem(15, n15, n16, resources.getString(R.string.loop15_description), 10, null);
+        SectionItem s16 = new SectionItem(16, n16, n17, resources.getString(R.string.loop16_description), 10, null);
+        SectionItem s17 = new SectionItem(17, n17, n18, resources.getString(R.string.loop17_description), 9.5, null);
+        SectionItem s18 = new SectionItem(18, n18, n19, resources.getString(R.string.loop18_description), 4, null);
+        SectionItem s19 = new SectionItem(19, n19, n20, resources.getString(R.string.loop19_description), 4, null);
+        SectionItem s20 = new SectionItem(20, n20, n21, resources.getString(R.string.loop20_description), 6, null);
+        SectionItem s21 = new SectionItem(21, n21, n22, resources.getString(R.string.loop21_description), 4.3, null);
+        SectionItem s22 = new SectionItem(22, n22, n23, resources.getString(R.string.loop22_description), 4, null);
+        SectionItem s23 = new SectionItem(23, n23, n24, resources.getString(R.string.loop23_description), 4, null);
+        SectionItem s24 = new SectionItem(24, n24, n25, resources.getString(R.string.loop24_description), 5, null);
 
-        long section1_id = db.createSection(s1);
-        long section2_id = db.createSection(s2);
-        long section3_id = db.createSection(s3);
-        long section4_id = db.createSection(s4);
-        long section5_id = db.createSection(s5);
-        long section6_id = db.createSection(s6);
-        long section7_id = db.createSection(s7);
-        long section8_id = db.createSection(s8);
-        long section9_id = db.createSection(s9);
-        long section10_id = db.createSection(s10);
-        long section11_id = db.createSection(s11);
-        long section12_id = db.createSection(s12);
-        long section13_id = db.createSection(s13);
-        long section14_id = db.createSection(s14);
-        long section15_id = db.createSection(s15);
-        long section16_id = db.createSection(s16);
-        long section17_id = db.createSection(s17);
-        long section18_id = db.createSection(s18);
-        long section19_id = db.createSection(s19);
-        long section20_id = db.createSection(s20);
-        long section21_id = db.createSection(s21);
-        long section22_id = db.createSection(s22);
-        long section23_id = db.createSection(s23);
-        long section24_id = db.createSection(s24);
+        db.createSection(s1);
+        db.createSection(s2);
+        db.createSection(s3);
+        db.createSection(s4);
+        db.createSection(s5);
+        db.createSection(s6);
+        db.createSection(s7);
+        db.createSection(s8);
+        db.createSection(s9);
+        db.createSection(s10);
+        db.createSection(s11);
+        db.createSection(s12);
+        db.createSection(s13);
+        db.createSection(s14);
+        db.createSection(s15);
+        db.createSection(s16);
+        db.createSection(s17);
+        db.createSection(s18);
+        db.createSection(s19);
+        db.createSection(s20);
+        db.createSection(s21);
+        db.createSection(s22);
+        db.createSection(s23);
+        db.createSection(s24);
     }
 }

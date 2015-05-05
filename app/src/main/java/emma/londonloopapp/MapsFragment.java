@@ -7,7 +7,6 @@ import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,12 +16,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapsFragment extends Fragment {
 
-    private WalkList walkList;
+    //private WalkList walkList;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private GoogleApiClient mGoogleApiClient;
 
@@ -33,7 +30,7 @@ public class MapsFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_maps, container, false);
 
         Resources resources = getResources();
-        walkList = new WalkList(resources);
+        //walkList = new WalkList(resources);
 
         setUpMapIfNeeded();
         return rootView;
@@ -110,11 +107,11 @@ public class MapsFragment extends Fragment {
         //mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("You are here!").snippet("Consider yourself located"));
 
         // add locations of start/end points
-        addMarkers(walkList);
+        //addMarkers(walkList);
 
     }
 
-    private void addMarkers(final WalkList walkList){
+    /*private void addMarkers(final WalkList walkList){
 
         MarkerOptions markers[] = new MarkerOptions[24];
 
@@ -144,6 +141,6 @@ public class MapsFragment extends Fragment {
 
             }});
 
-    }
+    }*/
 
 }

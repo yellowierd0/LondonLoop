@@ -5,7 +5,7 @@ package emma.londonloopapp;
  */
 public class NodeItem {
 
-    private long nodeID;
+    private long nodeId;
     private String name; //name of node
     private double latitude; //latitude of node point
     private double longitude; //longitude of node point
@@ -13,8 +13,8 @@ public class NodeItem {
     public NodeItem() {
     }
 
-    public NodeItem(long nodeID, String name, double latitude, double longitude) {
-        this.nodeID = nodeID;
+    public NodeItem(long nodeId, String name, double latitude, double longitude) {
+        this.nodeId = nodeId;
         this.name = name;
         this.latitude = latitude;
         this.longitude = longitude;
@@ -27,8 +27,8 @@ public class NodeItem {
 
     }
 
-    public long getID(){
-        return nodeID;
+    public long getId(){
+        return nodeId;
     }
 
     public String getName(){
@@ -43,8 +43,8 @@ public class NodeItem {
         return longitude;
     }
 
-    public void setID(int id){
-        this.nodeID = id ;
+    public void setId(long id){
+        this.nodeId = id ;
     }
 
     public void setName(String name){

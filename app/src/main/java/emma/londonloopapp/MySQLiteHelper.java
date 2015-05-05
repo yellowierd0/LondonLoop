@@ -27,9 +27,10 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     // Table Names
     private static final String TABLE_NODE = "Node";
     private static final String TABLE_SECTION = "Section";
+    private static final String TABLE_WALK = "Walk";
 
     // NODES Table - column names
-    private static final String KEY_NODE_ID = "NodeID";
+    private static final String KEY_NODE_ID = "NodeId";
     private static final String KEY_NAME = "Name";
     private static final String KEY_LATITUDE = "Latitude";
     private static final String KEY_LONGITUDE = "Longitude";
@@ -39,22 +40,24 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     private static final String KEY_DESCRIPTION = "Description";
     private static final String KEY_LENGTH = "Length";
     private static final String KEY_IMAGE = "Image";
-
-    // Foreign Key column names
     private static final String KEY_START_NODE = "StartNode";
     private static final String KEY_END_NODE = "EndNode";
 
     // Table Create Statements
     // Node table create statement
     private static final String CREATE_TABLE_NODE = "CREATE TABLE "
-            + TABLE_NODE + "(" + KEY_NODE_ID + " INTEGER PRIMARY KEY," + KEY_NAME
-            + " TEXT," + KEY_LATITUDE + " REAL," + KEY_LONGITUDE
+            + TABLE_NODE + "(" + KEY_NODE_ID + " INTEGER PRIMARY KEY,"
+            + KEY_NAME   + " TEXT," + KEY_LATITUDE + " REAL," + KEY_LONGITUDE
             + " REAL" + ")";
 
     // Tag table create statement
     private static final String CREATE_TABLE_SECTION = "CREATE TABLE " + TABLE_SECTION
-            + "(" + KEY_SECTION_ID + " INTEGER PRIMARY KEY," + KEY_START_NODE + " INTEGER,"
-            + KEY_END_NODE + " INTEGER," + KEY_DESCRIPTION + " TEXT," + KEY_LENGTH + " REAL," + KEY_IMAGE + " BLOB" + ")";
+            + "(" + KEY_SECTION_ID + " INTEGER PRIMARY KEY,"
+            + KEY_START_NODE + " INTEGER," 
+            + KEY_END_NODE + " INTEGER,"
+            + KEY_DESCRIPTION + " TEXT,"
+            + KEY_LENGTH + " REAL,"
+            + KEY_IMAGE + " BLOB" + ")";
 
     public MySQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -68,6 +71,11 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_SECTION);
     }
 
+    public void clearDB(SQLiteDatabase db){
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NODE);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SECTION);
+    }
+
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // on upgrade drop older tables
@@ -79,34 +87,33 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     }
 
     //Creating a Node
-    public long createNode(NodeItem nodeItem) {
+    public void createNode(NodeItem nodeItem) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
+        values.put(KEY_NODE_ID, nodeItem.getId());
         values.put(KEY_NAME, nodeItem.getName());
         values.put(KEY_LATITUDE, nodeItem.getLatitude());
         values.put(KEY_LONGITUDE, nodeItem.getLongitude());
 
         // insert row
-        long node_id = db.insert(TABLE_NODE, null, values);
+        db.insert(TABLE_NODE, null, values);
 
-        return node_id;
     }
 
-    public long createSection(SectionItem sectionItem) {
+    public void createSection(SectionItem sectionItem) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
         values.put(KEY_SECTION_ID, sectionItem.getId());
-        values.put(KEY_START_NODE, sectionItem.getStartNode());
-        values.put(KEY_END_NODE, sectionItem.getEndNode());
+        values.put(KEY_START_NODE, sectionItem.getStartNode().getId());
+        values.put(KEY_END_NODE, sectionItem.getEndNode().getId());
         values.put(KEY_DESCRIPTION, sectionItem.getDescription());
         values.put(KEY_LENGTH, sectionItem.getMiles());
 
         // insert row
-        long section_id = db.insert(TABLE_SECTION, null, values);
+        db.insert(TABLE_SECTION, null, values);
 
-        return section_id;
     }
 
     //Get a Node
@@ -124,7 +131,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
             c.moveToFirst();
 
         NodeItem nodeItem = new NodeItem();
-        nodeItem.setID(c.getInt(c.getColumnIndex(KEY_NODE_ID)));
+        nodeItem.setId(c.getLong(c.getColumnIndex(KEY_NODE_ID)));
         nodeItem.setName((c.getString(c.getColumnIndex(KEY_NAME))));
         nodeItem.setLatitude(c.getDouble(c.getColumnIndex(KEY_LATITUDE)));
         nodeItem.setLongitude(c.getDouble(c.getColumnIndex(KEY_LONGITUDE)));
@@ -136,7 +143,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         String selectQuery = "SELECT  * FROM " + TABLE_SECTION + " WHERE "
-                + KEY_NODE_ID + " = " + section_id;
+                + KEY_SECTION_ID + " = " + section_id;
 
         Log.e(LOG, selectQuery);
 
@@ -146,9 +153,9 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
             c.moveToFirst();
 
         SectionItem sectionItem = new SectionItem();
-        sectionItem.setId(c.getInt(c.getColumnIndex(KEY_SECTION_ID)));
-        sectionItem.setStartNode(c.getInt(c.getColumnIndex(KEY_START_NODE)));
-        sectionItem.setEndNode(c.getInt(c.getColumnIndex(KEY_END_NODE)));
+        sectionItem.setId(c.getLong(c.getColumnIndex(KEY_SECTION_ID)));
+        sectionItem.setStartNode(getNode(c.getLong(c.getColumnIndex(KEY_START_NODE))));
+        sectionItem.setEndNode(getNode(c.getLong(c.getColumnIndex(KEY_END_NODE))));
         sectionItem.setDescription(c.getString(c.getColumnIndex(KEY_DESCRIPTION)));
         sectionItem.setMiles(c.getDouble(c.getColumnIndex(KEY_LENGTH)));
         //sectionItem.setIcon(c.get(c.getColumnIndex(KEY_IMAGE)));
@@ -169,7 +176,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         if (c.moveToFirst()) {
             do {
                 NodeItem nodeItem = new NodeItem();
-                nodeItem.setID(c.getInt(c.getColumnIndex(KEY_NODE_ID)));
+                nodeItem.setId(c.getLong(c.getColumnIndex(KEY_NODE_ID)));
                 nodeItem.setName((c.getString(c.getColumnIndex(KEY_NAME))));
                 nodeItem.setLatitude(c.getDouble(c.getColumnIndex(KEY_LATITUDE)));
                 nodeItem.setLongitude(c.getDouble(c.getColumnIndex(KEY_LONGITUDE)));
@@ -196,9 +203,9 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         if (c.moveToFirst()) {
             do {
                 SectionItem sectionItem = new SectionItem();
-                sectionItem.setId(c.getInt(c.getColumnIndex(KEY_SECTION_ID)));
-                sectionItem.setStartNode(c.getInt(c.getColumnIndex(KEY_START_NODE)));
-                sectionItem.setEndNode(c.getInt(c.getColumnIndex(KEY_END_NODE)));
+                sectionItem.setId(c.getLong(c.getColumnIndex(KEY_SECTION_ID)));
+                sectionItem.setStartNode(getNode(c.getLong(c.getColumnIndex(KEY_START_NODE))));
+                sectionItem.setEndNode(getNode(c.getLong (c.getColumnIndex(KEY_END_NODE))));
                 sectionItem.setDescription(c.getString(c.getColumnIndex(KEY_DESCRIPTION)));
                 sectionItem.setMiles(c.getDouble(c.getColumnIndex(KEY_LENGTH)));
 
@@ -221,16 +228,16 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
         // updating row
         return db.update(TABLE_NODE, values, KEY_NODE_ID + " = ?",
-                new String[] { String.valueOf(nodeItem.getID()) });
+                new String[] { String.valueOf(nodeItem.getId()) });
     }
 
     //Updating a node
-    public int updateSection(SectionItem sectionItem, NodeItem startNode, NodeItem endNode) {
+    public int updateSection(SectionItem sectionItem) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_START_NODE, startNode.getID());
-        values.put(KEY_END_NODE, endNode.getID());
+        values.put(KEY_START_NODE, sectionItem.getStartNode().getId());
+        values.put(KEY_END_NODE, sectionItem.getEndNode().getId());
         values.put(KEY_DESCRIPTION, sectionItem.getDescription());
         values.put(KEY_LENGTH, sectionItem.getMiles());
 

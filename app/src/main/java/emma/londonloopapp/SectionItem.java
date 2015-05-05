@@ -7,8 +7,8 @@ import android.graphics.drawable.Drawable;
  */
 public class SectionItem {
     private long id;
-    private long startNode; // the text for the ListView item title
-    private long endNode; // the text for the ListView item title
+    private NodeItem startNode; // the text for the ListView item title
+    private NodeItem endNode; // the text for the ListView item title
     private String description; // the text for the ListView item description
     private double miles; //distance for walk in miles
     private Drawable icon; // the drawable for the ListView item ImageView
@@ -17,24 +17,18 @@ public class SectionItem {
 
     }
 
-    public SectionItem(long id, long startNode, long endNode, String description, double miles, Drawable icon) {
+    public SectionItem(long id, NodeItem start_node, NodeItem end_node, String description, double miles, Drawable icon) {
         this.id = id;
-        this.startNode = startNode;
-        this.endNode = endNode;
+        this.startNode = start_node;
+        this.endNode = end_node;
         this.description = description;
         this.miles = miles;
         this.icon = icon;
     }
 
-    public SectionItem(long startNode, long endNode, String description, double miles, Drawable icon) {
-        this.startNode = startNode;
-        this.endNode = endNode;
-        this.description = description;
-        this.miles = miles;
-        this.icon = icon;
-    }
-
-    public SectionItem(String description, double miles, Drawable icon) {
+    public SectionItem(NodeItem start_node, NodeItem end_node, String description, double miles, Drawable icon) {
+        this.startNode = start_node;
+        this.endNode = end_node;
         this.description = description;
         this.miles = miles;
         this.icon = icon;
@@ -44,11 +38,11 @@ public class SectionItem {
         return id;
     }
 
-    public long getStartNode(){
+    public NodeItem getStartNode(){
         return startNode;
     }
 
-    public long getEndNode(){
+    public NodeItem getEndNode(){
         return endNode;
     }
 
@@ -64,15 +58,15 @@ public class SectionItem {
         return icon;
     }
 
-    public void setId(int id){
+    public void setId(long id){
         this.id = id;
     }
 
-    public void setStartNode(int startNode){
+    public void setStartNode(NodeItem startNode){
         this.startNode = startNode;
     }
 
-    public void setEndNode(int endNode){
+    public void setEndNode(NodeItem endNode){
         this.endNode = endNode;
     }
 

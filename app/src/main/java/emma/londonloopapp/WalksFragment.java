@@ -1,22 +1,23 @@
 package emma.londonloopapp;
 
-import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
 import android.view.View;
+import android.widget.ListView;
 
 public class WalksFragment extends ListFragment {
 
-    private WalkList walkList;
+    MySQLiteHelper db;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // initialize the items list
 
-        Resources resources = getResources();
-        walkList = new WalkList(resources);
+        db = new MySQLiteHelper(getActivity());
 
-        setListAdapter(new ArrayAdapterItem(getActivity(), walkList.getWalks()));
+        setListAdapter(new ArrayAdapterItem(getActivity(), db.getAllSections()));
 
         // initialize and set the list adapter
 
@@ -28,13 +29,13 @@ public class WalksFragment extends ListFragment {
         getListView().setDivider(null);
     }
 
-    /*@Override/*
+    @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         // retrieve theListView item
-        SectionItem item = walkList.getWalks().get(position);
+        SectionItem item = db.getSection(position + 1);
         // do something
         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        //WalkDetailFragment wdf= WalkDetailFragment.newInstance(item.getId()-1);
+        WalkDetailFragment wdf= WalkDetailFragment.newInstance(item.getId()-1);
 
         fragmentManager.beginTransaction()
                 .add(R.id.container, wdf)
@@ -42,6 +43,6 @@ public class WalksFragment extends ListFragment {
                 .addToBackStack("walksFragment")
                 .commit();
 
-    }*/
+    }
 
 }

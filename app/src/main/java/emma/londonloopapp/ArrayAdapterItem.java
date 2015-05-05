@@ -40,7 +40,7 @@ public class ArrayAdapterItem extends ArrayAdapter<SectionItem> {
         // update the item view
         SectionItem item = getItem(position);
         viewHolder.walkImage.setImageDrawable(item.getIcon());
-        //viewHolder.walkTitle.setText(item.getStartNode());
+        viewHolder.walkTitle.setText(item.getId() + ". " + item.getStartNode().getName() + " to " + item.getEndNode().getName());
         viewHolder.walkLength.setText(item.getMiles() + " miles (" + (double) Math.round(item.getMiles() * 1.6 * 100) / 100 + " kilometres)");
         return convertView;
     }

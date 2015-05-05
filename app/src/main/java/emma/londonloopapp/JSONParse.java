@@ -16,7 +16,7 @@ public class JSONParse extends AsyncTask<String,String,JSONObject> {
     private ProgressDialog pDialog;
 
     //List of Walks
-    public NodeList nodeList;
+    //public NodeList nodeList;
 
     final String TAG = "JSONParse.java";
 
@@ -42,7 +42,7 @@ public class JSONParse extends AsyncTask<String,String,JSONObject> {
     public JSONParse(String url, MainActivity activity){
         this.url = url;
         this.activity = activity;
-        nodeList = new NodeList(activity.getResources());
+        //nodeList = new NodeList(activity.getResources());
     }
 
     @Override
