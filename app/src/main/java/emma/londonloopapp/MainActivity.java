@@ -209,10 +209,6 @@ public class MainActivity extends ActionBarActivity
         }
     }
 
-    public MySQLiteHelper getDB(){
-        return db;
-    }
-
     private void createWalks(){
 
         NodeItem n1 = new NodeItem(1, "Erith", 51.483144, 0.177975);

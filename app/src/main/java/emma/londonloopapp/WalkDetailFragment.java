@@ -34,6 +34,21 @@ public class WalkDetailFragment extends Fragment {
         description.setText(sectionItem.getDescription());
         description.setMovementMethod(new ScrollingMovementMethod());
 
+        final Button startButton = (Button) rootView.findViewById(R.id.startButton);
+        startButton.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                StartWalkFragment wdf = new StartWalkFragment();
+
+                fragmentManager.beginTransaction()
+                        .add(R.id.container, wdf)
+                                // Add this transaction to the back stack
+                        .addToBackStack("walkDetailFrag")
+                        .commit();
+            }
+        });
+
         final Button nButton = (Button) rootView.findViewById(R.id.nextButton);
         nButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {

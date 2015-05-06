@@ -1,12 +1,12 @@
 package emma.londonloopapp;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,12 +16,18 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MapsFragment extends Fragment {
 
-    //private WalkList walkList;
+    private MySQLiteHelper db;
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private GoogleApiClient mGoogleApiClient;
+    private final int WALK_NUMBERS = 24;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -29,8 +35,8 @@ public class MapsFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_maps, container, false);
 
-        Resources resources = getResources();
-        //walkList = new WalkList(resources);
+        db = new MySQLiteHelper(getActivity());
+
 
         setUpMapIfNeeded();
         return rootView;
@@ -107,40 +113,47 @@ public class MapsFragment extends Fragment {
         //mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("You are here!").snippet("Consider yourself located"));
 
         // add locations of start/end points
-        //addMarkers(walkList);
+        addMarkers();
 
     }
 
-    /*private void addMarkers(final WalkList walkList){
+    private void addMarkers(){
 
-        MarkerOptions markers[] = new MarkerOptions[24];
+        final MarkerOptions markers = new MarkerOptions();
 
-        for (int i = 0; i < walkList.getSize(); i++){
+        for  (int i = 1; i <= WALK_NUMBERS; i++){
 
-            SectionItem w = walkList.getWalk(i);
+            SectionItem w = db.getSection(Long.valueOf(i));
 
-            //markers[i] = new MarkerOptions().position(new LatLng(w.getLatitude(), w.getLongitude())).title(w.getTitle());
+            MarkerOptions m = new MarkerOptions().position(new LatLng(w.getStartNode().getLatitude(),
+                    w.getStartNode().getLongitude())).title(w.getId() + ". " +
+                    w.getStartNode().getName() + " to " + w.getEndNode().getName());
 
-            mMap.addMarker(markers[i]);
-
+            mMap.addMarker(m);
 
         }
 
         mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
+
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                WalkDetailFragment wdf= WalkDetailFragment.newInstance(walkList.getIdFromTitle(marker.getTitle()));
-                System.out.println(marker.getTitle());
-                System.out.println(walkList.getIdFromTitle(marker.getTitle()));
+                WalkDetailFragment wdf= WalkDetailFragment.newInstance(getMarkerPos(marker.getTitle()));
                 fragmentManager.beginTransaction()
                         .add(R.id.container, wdf)
-                                // Add this transaction to the back stack
+                        // Add this transaction to the back stack
                         .addToBackStack("mapFrag")
                         .commit();
 
             }});
 
-    }*/
+    }
+
+    private long getMarkerPos(String s){
+        Matcher matcher = Pattern.compile("\\d+").matcher(s);
+        matcher.find();
+        return Long.valueOf(matcher.group()) - 1;
+    }
+
 
 }

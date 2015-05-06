@@ -53,7 +53,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     // Tag table create statement
     private static final String CREATE_TABLE_SECTION = "CREATE TABLE " + TABLE_SECTION
             + "(" + KEY_SECTION_ID + " INTEGER PRIMARY KEY,"
-            + KEY_START_NODE + " INTEGER," 
+            + KEY_START_NODE + " INTEGER,"
             + KEY_END_NODE + " INTEGER,"
             + KEY_DESCRIPTION + " TEXT,"
             + KEY_LENGTH + " REAL,"
