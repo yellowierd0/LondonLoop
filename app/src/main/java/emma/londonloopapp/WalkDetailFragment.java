@@ -21,7 +21,7 @@ public class WalkDetailFragment extends Fragment {
 			Bundle savedInstanceState) {
 
 		View rootView = inflater.inflate(R.layout.fragment_walk_detail, container, false);
-        long walkNumber = getArguments().getLong("walkNumber", 0);
+        final long walkNumber = getArguments().getLong("walkNumber", 0);
 
         db = new MySQLiteHelper(getActivity());
 
@@ -39,7 +39,7 @@ public class WalkDetailFragment extends Fragment {
             public void onClick(View v) {
                 // Perform action on click
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                StartWalkFragment wdf = new StartWalkFragment();
+                StartWalkFragment wdf = StartWalkFragment.newInstance(walkNumber);
 
                 fragmentManager.beginTransaction()
                         .add(R.id.container, wdf)

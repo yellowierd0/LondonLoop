@@ -19,12 +19,14 @@ public class StartWalkFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_start, container, false);
 
+        final long walkNumber = getArguments().getLong("walkNumber", 0);
+
         final Button navButton = (Button) rootView.findViewById(R.id.navButton);
         navButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Perform action on click
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                StartWalkFragment wdf = new StartWalkFragment();
+                NavigationFragment wdf = NavigationFragment.newInstance(walkNumber);
 
                 fragmentManager.beginTransaction()
                         .add(R.id.container, wdf)
@@ -52,5 +54,15 @@ public class StartWalkFragment extends Fragment {
         return rootView;
     }
 
+
+    public static StartWalkFragment newInstance(long walk)
+    {
+        StartWalkFragment f = new StartWalkFragment();
+        final Bundle bdl = new Bundle(1);
+        bdl.putLong("walkNumber", walk);
+        f.setArguments(bdl);
+        return f;
+
+    }
 
 }
