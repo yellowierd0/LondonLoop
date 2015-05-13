@@ -1,10 +1,8 @@
 package emma.londonloopapp;
 
 import android.app.Activity;
-import android.content.Context;
-import android.location.Criteria;
 import android.location.Location;
-import android.location.LocationManager;
+import android.location.LocationListener;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -19,7 +17,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationServices;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -55,6 +52,10 @@ public class NavigationFragment extends Fragment {
 
     private GoogleApiClient mGoogleApiClient;
 
+    private MyLocationListener mylistener;
+    private double longitude;
+    private double latitude;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -69,9 +70,10 @@ public class NavigationFragment extends Fragment {
 
         this.output = (TextView) rootView.findViewById(R.id.output);
 
-        buildGoogleApiClient();
+        MyLocation myLocation = new MyLocation(getActivity().getBaseContext());
 
-        planJourney(sectionItem, output);
+        Location currentLocation = myLocation.getLocation();
+        planJourney(currentLocation, sectionItem, output);
 
         return rootView;
     }
@@ -83,28 +85,11 @@ public class NavigationFragment extends Fragment {
         this.activity = activity;
     }
 
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(getActivity())
-                .addConnectionCallbacks((GoogleApiClient.ConnectionCallbacks) getActivity())
-                .addOnConnectionFailedListener((GoogleApiClient.OnConnectionFailedListener) getActivity())
-                .addApi(LocationServices.API)
-                .build();
-    }
+    private void planJourney(Location currentLocation, SectionItem destination, TextView output){
 
-    private void planJourney(SectionItem destination, TextView output){
+        if (currentLocation != null) {
 
-        // Get LocationManager object from System Service LOCATION_SERVICE
-        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
-        // Create a criteria object to retrieve provider
-        Criteria criteria = new Criteria();
-        // Get the name of the best provider
-        String provider = locationManager.getBestProvider(criteria, true);
-        // Get Current Location
-        //Location myLocation = locationManager.getLastKnownLocation(provider);
-        Location myLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-
-        if (myLocation != null){
-            String from = "/from/lonlat:" + myLocation.getLongitude() + "," + myLocation.getLatitude();
+            String from = "/from/lonlat:" + currentLocation.getLongitude() + "," + currentLocation.getLatitude();
             String api_key = "?api_key=377843b343d1e052ac4d024fd9b7c93a&app_id=6109f899";
             String to = "/to/lonlat:" + destination.getStartNode().getLongitude() + "," + destination.getStartNode().getLatitude();
             String endUrl = ".json";
@@ -113,8 +98,7 @@ public class NavigationFragment extends Fragment {
 
             // call AsynTask to perform network operation on separate thread
             new HttpAsyncTask().execute(getURL);
-        } else {
-            output.setText("Can't find current Location");
+
         }
 
     }
@@ -207,5 +191,33 @@ public class NavigationFragment extends Fragment {
         f.setArguments(bdl);
         return f;
 
+    }
+
+    private class MyLocationListener implements LocationListener {
+
+        @Override
+        public void onLocationChanged(Location location) {
+            // Initialize the location fields
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+            Toast.makeText(getActivity(), provider + "'s status changed to "+status +"!",
+                    Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onProviderEnabled(String provider) {
+            Toast.makeText(getActivity(), "Provider " + provider + " enabled!",
+                    Toast.LENGTH_SHORT).show();
+
+        }
+        @Override
+        public void onProviderDisabled(String provider) {
+            Toast.makeText(getActivity(), "Provider " + provider + " disabled!",
+                    Toast.LENGTH_SHORT).show();
+        }
     }
 }
