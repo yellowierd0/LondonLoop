@@ -1,27 +1,24 @@
 package emma.londonloopapp;
 
 import android.app.Activity;
+import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.support.v4.app.ListFragment;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.android.gms.common.api.GoogleApiClient;
+import android.widget.ListView;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,19 +26,19 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Emma on 06/05/2015.
  */
-public class NavigationFragment extends Fragment {
+public class NavigationFragment extends ListFragment {
 
     MySQLiteHelper db;
 
     private Activity activity;
 
     private static final String LOG = "NavHelper";
-
-    private TextView output;
 
     private static String BASE_URL = "http://transportapi.com/v3/uk/public/journey";
 
@@ -50,17 +47,11 @@ public class NavigationFragment extends Fragment {
 
     private static String test_url = "http://transportapi.com/v3/uk/public/journey/from/lonlat:0.191433,51.516886/to/lonlat:-0.1276250,51.503363051.json?api_key=377843b343d1e052ac4d024fd9b7c93a&app_id=6109f899";
 
-    private GoogleApiClient mGoogleApiClient;
-
-    private MyLocationListener mylistener;
-    private double longitude;
-    private double latitude;
+    private boolean planRoute = false;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-        View rootView = inflater.inflate(R.layout.fragment_navigation, container, false);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         long walkNumber = getArguments().getLong("walkNumber", 0);
 
@@ -68,14 +59,30 @@ public class NavigationFragment extends Fragment {
 
         final SectionItem sectionItem = db.getSection(walkNumber + 1);
 
-        this.output = (TextView) rootView.findViewById(R.id.output);
+        // Acquire a reference to the system Location Manager
+        LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
-        MyLocation myLocation = new MyLocation(getActivity().getBaseContext());
+        // Define a listener that responds to location updates
+        LocationListener locationListener = new LocationListener() {
+            public void onLocationChanged(Location location) {
+                // Called when a new location is found by the network location provider.
+                if (planRoute == false){
+                    planJourney(location, sectionItem);
+                    planRoute = true;
+                }
 
-        Location currentLocation = myLocation.getLocation();
-        planJourney(currentLocation, sectionItem, output);
+            }
 
-        return rootView;
+            public void onStatusChanged(String provider, int status, Bundle extras) {}
+
+            public void onProviderEnabled(String provider) {}
+
+            public void onProviderDisabled(String provider) {}
+        };
+
+        // Register the listener with the Location Manager to receive location updates
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+
     }
 
     @Override
@@ -85,7 +92,31 @@ public class NavigationFragment extends Fragment {
         this.activity = activity;
     }
 
-    private void planJourney(Location currentLocation, SectionItem destination, TextView output){
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        // remove the dividers from the ListView of the ListFragment
+        getListView().setBackgroundColor(getResources().getColor(R.color.primary_100));
+        getListView().setDivider(null);
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        // retrieve theListView item
+        /*SectionItem item = db.getSection(position + 1);
+        // do something
+        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        WalkDetailFragment wdf= WalkDetailFragment.newInstance(item.getId()-1);
+
+        fragmentManager.beginTransaction()
+                .add(R.id.container, wdf)
+                        // Add this transaction to the back stack
+                .addToBackStack("walksFragment")
+                .commit();
+*/
+    }
+
+    private void planJourney(Location currentLocation, SectionItem destination){
 
         if (currentLocation != null) {
 
@@ -159,13 +190,15 @@ public class NavigationFragment extends Fragment {
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
-            Toast.makeText(getActivity().getBaseContext(), "Received!", Toast.LENGTH_LONG).show();
             JSONObject json = null;
 
             try {
                 json = new JSONObject(result);
+
+                List<RouteItem> routeItems = getRouteItems(json);
+                setListAdapter(new RouteAdapterItem(getActivity(), routeItems));
                 // Perform action on click
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                /*FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 StartWalkFragment wdf = new StartWalkFragment();
 
                 fragmentManager.beginTransaction()
@@ -173,13 +206,62 @@ public class NavigationFragment extends Fragment {
                                 // Add this transaction to the back stack
                         .addToBackStack("startFrag")
                         .commit();
+*/
 
-
-                output.setText(json.toString(1));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    private List<RouteItem> getRouteItems(JSONObject jsonObject) throws JSONException {
+
+        JSONArray routeArray = jsonObject.getJSONArray("routes");
+        ArrayList<RouteItem> routeItems = new ArrayList<RouteItem>();
+
+        for (int i = 0; i < routeArray.length(); i++){
+            String duration = routeArray.getJSONObject(i).getString("duration");
+            JSONArray partArray = routeArray.getJSONObject(i).getJSONArray("route_parts");
+
+            RoutePart[] routeParts = new RoutePart[partArray.length()];
+
+            for (int j = 0; j < partArray.length(); j++){
+
+                String mode = partArray.getJSONObject(i).getString("mode");
+                String from_point_name = partArray.getJSONObject(i).getString("from_point_name");
+                String to_point_name = partArray.getJSONObject(i).getString("to_point_name");
+                String destination = partArray.getJSONObject(i).getString("destination");
+                String line_name = partArray.getJSONObject(i).getString("line_name");
+                String part_duration = partArray.getJSONObject(i).getString("duration");
+                String departure_time = partArray.getJSONObject(i).getString("departure_time");
+                String arrival_time = partArray.getJSONObject(i).getString("arrival_time");
+                String coordinates = partArray.getJSONObject(i).getString("coordinates");
+                ArrayList<Location> locations = convertStringToCoord(coordinates);
+
+                RoutePart rp = new RoutePart(mode, from_point_name, to_point_name, destination, line_name, part_duration, departure_time, arrival_time, locations);
+                routeParts[j] = rp;
+            }
+            routeItems.add(new RouteItem(duration, routeParts));
+        }
+
+        return routeItems;
+
+    }
+
+    private ArrayList<Location> convertStringToCoord(String coordinates){
+
+        String delims = "[ \\[\\],]+";
+        String[] tokens = coordinates.split(delims);
+        ArrayList<Location> locations = new ArrayList<Location>();
+        for (int i = 1; i < tokens.length; i++){
+            if (i % 2 != 0){
+                Location l = new Location("TfL journey planning API");
+                l.setLongitude(Double.parseDouble(tokens[i]));
+                l.setLatitude(Double.parseDouble(tokens[i+1]));
+                locations.add(l);
+            }
+        }
+        return locations;
     }
 
 
@@ -191,33 +273,5 @@ public class NavigationFragment extends Fragment {
         f.setArguments(bdl);
         return f;
 
-    }
-
-    private class MyLocationListener implements LocationListener {
-
-        @Override
-        public void onLocationChanged(Location location) {
-            // Initialize the location fields
-            latitude = location.getLatitude();
-            longitude = location.getLongitude();
-        }
-
-        @Override
-        public void onStatusChanged(String provider, int status, Bundle extras) {
-            Toast.makeText(getActivity(), provider + "'s status changed to "+status +"!",
-                    Toast.LENGTH_SHORT).show();
-        }
-
-        @Override
-        public void onProviderEnabled(String provider) {
-            Toast.makeText(getActivity(), "Provider " + provider + " enabled!",
-                    Toast.LENGTH_SHORT).show();
-
-        }
-        @Override
-        public void onProviderDisabled(String provider) {
-            Toast.makeText(getActivity(), "Provider " + provider + " disabled!",
-                    Toast.LENGTH_SHORT).show();
-        }
     }
 }
