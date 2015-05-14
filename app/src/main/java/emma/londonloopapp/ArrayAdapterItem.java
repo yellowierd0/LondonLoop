@@ -1,6 +1,7 @@
 package emma.londonloopapp;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +9,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.io.InputStream;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -29,7 +32,7 @@ public class ArrayAdapterItem extends ArrayAdapter<SectionItem> {
             convertView = inflater.inflate(R.layout.walk_item, parent, false);
             // initialize the view holder
             viewHolder = new ViewHolder();
-            viewHolder.walkImage = (ImageView) convertView.findViewById(R.id.ivIcon);
+            viewHolder.walkImage = (ImageView) convertView.findViewById(R.id.walkIcon);
             viewHolder.walkTitle = (TextView) convertView.findViewById(R.id.walkTitle);
             viewHolder.walkLength = (TextView) convertView.findViewById(R.id.walkLength);
             convertView.setTag(viewHolder);
@@ -39,7 +42,7 @@ public class ArrayAdapterItem extends ArrayAdapter<SectionItem> {
         }
         // update the item view
         SectionItem item = getItem(position);
-        viewHolder.walkImage.setImageDrawable(item.getIcon());
+        viewHolder.walkImage.setImageDrawable(getContext().getResources().getDrawable(item.getIcon()));
         viewHolder.walkTitle.setText(item.getId() + ". " + item.getStartNode().getName() + " to " + item.getEndNode().getName());
         viewHolder.walkLength.setText(item.getMiles() + " miles (" + (double) Math.round(item.getMiles() * 1.6 * 100) / 100 + " kilometres)");
         return convertView;
@@ -51,4 +54,13 @@ public class ArrayAdapterItem extends ArrayAdapter<SectionItem> {
         TextView walkLength;
     }
 
+    private static Drawable LoadImageFromWebOperations(String url) {
+        try {
+            InputStream is = (InputStream) new URL(url).getContent();
+            Drawable d = Drawable.createFromStream(is, "src name");
+            return d;
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

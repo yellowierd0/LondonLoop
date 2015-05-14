@@ -1,7 +1,5 @@
 package emma.londonloopapp;
 
-import android.graphics.drawable.Drawable;
-
 /**
  * Created by Emma on 07/03/2015.
  */
@@ -11,13 +9,13 @@ public class SectionItem {
     private NodeItem endNode; // the text for the ListView item title
     private String description; // the text for the ListView item description
     private double miles; //distance for walk in miles
-    private Drawable icon; // the drawable for the ListView item ImageView
+    private int icon; // the drawable for the ListView item ImageView
 
     public SectionItem() {
 
     }
 
-    public SectionItem(long id, NodeItem start_node, NodeItem end_node, String description, double miles, Drawable icon) {
+    public SectionItem(long id, NodeItem start_node, NodeItem end_node, String description, double miles, int icon) {
         this.id = id;
         this.startNode = start_node;
         this.endNode = end_node;
@@ -26,7 +24,7 @@ public class SectionItem {
         this.icon = icon;
     }
 
-    public SectionItem(NodeItem start_node, NodeItem end_node, String description, double miles, Drawable icon) {
+    public SectionItem(NodeItem start_node, NodeItem end_node, String description, double miles, int icon) {
         this.startNode = start_node;
         this.endNode = end_node;
         this.description = description;
@@ -54,7 +52,7 @@ public class SectionItem {
         return miles;
     }
 
-    public Drawable getIcon(){
+    public int getIcon(){
         return icon;
     }
 
@@ -78,7 +76,7 @@ public class SectionItem {
         this.miles = miles;
     }
 
-    public void setIcon(Drawable icon){
+    public void setIcon(int icon){
         this.icon = icon;
     }
 }

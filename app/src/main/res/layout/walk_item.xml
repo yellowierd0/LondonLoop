@@ -15,7 +15,7 @@
 
         <!-- Card Contents go here -->
 
-        <ImageView android:id="@+id/ivIcon"
+        <ImageView android:id="@+id/walkIcon"
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:padding="5dp"

@@ -2,6 +2,10 @@ package emma.londonloopapp;
 
 import android.app.Activity;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -265,30 +269,33 @@ public class MainActivity extends ActionBarActivity
 
         Resources resources = getResources();
 
-        SectionItem s1 = new SectionItem(1, n1, n2, resources.getString(R.string.loop1_description), 8.5, null);
-        SectionItem s2 = new SectionItem(2, n2, n3, resources.getString(R.string.loop2_description), 7, null);
-        SectionItem s3 = new SectionItem(3, n3, n4, resources.getString(R.string.loop3_description), 9, null);
-        SectionItem s4 = new SectionItem(4, n4, n5, resources.getString(R.string.loop4_description), 10, null);
-        SectionItem s5 = new SectionItem(5, n5, n6, resources.getString(R.string.loop5_description), 6, null);
-        SectionItem s6 = new SectionItem(6, n6, n7, resources.getString(R.string.loop6_description), 4.5, null);
-        SectionItem s7 = new SectionItem(7, n7, n8, resources.getString(R.string.loop7_description), 3.5, null);
-        SectionItem s8 = new SectionItem(8, n8, n9, resources.getString(R.string.loop8_description), 7.3, null);
-        SectionItem s9 = new SectionItem(9, n9, n10, resources.getString(R.string.loop9_description), 8.5, null);
-        SectionItem s10 = new SectionItem(10, n10, n11, resources.getString(R.string.loop10_description), 3.5, null);
-        SectionItem s11 = new SectionItem(11, n11, n12, resources.getString(R.string.loop11_description), 7.5, null);
-        SectionItem s12 = new SectionItem(12, n12, n13, resources.getString(R.string.loop12_description), 4.5, null);
-        SectionItem s13 = new SectionItem(13, n13, n14, resources.getString(R.string.loop13_description), 5, null);
-        SectionItem s14 = new SectionItem(14, n14, n15, resources.getString(R.string.loop14_description), 3.8, null);
-        SectionItem s15 = new SectionItem(15, n15, n16, resources.getString(R.string.loop15_description), 10, null);
-        SectionItem s16 = new SectionItem(16, n16, n17, resources.getString(R.string.loop16_description), 10, null);
-        SectionItem s17 = new SectionItem(17, n17, n18, resources.getString(R.string.loop17_description), 9.5, null);
-        SectionItem s18 = new SectionItem(18, n18, n19, resources.getString(R.string.loop18_description), 4, null);
-        SectionItem s19 = new SectionItem(19, n19, n20, resources.getString(R.string.loop19_description), 4, null);
-        SectionItem s20 = new SectionItem(20, n20, n21, resources.getString(R.string.loop20_description), 6, null);
-        SectionItem s21 = new SectionItem(21, n21, n22, resources.getString(R.string.loop21_description), 4.3, null);
-        SectionItem s22 = new SectionItem(22, n22, n23, resources.getString(R.string.loop22_description), 4, null);
-        SectionItem s23 = new SectionItem(23, n23, n24, resources.getString(R.string.loop23_description), 4, null);
-        SectionItem s24 = new SectionItem(24, n24, n25, resources.getString(R.string.loop24_description), 5, null);
+        int dummy1 =  R.drawable.dummy;
+        int dummy2 = R.drawable.dummy2;
+
+        SectionItem s1 = new SectionItem(1, n1, n2, resources.getString(R.string.loop1_description), 8.5, dummy1);
+        SectionItem s2 = new SectionItem(2, n2, n3, resources.getString(R.string.loop2_description), 7, dummy2);
+        SectionItem s3 = new SectionItem(3, n3, n4, resources.getString(R.string.loop3_description), 9, dummy1);
+        SectionItem s4 = new SectionItem(4, n4, n5, resources.getString(R.string.loop4_description), 10, dummy2);
+        SectionItem s5 = new SectionItem(5, n5, n6, resources.getString(R.string.loop5_description), 6, dummy1);
+        SectionItem s6 = new SectionItem(6, n6, n7, resources.getString(R.string.loop6_description), 4.5, dummy2);
+        SectionItem s7 = new SectionItem(7, n7, n8, resources.getString(R.string.loop7_description), 3.5, dummy1);
+        SectionItem s8 = new SectionItem(8, n8, n9, resources.getString(R.string.loop8_description), 7.3, dummy2);
+        SectionItem s9 = new SectionItem(9, n9, n10, resources.getString(R.string.loop9_description), 8.5, dummy1);
+        SectionItem s10 = new SectionItem(10, n10, n11, resources.getString(R.string.loop10_description), 3.5, dummy2);
+        SectionItem s11 = new SectionItem(11, n11, n12, resources.getString(R.string.loop11_description), 7.5, dummy1);
+        SectionItem s12 = new SectionItem(12, n12, n13, resources.getString(R.string.loop12_description), 4.5, dummy2);
+        SectionItem s13 = new SectionItem(13, n13, n14, resources.getString(R.string.loop13_description), 5, dummy1);
+        SectionItem s14 = new SectionItem(14, n14, n15, resources.getString(R.string.loop14_description), 3.8, dummy2);
+        SectionItem s15 = new SectionItem(15, n15, n16, resources.getString(R.string.loop15_description), 10, dummy1);
+        SectionItem s16 = new SectionItem(16, n16, n17, resources.getString(R.string.loop16_description), 10, dummy2);
+        SectionItem s17 = new SectionItem(17, n17, n18, resources.getString(R.string.loop17_description), 9.5, dummy1);
+        SectionItem s18 = new SectionItem(18, n18, n19, resources.getString(R.string.loop18_description), 4, dummy2);
+        SectionItem s19 = new SectionItem(19, n19, n20, resources.getString(R.string.loop19_description), 4, dummy1);
+        SectionItem s20 = new SectionItem(20, n20, n21, resources.getString(R.string.loop20_description), 6, dummy2);
+        SectionItem s21 = new SectionItem(21, n21, n22, resources.getString(R.string.loop21_description), 4.3, dummy1);
+        SectionItem s22 = new SectionItem(22, n22, n23, resources.getString(R.string.loop22_description), 4, dummy2);
+        SectionItem s23 = new SectionItem(23, n23, n24, resources.getString(R.string.loop23_description), 4, dummy1);
+        SectionItem s24 = new SectionItem(24, n24, n25, resources.getString(R.string.loop24_description), 5, dummy2);
 
         db.createSection(s1);
         db.createSection(s2);
@@ -314,5 +321,20 @@ public class MainActivity extends ActionBarActivity
         db.createSection(s22);
         db.createSection(s23);
         db.createSection(s24);
+
     }
+
+    private static Bitmap drawableToBitmap (Drawable drawable) {
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable)drawable).getBitmap();
+        }
+
+        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        return bitmap;
+    }
+
 }

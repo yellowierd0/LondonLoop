@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Emma on 06/05/2015.
@@ -48,6 +47,8 @@ public class NavigationFragment extends ListFragment {
     private static String test_url = "http://transportapi.com/v3/uk/public/journey/from/lonlat:0.191433,51.516886/to/lonlat:-0.1276250,51.503363051.json?api_key=377843b343d1e052ac4d024fd9b7c93a&app_id=6109f899";
 
     private boolean planRoute = false;
+
+    private ArrayList<RouteItem> routeItems;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -103,17 +104,7 @@ public class NavigationFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         // retrieve theListView item
-        /*SectionItem item = db.getSection(position + 1);
-        // do something
-        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-        WalkDetailFragment wdf= WalkDetailFragment.newInstance(item.getId()-1);
 
-        fragmentManager.beginTransaction()
-                .add(R.id.container, wdf)
-                        // Add this transaction to the back stack
-                .addToBackStack("walksFragment")
-                .commit();
-*/
     }
 
     private void planJourney(Location currentLocation, SectionItem destination){
@@ -195,18 +186,8 @@ public class NavigationFragment extends ListFragment {
             try {
                 json = new JSONObject(result);
 
-                List<RouteItem> routeItems = getRouteItems(json);
+                routeItems = getRouteItems(json);
                 setListAdapter(new RouteAdapterItem(getActivity(), routeItems));
-                // Perform action on click
-                /*FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                StartWalkFragment wdf = new StartWalkFragment();
-
-                fragmentManager.beginTransaction()
-                        .add(R.id.container, wdf)
-                                // Add this transaction to the back stack
-                        .addToBackStack("startFrag")
-                        .commit();
-*/
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -214,10 +195,10 @@ public class NavigationFragment extends ListFragment {
         }
     }
 
-    private List<RouteItem> getRouteItems(JSONObject jsonObject) throws JSONException {
+    private ArrayList<RouteItem> getRouteItems(JSONObject jsonObject) throws JSONException {
 
         JSONArray routeArray = jsonObject.getJSONArray("routes");
-        ArrayList<RouteItem> routeItems = new ArrayList<RouteItem>();
+        routeItems = new ArrayList<RouteItem>();
 
         for (int i = 0; i < routeArray.length(); i++){
             String duration = routeArray.getJSONObject(i).getString("duration");

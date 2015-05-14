@@ -57,7 +57,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
             + KEY_END_NODE + " INTEGER,"
             + KEY_DESCRIPTION + " TEXT,"
             + KEY_LENGTH + " REAL,"
-            + KEY_IMAGE + " BLOB" + ")";
+            + KEY_IMAGE + " INTEGER" + ")";
 
     public MySQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -110,7 +110,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         values.put(KEY_END_NODE, sectionItem.getEndNode().getId());
         values.put(KEY_DESCRIPTION, sectionItem.getDescription());
         values.put(KEY_LENGTH, sectionItem.getMiles());
-
+        values.put(KEY_IMAGE, sectionItem.getIcon());
         // insert row
         db.insert(TABLE_SECTION, null, values);
 
@@ -158,7 +158,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         sectionItem.setEndNode(getNode(c.getLong(c.getColumnIndex(KEY_END_NODE))));
         sectionItem.setDescription(c.getString(c.getColumnIndex(KEY_DESCRIPTION)));
         sectionItem.setMiles(c.getDouble(c.getColumnIndex(KEY_LENGTH)));
-        //sectionItem.setIcon(c.get(c.getColumnIndex(KEY_IMAGE)));
+        sectionItem.setIcon(c.getInt((c.getColumnIndex(KEY_IMAGE))));
         return sectionItem;
     }
 
@@ -208,6 +208,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 sectionItem.setEndNode(getNode(c.getLong (c.getColumnIndex(KEY_END_NODE))));
                 sectionItem.setDescription(c.getString(c.getColumnIndex(KEY_DESCRIPTION)));
                 sectionItem.setMiles(c.getDouble(c.getColumnIndex(KEY_LENGTH)));
+                sectionItem.setIcon(c.getInt(c.getColumnIndex(KEY_IMAGE)));
 
                 // adding to node list
                 sections.add(sectionItem);
@@ -240,6 +241,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         values.put(KEY_END_NODE, sectionItem.getEndNode().getId());
         values.put(KEY_DESCRIPTION, sectionItem.getDescription());
         values.put(KEY_LENGTH, sectionItem.getMiles());
+        values.put(KEY_IMAGE, sectionItem.getIcon());
 
         // updating row
         return db.update(TABLE_SECTION, values, KEY_SECTION_ID + " = ?",
