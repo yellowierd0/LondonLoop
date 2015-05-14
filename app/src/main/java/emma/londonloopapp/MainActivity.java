@@ -2,10 +2,6 @@ package emma.londonloopapp;
 
 import android.app.Activity;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -20,6 +16,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import com.google.android.gms.maps.model.LatLng;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 
 public class MainActivity extends ActionBarActivity
@@ -272,69 +276,71 @@ public class MainActivity extends ActionBarActivity
         int dummy1 =  R.drawable.dummy;
         int dummy2 = R.drawable.dummy2;
 
-        SectionItem s1 = new SectionItem(1, n1, n2, resources.getString(R.string.loop1_description), 8.5, dummy1);
-        SectionItem s2 = new SectionItem(2, n2, n3, resources.getString(R.string.loop2_description), 7, dummy2);
-        SectionItem s3 = new SectionItem(3, n3, n4, resources.getString(R.string.loop3_description), 9, dummy1);
-        SectionItem s4 = new SectionItem(4, n4, n5, resources.getString(R.string.loop4_description), 10, dummy2);
-        SectionItem s5 = new SectionItem(5, n5, n6, resources.getString(R.string.loop5_description), 6, dummy1);
-        SectionItem s6 = new SectionItem(6, n6, n7, resources.getString(R.string.loop6_description), 4.5, dummy2);
-        SectionItem s7 = new SectionItem(7, n7, n8, resources.getString(R.string.loop7_description), 3.5, dummy1);
-        SectionItem s8 = new SectionItem(8, n8, n9, resources.getString(R.string.loop8_description), 7.3, dummy2);
-        SectionItem s9 = new SectionItem(9, n9, n10, resources.getString(R.string.loop9_description), 8.5, dummy1);
-        SectionItem s10 = new SectionItem(10, n10, n11, resources.getString(R.string.loop10_description), 3.5, dummy2);
-        SectionItem s11 = new SectionItem(11, n11, n12, resources.getString(R.string.loop11_description), 7.5, dummy1);
-        SectionItem s12 = new SectionItem(12, n12, n13, resources.getString(R.string.loop12_description), 4.5, dummy2);
-        SectionItem s13 = new SectionItem(13, n13, n14, resources.getString(R.string.loop13_description), 5, dummy1);
-        SectionItem s14 = new SectionItem(14, n14, n15, resources.getString(R.string.loop14_description), 3.8, dummy2);
-        SectionItem s15 = new SectionItem(15, n15, n16, resources.getString(R.string.loop15_description), 10, dummy1);
-        SectionItem s16 = new SectionItem(16, n16, n17, resources.getString(R.string.loop16_description), 10, dummy2);
-        SectionItem s17 = new SectionItem(17, n17, n18, resources.getString(R.string.loop17_description), 9.5, dummy1);
-        SectionItem s18 = new SectionItem(18, n18, n19, resources.getString(R.string.loop18_description), 4, dummy2);
-        SectionItem s19 = new SectionItem(19, n19, n20, resources.getString(R.string.loop19_description), 4, dummy1);
-        SectionItem s20 = new SectionItem(20, n20, n21, resources.getString(R.string.loop20_description), 6, dummy2);
-        SectionItem s21 = new SectionItem(21, n21, n22, resources.getString(R.string.loop21_description), 4.3, dummy1);
-        SectionItem s22 = new SectionItem(22, n22, n23, resources.getString(R.string.loop22_description), 4, dummy2);
-        SectionItem s23 = new SectionItem(23, n23, n24, resources.getString(R.string.loop23_description), 4, dummy1);
-        SectionItem s24 = new SectionItem(24, n24, n25, resources.getString(R.string.loop24_description), 5, dummy2);
+        SectionItem[] sectionItems = new SectionItem[24];
 
-        db.createSection(s1);
-        db.createSection(s2);
-        db.createSection(s3);
-        db.createSection(s4);
-        db.createSection(s5);
-        db.createSection(s6);
-        db.createSection(s7);
-        db.createSection(s8);
-        db.createSection(s9);
-        db.createSection(s10);
-        db.createSection(s11);
-        db.createSection(s12);
-        db.createSection(s13);
-        db.createSection(s14);
-        db.createSection(s15);
-        db.createSection(s16);
-        db.createSection(s17);
-        db.createSection(s18);
-        db.createSection(s19);
-        db.createSection(s20);
-        db.createSection(s21);
-        db.createSection(s22);
-        db.createSection(s23);
-        db.createSection(s24);
 
-    }
+        sectionItems[0] = new SectionItem(1, n1, n2, resources.getString(R.string.loop1_description), 8.5, dummy1);
+        sectionItems[1] = new SectionItem(2, n2, n3, resources.getString(R.string.loop2_description), 7, dummy2);
+        sectionItems[2] = new SectionItem(3, n3, n4, resources.getString(R.string.loop3_description), 9, dummy1);
+        sectionItems[3] = new SectionItem(4, n4, n5, resources.getString(R.string.loop4_description), 10, dummy2);
+        sectionItems[4] = new SectionItem(5, n5, n6, resources.getString(R.string.loop5_description), 6, dummy1);
+        sectionItems[5] = new SectionItem(6, n6, n7, resources.getString(R.string.loop6_description), 4.5, dummy2);
+        sectionItems[6] = new SectionItem(7, n7, n8, resources.getString(R.string.loop7_description), 3.5, dummy1);
+        sectionItems[7] = new SectionItem(8, n8, n9, resources.getString(R.string.loop8_description), 7.3, dummy2);
+        sectionItems[8] = new SectionItem(9, n9, n10, resources.getString(R.string.loop9_description), 8.5, dummy1);
+        sectionItems[9] = new SectionItem(10, n10, n11, resources.getString(R.string.loop10_description), 3.5, dummy2);
+        sectionItems[10] = new SectionItem(11, n11, n12, resources.getString(R.string.loop11_description), 7.5, dummy1);
+        sectionItems[11] = new SectionItem(12, n12, n13, resources.getString(R.string.loop12_description), 4.5, dummy2);
+        sectionItems[12] = new SectionItem(13, n13, n14, resources.getString(R.string.loop13_description), 5, dummy1);
+        sectionItems[13] = new SectionItem(14, n14, n15, resources.getString(R.string.loop14_description), 3.8, dummy2);
+        sectionItems[14] = new SectionItem(15, n15, n16, resources.getString(R.string.loop15_description), 10, dummy1);
+        sectionItems[15] = new SectionItem(16, n16, n17, resources.getString(R.string.loop16_description), 10, dummy2);
+        sectionItems[16] = new SectionItem(17, n17, n18, resources.getString(R.string.loop17_description), 9.5, dummy1);
+        sectionItems[17] = new SectionItem(18, n18, n19, resources.getString(R.string.loop18_description), 4, dummy2);
+        sectionItems[18] = new SectionItem(19, n19, n20, resources.getString(R.string.loop19_description), 4, dummy1);
+        sectionItems[19] = new SectionItem(20, n20, n21, resources.getString(R.string.loop20_description), 6, dummy2);
+        sectionItems[20] = new SectionItem(21, n21, n22, resources.getString(R.string.loop21_description), 4.3, dummy1);
+        sectionItems[21] = new SectionItem(22, n22, n23, resources.getString(R.string.loop22_description), 4, dummy2);
+        sectionItems[22] = new SectionItem(23, n23, n24, resources.getString(R.string.loop23_description), 4, dummy1);
+        sectionItems[23] = new SectionItem(24, n24, n25, resources.getString(R.string.loop24_description), 5, dummy2);
 
-    private static Bitmap drawableToBitmap (Drawable drawable) {
-        if (drawable instanceof BitmapDrawable) {
-            return ((BitmapDrawable)drawable).getBitmap();
+        for (int i = 0; i < 24; i++){
+            db.createSection(sectionItems[i]);
         }
 
-        Bitmap bitmap = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
-        Canvas canvas = new Canvas(bitmap);
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
-        drawable.draw(canvas);
+        InputStream inputStream = getResources().openRawResource(R.raw.gps);
 
-        return bitmap;
+        BufferedReader br = null;
+        String line = "";
+        String cvsSplitBy = ",";
+
+        try {
+
+            br = new BufferedReader(new InputStreamReader(inputStream));
+            while ((line = br.readLine()) != null) {
+
+                // use comma as separator
+                String[] gpsString = line.split(cvsSplitBy);
+
+                GPSItem gpsItem = new GPSItem(Long.parseLong(gpsString[0]),
+                        Integer.parseInt(gpsString[1]),
+                        new LatLng(Double.parseDouble(gpsString[2]), Double.parseDouble(gpsString[3])),
+                        sectionItems[Integer.parseInt(gpsString[4])-1]);
+                db.createGPSItem(gpsItem);
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
-
 }

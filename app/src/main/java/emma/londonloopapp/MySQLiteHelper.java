@@ -7,8 +7,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Emma on 30/04/2015.
@@ -27,7 +31,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     // Table Names
     private static final String TABLE_NODE = "Node";
     private static final String TABLE_SECTION = "Section";
-    private static final String TABLE_WALK = "Walk";
+    private static final String TABLE_GPS = "Gps";
 
     // NODES Table - column names
     private static final String KEY_NODE_ID = "NodeId";
@@ -43,6 +47,13 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     private static final String KEY_START_NODE = "StartNode";
     private static final String KEY_END_NODE = "EndNode";
 
+    // GPS Table - column names
+    private static final String KEY_GPS_ID = "GpsId";
+    private static final String KEY_GPS_NO = "GpsNo";
+    private static final String KEY_GPS_LAT = "GPSLat";
+    private static final String KEY_GPS_LONG = "GPSLong";
+    private static final String KEY_GPS_SECTION = "GPSSection";
+
     // Table Create Statements
     // Node table create statement
     private static final String CREATE_TABLE_NODE = "CREATE TABLE "
@@ -50,7 +61,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
             + KEY_NAME   + " TEXT," + KEY_LATITUDE + " REAL," + KEY_LONGITUDE
             + " REAL" + ")";
 
-    // Tag table create statement
+    // Section table create statement
     private static final String CREATE_TABLE_SECTION = "CREATE TABLE " + TABLE_SECTION
             + "(" + KEY_SECTION_ID + " INTEGER PRIMARY KEY,"
             + KEY_START_NODE + " INTEGER,"
@@ -59,21 +70,30 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
             + KEY_LENGTH + " REAL,"
             + KEY_IMAGE + " INTEGER" + ")";
 
+    // GPS table create statement
+    private static final String CREATE_TABLE_GPS = "CREATE TABLE " + TABLE_GPS
+            + "(" + KEY_GPS_ID + " INTEGER PRIMARY KEY,"
+            + KEY_GPS_NO + " INTEGER,"
+            + KEY_GPS_LAT + " REAL,"
+            + KEY_GPS_LONG + " REAL,"
+            + KEY_GPS_SECTION + " INTEGER" + ")";
+
     public MySQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-
         // creating required tables
         db.execSQL(CREATE_TABLE_NODE);
         db.execSQL(CREATE_TABLE_SECTION);
+        db.execSQL(CREATE_TABLE_GPS);
     }
 
     public void clearDB(SQLiteDatabase db){
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NODE);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SECTION);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_GPS);
     }
 
     @Override
@@ -81,7 +101,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         // on upgrade drop older tables
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NODE);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SECTION);
-
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_GPS);
         // create new tables
         onCreate(db);
     }
@@ -113,6 +133,20 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         values.put(KEY_IMAGE, sectionItem.getIcon());
         // insert row
         db.insert(TABLE_SECTION, null, values);
+
+    }
+
+    public void createGPSItem(GPSItem gpsItem) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_GPS_ID, gpsItem.getId());
+        values.put(KEY_GPS_NO, gpsItem.getIncr());
+        values.put(KEY_GPS_LAT, gpsItem.getLatLng().latitude);
+        values.put(KEY_GPS_LONG, gpsItem.getLatLng().longitude);
+        values.put(KEY_GPS_SECTION, gpsItem.getSectionItem().getId());
+        // insert row
+        db.insert(TABLE_GPS, null, values);
 
     }
 
@@ -160,6 +194,26 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         sectionItem.setMiles(c.getDouble(c.getColumnIndex(KEY_LENGTH)));
         sectionItem.setIcon(c.getInt((c.getColumnIndex(KEY_IMAGE))));
         return sectionItem;
+    }
+
+    //Get a GPSItem
+    public GPSItem getGPSItem(long gps_id){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT * FROM " + TABLE_GPS + " WHERE "
+                + KEY_GPS_ID + " = " + gps_id;
+        Log.e(LOG, selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c!=null)
+            c.moveToFirst();
+        GPSItem gpsItem = new GPSItem();
+        gpsItem.setId(c.getLong(c.getColumnIndex(KEY_GPS_ID)));
+        gpsItem.setIncr(c.getInt(c.getColumnIndex(KEY_GPS_NO)));
+        gpsItem.setLatLng(new LatLng(c.getDouble(c.getColumnIndex(KEY_GPS_LAT)),c.getDouble(c.getColumnIndex(KEY_GPS_LONG))));
+        gpsItem.setSectionItem(getSection(c.getLong(c.getColumnIndex(KEY_GPS_SECTION))));
+        return gpsItem;
     }
 
     //Get all Nodes
@@ -218,6 +272,62 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         return sections;
     }
 
+    //Get all GPSItems from section
+    public Map<Integer, GPSItem> getGPSItemFromSection(SectionItem sectionItem){
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Map<Integer, GPSItem> gpsItems = new HashMap<Integer, GPSItem>();
+        String selectQuery = "SELECT * FROM " + TABLE_GPS + " WHERE "
+                + KEY_GPS_SECTION + " = " + sectionItem.getId();
+        Log.e(LOG, selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()){
+            do {
+                GPSItem gpsItem = new GPSItem();
+                gpsItem.setId(c.getLong(c.getColumnIndex(KEY_GPS_ID)));
+                gpsItem.setIncr(c.getInt(c.getColumnIndex(KEY_GPS_NO)));
+                gpsItem.setLatLng(new LatLng(c.getDouble(c.getColumnIndex(KEY_GPS_LAT)),c.getDouble(c.getColumnIndex(KEY_GPS_LONG))));
+                gpsItem.setSectionItem(getSection(c.getLong(c.getColumnIndex(KEY_GPS_SECTION))));
+
+                gpsItems.put(gpsItem.getIncr(), gpsItem);
+            } while (c.moveToNext());
+        }
+
+        return gpsItems;
+    }
+
+    //Get all GPSItems
+    public List<GPSItem> getAllGPSItem(){
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        List<GPSItem> gpsItems = new ArrayList<GPSItem>();
+        String selectQuery = "SELECT * FROM " + TABLE_GPS;
+        Log.e(LOG, selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()){
+            do {
+                GPSItem gpsItem = new GPSItem();
+                gpsItem.setId(c.getLong(c.getColumnIndex(KEY_GPS_ID)));
+                gpsItem.setIncr(c.getInt(c.getColumnIndex(KEY_GPS_NO)));
+                gpsItem.setLatLng(new LatLng(c.getDouble(c.getColumnIndex(KEY_GPS_LAT)),c.getDouble(c.getColumnIndex(KEY_GPS_LONG))));
+                gpsItem.setSectionItem(getSection(c.getLong(c.getColumnIndex(KEY_GPS_SECTION))));
+
+                gpsItems.add(gpsItem);
+            } while (c.moveToNext());
+        }
+
+        return gpsItems;
+    }
+
+
     //Updating a node
     public int updateNode(NodeItem nodeItem) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -232,7 +342,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 new String[] { String.valueOf(nodeItem.getId()) });
     }
 
-    //Updating a node
+    //Updating a section
     public int updateSection(SectionItem sectionItem) {
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -248,6 +358,22 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 new String[] { String.valueOf(sectionItem.getId()) });
     }
 
+    //Updating a gpsItem
+    public int updateGPSItem(GPSItem gpsItem){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_GPS_ID, gpsItem.getId());
+        values.put(KEY_GPS_NO, gpsItem.getIncr());
+        values.put(KEY_GPS_LAT, gpsItem.getLatLng().latitude);
+        values.put(KEY_GPS_LONG, gpsItem.getLatLng().longitude);
+        values.put(KEY_GPS_SECTION, gpsItem.getSectionItem().getId());
+
+        // updating row
+        return db.update(TABLE_GPS, values, KEY_NODE_ID + " = ?",
+                new String[] { String.valueOf(gpsItem.getId())});
+    }
+
     //Deleting a node
     public void deleteNode(long node_id) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -260,6 +386,13 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_SECTION, KEY_SECTION_ID + " = ?",
                 new String[] { String.valueOf(section_id) });
+    }
+
+    //Deleting a gpsItem
+    public void deleteGpsItem(long gps_id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_GPS, KEY_GPS_ID + " = ?",
+                new String[] { String.valueOf(gps_id)} );
     }
 
     // closing database

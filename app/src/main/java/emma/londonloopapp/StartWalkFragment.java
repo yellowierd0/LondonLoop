@@ -42,7 +42,7 @@ public class StartWalkFragment extends Fragment {
             public void onClick(View v) {
                 // Perform action on click
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                StartWalkFragment wdf = new StartWalkFragment();
+                GPSSectionFragment wdf = GPSSectionFragment.newInstance(walkNumber);
 
                 fragmentManager.beginTransaction()
                         .add(R.id.container, wdf)
