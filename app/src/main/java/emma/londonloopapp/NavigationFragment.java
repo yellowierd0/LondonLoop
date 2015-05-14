@@ -187,7 +187,7 @@ public class NavigationFragment extends ListFragment {
                 json = new JSONObject(result);
 
                 routeItems = getRouteItems(json);
-                setListAdapter(new RouteAdapterItem(getActivity(), routeItems));
+                setListAdapter(new RouteAdapterItem(getActivity(), routeItems, getActivity()));
 
             } catch (JSONException e) {
                 e.printStackTrace();

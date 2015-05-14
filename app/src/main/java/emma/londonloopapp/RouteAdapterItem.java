@@ -1,10 +1,13 @@
 package emma.londonloopapp;
 
 import android.content.Context;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -16,10 +19,12 @@ import java.util.List;
  */
 public class RouteAdapterItem extends ArrayAdapter<RouteItem> {
 
-    public RouteAdapterItem(Context context, List <RouteItem> items) {
+    private FragmentActivity listFragment;
+    public RouteAdapterItem(Context context, List <RouteItem> items, FragmentActivity listFragment) {
 
         super(context, R.layout.route_item, items);
 
+        this.listFragment = listFragment;
     }
 
 
@@ -33,7 +38,7 @@ public class RouteAdapterItem extends ArrayAdapter<RouteItem> {
             convertView = inflater.inflate(R.layout.route_item, parent, false);
             // initialize the view holder
             viewHolder = new ViewHolder();
-            viewHolder.time= (TextView) convertView.findViewById(R.id.time);
+            viewHolder.time= (Button) convertView.findViewById(R.id.time);
             viewHolder.duration = (TextView) convertView.findViewById(R.id.duration);
             viewHolder.route_parts = (LinearLayout) convertView.findViewById(R.id.transportModes);
             viewHolder.route_detail = (LinearLayout) convertView.findViewById(R.id.transportRoute);
@@ -45,10 +50,26 @@ public class RouteAdapterItem extends ArrayAdapter<RouteItem> {
         }
 
         // update the item view
-        RouteItem item = getItem(position);
+        final RouteItem item = getItem(position);
         RoutePart[] routeParts = item.getRouteParts();
-
         viewHolder.time.setText("Depart: " + routeParts[0].getDeparture_time() + ", Arrive: " + routeParts[routeParts.length-1].getArrival_time());
+
+        viewHolder.time.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+
+                FragmentManager fragmentManager = listFragment.getSupportFragmentManager();
+                MapNavFragment wdf = MapNavFragment.newInstance(item);
+
+                fragmentManager.beginTransaction()
+                        .add(R.id.container, wdf)
+                                // Add this transaction to the back stack
+                        .addToBackStack("routeList")
+                        .commit();
+
+            }
+        });
+
         viewHolder.duration.setText("(" + getDuration(item.getDuration()) + ")");
 
         for (int i = 0; i < routeParts.length; i++){
@@ -61,10 +82,17 @@ public class RouteAdapterItem extends ArrayAdapter<RouteItem> {
             sb.append(routeParts[i].getDeparture_time());
             sb.append(": ");
             sb.append(getModeName(routeParts[i].getMode()));
+            if(!(routeParts[i].getLine_name().equals("")) && !(routeParts[i].getMode().equals("train"))){
+                sb.append(" (");
+                sb.append(routeParts[i].getLine_name());
+                sb.append(") ");
+            }
             sb.append(" from ");
             sb.append(routeParts[i].getFrom_point_name());
-            sb.append(" towards ");
-            sb.append(routeParts[i].getDestination());
+            if (!(routeParts[i].getMode().equals("foot"))){
+                sb.append(" towards ");
+                sb.append(routeParts[i].getDestination());
+            }
             sb.append(" to ");
             sb.append(routeParts[i].getTo_point_name());
             textView.setText(sb.toString());
@@ -140,7 +168,7 @@ public class RouteAdapterItem extends ArrayAdapter<RouteItem> {
     }
 
         private static class ViewHolder {
-            TextView time;
+            Button time;
             TextView duration;
             LinearLayout route_parts;
             LinearLayout route_detail;

@@ -11,11 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
@@ -23,7 +23,7 @@ import java.util.ArrayList;
 public class MapNavFragment extends Fragment {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
-    private GoogleApiClient mGoogleApiClient;
+    private RouteItem routeItem;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -105,34 +105,106 @@ public class MapNavFragment extends Fragment {
         mMap.animateCamera(CameraUpdateFactory.zoomTo(10));
         //mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("You are here!").snippet("Consider yourself located"));
 
+        drawPaths();
+
     }
 
-    private void drawPrimaryLinePath( ArrayList<Location> listLocsToDraw )
+    private void drawPaths( )
     {
+        RoutePart[] routeParts = routeItem.getRouteParts();
+
+
         if ( mMap == null )
         {
             return;
         }
 
-        if ( listLocsToDraw.size() < 2 )
-        {
-            return;
+        ArrayList<LatLng> points = null;
+        PolylineOptions polyLineOptions = null;
+
+        for (int i = 0; i < routeParts.length; i++){
+
+            points = new ArrayList<LatLng>();
+            polyLineOptions = new PolylineOptions();
+            ArrayList<Location> coordinates = routeParts[i].getCoordinates();
+
+            for (int j = 0; j < coordinates.size(); j++){
+                LatLng position = new LatLng(coordinates.get(j).getLatitude(),
+                        coordinates.get(j).getLongitude());
+                points.add(position);
+
+                if (j == 0){
+                    MarkerOptions markerOptions = new MarkerOptions();
+                    markerOptions.position(position)
+                            .title(routeParts[i].getFrom_point_name());
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(getModeName(routeParts[i].getMode()));
+                    sb.append(" from ");
+                    sb.append(routeParts[i].getFrom_point_name());
+                    if (!(routeParts[i].getMode().equals("foot"))){
+                        sb.append(" towards ");
+                        sb.append(routeParts[i].getDestination());
+                    }
+                    sb.append(" to ");
+                    sb.append(routeParts[i].getTo_point_name());
+                    if(!(routeParts[i].getLine_name().equals("")) && !(routeParts[i].getMode().equals("train"))){
+                        sb.append(" (");
+                        sb.append(routeParts[i].getLine_name());
+                        sb.append(") ");
+                    }
+                    markerOptions.snippet(sb.toString());
+                    mMap.addMarker(markerOptions);
+                }
+
+                if (i == routeParts.length-1 && j == coordinates.size()-1){
+                    MarkerOptions markerOptions = new MarkerOptions();
+                    markerOptions.position(position)
+                            .title(routeParts[i].getTo_point_name());
+                    markerOptions.snippet("Your destination!");
+                    mMap.addMarker(markerOptions);
+                }
+            }
+            polyLineOptions.addAll(points);
+            polyLineOptions.width(2);
+            polyLineOptions.color(Color.BLUE);
+            mMap.addPolyline(polyLineOptions);
         }
 
-        PolylineOptions options = new PolylineOptions();
+    }
 
-        options.color( Color.parseColor("#CC0000FF") );
-        options.width( 5 );
-        options.visible( true );
 
-        for ( Location locRecorded : listLocsToDraw )
-        {
-            options.add( new LatLng( locRecorded.getLatitude(),
-                    locRecorded.getLongitude() ) );
+    public static MapNavFragment newInstance(RouteItem routeItem) {
+        MapNavFragment fragment = new MapNavFragment();
+        fragment.setSomeObject(routeItem);
+        return fragment;
+    }
+
+    public void setSomeObject(RouteItem someObject) {
+        this.routeItem = someObject;
+    }
+
+    private String getModeName(String mode){
+        if (mode.equals("foot")){
+            return "Walk";
+        } else if (mode.equals("tube")){
+            return "Take the tube";
+        } else if (mode.equals("dlr")) {
+            return "Take the DLR";
+        } else if (mode.equals("bus")) {
+            return "Take the bus";
+        } else if (mode.equals("tram")) {
+            return "Take the tram";
+        } else if (mode.equals("train")) {
+            return "Take the train";
+        } else if (mode.equals("overground")) {
+            return "Take the overground";
+        } else if (mode.equals("boat")) {
+            return "Take the river boat";
+        } else if (mode.equals("wait")) {
+            return "Wait";
+        } else {
+            return "Other";
         }
-
-        mMap.addPolyline( options );
-
     }
 
 }
