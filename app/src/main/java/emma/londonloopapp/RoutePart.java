@@ -32,7 +32,7 @@ public class RoutePart {
         this.duration = duration;
         this.departure_time = departure_time;
         this.arrival_time = arrival_time;
-
+        this.coordinates = coordinates;
 
     }
 

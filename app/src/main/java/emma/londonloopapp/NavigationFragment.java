@@ -227,15 +227,15 @@ public class NavigationFragment extends ListFragment {
 
             for (int j = 0; j < partArray.length(); j++){
 
-                String mode = partArray.getJSONObject(i).getString("mode");
-                String from_point_name = partArray.getJSONObject(i).getString("from_point_name");
-                String to_point_name = partArray.getJSONObject(i).getString("to_point_name");
-                String destination = partArray.getJSONObject(i).getString("destination");
-                String line_name = partArray.getJSONObject(i).getString("line_name");
-                String part_duration = partArray.getJSONObject(i).getString("duration");
-                String departure_time = partArray.getJSONObject(i).getString("departure_time");
-                String arrival_time = partArray.getJSONObject(i).getString("arrival_time");
-                String coordinates = partArray.getJSONObject(i).getString("coordinates");
+                String mode = partArray.getJSONObject(j).getString("mode");
+                String from_point_name = partArray.getJSONObject(j).getString("from_point_name");
+                String to_point_name = partArray.getJSONObject(j).getString("to_point_name");
+                String destination = partArray.getJSONObject(j).getString("destination");
+                String line_name = partArray.getJSONObject(j).getString("line_name");
+                String part_duration = partArray.getJSONObject(j).getString("duration");
+                String departure_time = partArray.getJSONObject(j).getString("departure_time");
+                String arrival_time = partArray.getJSONObject(j).getString("arrival_time");
+                String coordinates = partArray.getJSONObject(j).getString("coordinates");
                 ArrayList<Location> locations = convertStringToCoord(coordinates);
 
                 RoutePart rp = new RoutePart(mode, from_point_name, to_point_name, destination, line_name, part_duration, departure_time, arrival_time, locations);
