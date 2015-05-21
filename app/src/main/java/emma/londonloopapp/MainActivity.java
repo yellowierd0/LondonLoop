@@ -52,6 +52,8 @@ public class MainActivity extends ActionBarActivity
 
         setContentView(R.layout.activity_main);
 
+        //FacebookSdk.sdkInitialize(getApplicationContext());
+
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
@@ -65,8 +67,8 @@ public class MainActivity extends ActionBarActivity
         //new JSONParse(sectionUrl, MainActivity.this).execute();
 
         db = new MySQLiteHelper(getApplicationContext());
-        db.clearDB(db.getWritableDatabase());
-        db.onCreate(db.getWritableDatabase());
+        //db.clearDB(db.getWritableDatabase());
+        //db.onCreate(db.getWritableDatabase());
         createWalks();
 
         db.closeDB();
@@ -100,7 +102,7 @@ public class MainActivity extends ActionBarActivity
                         .commit();
                 break;
             case 2:
-                fragment = new StatsFragment();
+                fragment = new MyProfileFragment();
                 fragmentManager.beginTransaction()
                         .add(R.id.container, fragment)
                         // Add this transaction to the back stack
@@ -245,40 +247,12 @@ public class MainActivity extends ActionBarActivity
         NodeItem n24 = new NodeItem(24, "Rainham", 51.516886, 0.191433);
         NodeItem n25 = new NodeItem(25, "Purfleet", 51.480946, 0.236477);
 
-        db.createNode(n1);
-        db.createNode(n2);
-        db.createNode(n3);
-        db.createNode(n4);
-        db.createNode(n5);
-        db.createNode(n6);
-        db.createNode(n7);
-        db.createNode(n8);
-        db.createNode(n9);
-        db.createNode(n10);
-        db.createNode(n11);
-        db.createNode(n12);
-        db.createNode(n13);
-        db.createNode(n14);
-        db.createNode(n15);
-        db.createNode(n16);
-        db.createNode(n17);
-        db.createNode(n18);
-        db.createNode(n19);
-        db.createNode(n20);
-        db.createNode(n21);
-        db.createNode(n22);
-        db.createNode(n23);
-        db.createNode(n24);
-        db.createNode(n25);
-
         Resources resources = getResources();
 
         int dummy1 =  R.drawable.dummy;
         int dummy2 = R.drawable.dummy2;
 
         SectionItem[] sectionItems = new SectionItem[24];
-
-
         sectionItems[0] = new SectionItem(1, n1, n2, resources.getString(R.string.loop1_description), 8.5, dummy1);
         sectionItems[1] = new SectionItem(2, n2, n3, resources.getString(R.string.loop2_description), 7, dummy2);
         sectionItems[2] = new SectionItem(3, n3, n4, resources.getString(R.string.loop3_description), 9, dummy1);
@@ -304,41 +278,74 @@ public class MainActivity extends ActionBarActivity
         sectionItems[22] = new SectionItem(23, n23, n24, resources.getString(R.string.loop23_description), 4, dummy1);
         sectionItems[23] = new SectionItem(24, n24, n25, resources.getString(R.string.loop24_description), 5, dummy2);
 
-        for (int i = 0; i < 24; i++){
-            db.createSection(sectionItems[i]);
+        if(db.getNode(1) == null){
+            db.createNode(n1);
+            db.createNode(n2);
+            db.createNode(n3);
+            db.createNode(n4);
+            db.createNode(n5);
+            db.createNode(n6);
+            db.createNode(n7);
+            db.createNode(n8);
+            db.createNode(n9);
+            db.createNode(n10);
+            db.createNode(n11);
+            db.createNode(n12);
+            db.createNode(n13);
+            db.createNode(n14);
+            db.createNode(n15);
+            db.createNode(n16);
+            db.createNode(n17);
+            db.createNode(n18);
+            db.createNode(n19);
+            db.createNode(n20);
+            db.createNode(n21);
+            db.createNode(n22);
+            db.createNode(n23);
+            db.createNode(n24);
+            db.createNode(n25);
         }
 
-        InputStream inputStream = getResources().openRawResource(R.raw.gps);
+        if (db.getSection(1) == null){
 
-        BufferedReader br = null;
-        String line = "";
-        String cvsSplitBy = ",";
-
-        try {
-
-            br = new BufferedReader(new InputStreamReader(inputStream));
-            while ((line = br.readLine()) != null) {
-
-                // use comma as separator
-                String[] gpsString = line.split(cvsSplitBy);
-
-                GPSItem gpsItem = new GPSItem(Long.parseLong(gpsString[0]),
-                        Integer.parseInt(gpsString[1]),
-                        new LatLng(Double.parseDouble(gpsString[2]), Double.parseDouble(gpsString[3])),
-                        sectionItems[Integer.parseInt(gpsString[4])-1]);
-                db.createGPSItem(gpsItem);
+            for (int i = 0; i < 24; i++){
+                db.createSection(sectionItems[i]);
             }
+        }
 
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
+        if(db.getGPSItem(1) == null){
+            InputStream inputStream = resources.openRawResource(R.raw.gps);
+
+            BufferedReader br = null;
+            String line = "";
+            String cvsSplitBy = ",";
+
+            try {
+
+                br = new BufferedReader(new InputStreamReader(inputStream));
+                while ((line = br.readLine()) != null) {
+
+                    // use comma as separator
+                    String[] gpsString = line.split(cvsSplitBy);
+
+                    GPSItem gpsItem = new GPSItem(Long.parseLong(gpsString[0]),
+                            Integer.parseInt(gpsString[1]),
+                            new LatLng(Double.parseDouble(gpsString[2]), Double.parseDouble(gpsString[3])),
+                            sectionItems[Integer.parseInt(gpsString[4])-1]);
+                    db.createGPSItem(gpsItem);
+                }
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (br != null) {
+                    try {
+                        br.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }

@@ -31,7 +31,7 @@ import java.util.ArrayList;
 /**
  * Created by Emma on 06/05/2015.
  */
-public class NavigationFragment extends ListFragment {
+public class NavigationListFragment extends ListFragment {
 
     MySQLiteHelper db;
 
@@ -69,7 +69,6 @@ public class NavigationFragment extends ListFragment {
                 // Called when a new location is found by the network location provider.
                 if (planRoute == false){
                     planJourney(location, sectionItem);
-                    planRoute = true;
                 }
 
             }
@@ -112,7 +111,7 @@ public class NavigationFragment extends ListFragment {
         if (currentLocation != null) {
 
             String from = "/from/lonlat:" + currentLocation.getLongitude() + "," + currentLocation.getLatitude();
-            String api_key = "?api_key=377843b343d1e052ac4d024fd9b7c93a&app_id=6109f899";
+            String api_key = "?api_key=" + API_KEY + "&app_id=" + APP_ID;
             String to = "/to/lonlat:" + destination.getStartNode().getLongitude() + "," + destination.getStartNode().getLatitude();
             String endUrl = ".json";
 
@@ -172,6 +171,7 @@ public class NavigationFragment extends ListFragment {
         else
             return false;
     }
+
     private class HttpAsyncTask extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... urls) {
@@ -184,11 +184,15 @@ public class NavigationFragment extends ListFragment {
             JSONObject json = null;
 
             try {
-                json = new JSONObject(result);
 
-                routeItems = getRouteItems(json);
-                setListAdapter(new RouteAdapterItem(getActivity(), routeItems, getActivity()));
+                if (planRoute == false) {
 
+                    json = new JSONObject(result);
+
+                    routeItems = getRouteItems(json);
+                    setListAdapter(new RouteAdapterItem(getActivity(), routeItems, getActivity()));
+                    planRoute = true;
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -246,9 +250,9 @@ public class NavigationFragment extends ListFragment {
     }
 
 
-    public static NavigationFragment newInstance(long walk)
+    public static NavigationListFragment newInstance(long walk)
     {
-        NavigationFragment f = new NavigationFragment();
+        NavigationListFragment f = new NavigationListFragment();
         final Bundle bdl = new Bundle(1);
         bdl.putLong("walkNumber", walk);
         f.setArguments(bdl);

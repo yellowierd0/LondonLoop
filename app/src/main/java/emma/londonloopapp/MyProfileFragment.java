@@ -6,14 +6,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-public class StatsFragment extends Fragment {
+public class MyProfileFragment extends Fragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
-		View rootView = inflater.inflate(R.layout.fragment_stats, container, false);
-		
-		return rootView;
+		View rootView = inflater.inflate(R.layout.fragment_myprofile, container, false);
+        return rootView;
 	}
 }

@@ -24,6 +24,7 @@ public class MapNavFragment extends Fragment {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private RouteItem routeItem;
+    private Location myLocation;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -84,7 +85,7 @@ public class MapNavFragment extends Fragment {
         String provider = locationManager.getBestProvider(criteria, true);
 
         // Get Current Location
-        Location myLocation = locationManager.getLastKnownLocation(provider);
+        myLocation = locationManager.getLastKnownLocation(provider);
 
         // set map type
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
@@ -164,6 +165,10 @@ public class MapNavFragment extends Fragment {
                     mMap.addMarker(markerOptions);
                 }
             }
+
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(myLocation.getLatitude(),myLocation.getLongitude())));
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+
             polyLineOptions.addAll(points);
             polyLineOptions.width(2);
             polyLineOptions.color(Color.BLUE);
@@ -180,6 +185,7 @@ public class MapNavFragment extends Fragment {
     }
 
     public void setSomeObject(RouteItem someObject) {
+
         this.routeItem = someObject;
     }
 

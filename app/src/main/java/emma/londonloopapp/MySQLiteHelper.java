@@ -90,12 +90,6 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_GPS);
     }
 
-    public void clearDB(SQLiteDatabase db){
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_NODE);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_SECTION);
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_GPS);
-    }
-
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // on upgrade drop older tables

@@ -1,7 +1,6 @@
 package emma.londonloopapp;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,17 +8,15 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import java.io.InputStream;
-import java.net.URL;
 import java.util.List;
 
 /**
  * Created by Emma on 26/01/2015.
  */
 
-public class ArrayAdapterItem extends ArrayAdapter<SectionItem> {
+public class WalkAdapterItem extends ArrayAdapter<SectionItem> {
 
-    public ArrayAdapterItem(Context context, List<SectionItem> items) {
+    public WalkAdapterItem(Context context, List<SectionItem> items) {
         super(context, R.layout.walk_item, items);
     }
 
@@ -52,15 +49,5 @@ public class ArrayAdapterItem extends ArrayAdapter<SectionItem> {
         ImageView walkImage;
         TextView walkTitle;
         TextView walkLength;
-    }
-
-    private static Drawable LoadImageFromWebOperations(String url) {
-        try {
-            InputStream is = (InputStream) new URL(url).getContent();
-            Drawable d = Drawable.createFromStream(is, "src name");
-            return d;
-        } catch (Exception e) {
-            return null;
-        }
     }
 }

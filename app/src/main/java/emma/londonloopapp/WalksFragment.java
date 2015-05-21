@@ -17,7 +17,7 @@ public class WalksFragment extends ListFragment {
 
         db = new MySQLiteHelper(getActivity());
 
-        setListAdapter(new ArrayAdapterItem(getActivity(), db.getAllSections()));
+        setListAdapter(new WalkAdapterItem(getActivity(), db.getAllSections()));
 
         // initialize and set the list adapter
 

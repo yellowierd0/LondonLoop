@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -38,7 +37,7 @@ public class RouteAdapterItem extends ArrayAdapter<RouteItem> {
             convertView = inflater.inflate(R.layout.route_item, parent, false);
             // initialize the view holder
             viewHolder = new ViewHolder();
-            viewHolder.time= (Button) convertView.findViewById(R.id.time);
+            viewHolder.time= (TextView) convertView.findViewById(R.id.time);
             viewHolder.duration = (TextView) convertView.findViewById(R.id.duration);
             viewHolder.route_parts = (LinearLayout) convertView.findViewById(R.id.transportModes);
             viewHolder.route_detail = (LinearLayout) convertView.findViewById(R.id.transportRoute);
@@ -53,29 +52,16 @@ public class RouteAdapterItem extends ArrayAdapter<RouteItem> {
         final RouteItem item = getItem(position);
         RoutePart[] routeParts = item.getRouteParts();
         viewHolder.time.setText("Depart: " + routeParts[0].getDeparture_time() + ", Arrive: " + routeParts[routeParts.length-1].getArrival_time());
-
-        viewHolder.time.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // Perform action on click
-
-                FragmentManager fragmentManager = listFragment.getSupportFragmentManager();
-                MapNavFragment wdf = MapNavFragment.newInstance(item);
-
-                fragmentManager.beginTransaction()
-                        .add(R.id.container, wdf)
-                                // Add this transaction to the back stack
-                        .addToBackStack("routeList")
-                        .commit();
-
-            }
-        });
-
         viewHolder.duration.setText("(" + getDuration(item.getDuration()) + ")");
 
         for (int i = 0; i < routeParts.length; i++){
-            ImageView imageView = new ImageView(getContext());
-            imageView.setBackgroundResource(getModeView(routeParts[i].getMode()));
-            viewHolder.route_parts.addView(imageView);
+
+            // Stop duplicate icons
+            if ((i == 0) || (getModeView(routeParts[i-1].getMode()) != getModeView(routeParts[i].getMode()))) {
+                ImageView imageView = new ImageView(getContext());
+                imageView.setBackgroundResource(getModeView(routeParts[i].getMode()));
+                viewHolder.route_parts.addView(imageView);
+            }
 
             TextView textView = new TextView(getContext());
             StringBuilder sb = new StringBuilder();
@@ -100,8 +86,76 @@ public class RouteAdapterItem extends ArrayAdapter<RouteItem> {
             viewHolder.route_detail.addView(textView);
         }
 
+        setClickListeners(viewHolder, item);
+
         return convertView;
 
+    }
+
+    private void setClickListeners(ViewHolder viewHolder, final RouteItem item){
+        viewHolder.time.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+
+                FragmentManager fragmentManager = listFragment.getSupportFragmentManager();
+                MapNavFragment wdf = MapNavFragment.newInstance(item);
+
+                fragmentManager.beginTransaction()
+                        .add(R.id.container, wdf)
+                                // Add this transaction to the back stack
+                        .addToBackStack("routeList")
+                        .commit();
+
+            }
+        });
+
+        viewHolder.duration.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+
+                FragmentManager fragmentManager = listFragment.getSupportFragmentManager();
+                MapNavFragment wdf = MapNavFragment.newInstance(item);
+
+                fragmentManager.beginTransaction()
+                        .add(R.id.container, wdf)
+                                // Add this transaction to the back stack
+                        .addToBackStack("routeList")
+                        .commit();
+
+            }
+        });
+
+        viewHolder.route_parts.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+
+                FragmentManager fragmentManager = listFragment.getSupportFragmentManager();
+                MapNavFragment wdf = MapNavFragment.newInstance(item);
+
+                fragmentManager.beginTransaction()
+                        .add(R.id.container, wdf)
+                                // Add this transaction to the back stack
+                        .addToBackStack("routeList")
+                        .commit();
+
+            }
+        });
+
+        viewHolder.route_detail.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                // Perform action on click
+
+                FragmentManager fragmentManager = listFragment.getSupportFragmentManager();
+                MapNavFragment wdf = MapNavFragment.newInstance(item);
+
+                fragmentManager.beginTransaction()
+                        .add(R.id.container, wdf)
+                                // Add this transaction to the back stack
+                        .addToBackStack("routeList")
+                        .commit();
+
+            }
+        });
     }
 
     private String getModeName(String mode){
@@ -168,7 +222,7 @@ public class RouteAdapterItem extends ArrayAdapter<RouteItem> {
     }
 
         private static class ViewHolder {
-            Button time;
+            TextView time;
             TextView duration;
             LinearLayout route_parts;
             LinearLayout route_detail;
