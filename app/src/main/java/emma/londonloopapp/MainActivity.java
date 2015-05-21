@@ -52,8 +52,6 @@ public class MainActivity extends ActionBarActivity
 
         setContentView(R.layout.activity_main);
 
-        //FacebookSdk.sdkInitialize(getApplicationContext());
-
         mNavigationDrawerFragment = (NavigationDrawerFragment)
                 getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
         mTitle = getTitle();
@@ -122,7 +120,7 @@ public class MainActivity extends ActionBarActivity
                 mTitle = getString(R.string.title_maps);
                 break;
             case 3:
-                mTitle = getString(R.string.title_stats);
+                mTitle = getString(R.string.title_myprofile);
                 break;
         }
     }
@@ -249,8 +247,8 @@ public class MainActivity extends ActionBarActivity
 
         Resources resources = getResources();
 
-        int dummy1 =  R.drawable.dummy;
-        int dummy2 = R.drawable.dummy2;
+        int dummy1 =  R.drawable.loopimage1;
+        int dummy2 = R.drawable.loopimage2;
 
         SectionItem[] sectionItems = new SectionItem[24];
         sectionItems[0] = new SectionItem(1, n1, n2, resources.getString(R.string.loop1_description), 8.5, dummy1);
