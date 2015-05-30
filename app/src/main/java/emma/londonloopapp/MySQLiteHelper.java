@@ -100,6 +100,17 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         onCreate(db);
     }
 
+    public boolean hasTableCount(SQLiteDatabase db, String table){
+        Cursor cursor = db.rawQuery("SELECT count(*) FROM " + table, null);
+        if (cursor.moveToFirst() && cursor.getInt(0) > 0){
+            // there are rows in the table
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
     //Creating a Node
     public void createNode(NodeItem nodeItem) {
         SQLiteDatabase db = this.getWritableDatabase();
