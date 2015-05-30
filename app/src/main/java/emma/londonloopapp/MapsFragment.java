@@ -121,7 +121,17 @@ public class MapsFragment extends Fragment {
 
             MarkerOptions m = new MarkerOptions().position(new LatLng(w.getStartNode().getLatitude(),
                     w.getStartNode().getLongitude())).title(w.getId() + ". " +
-                    w.getStartNode().getName() + " to " + w.getEndNode().getName()).icon(BitmapDescriptorFactory.fromResource(R.drawable.loop_marker));
+                    w.getStartNode().getName() + " to " + w.getEndNode().getName());
+
+            if (w.getId() < 11){
+                m.icon(BitmapDescriptorFactory.fromResource(R.drawable.loop_marker_blue));
+            } else if (w.getId() < 17){
+                m.icon(BitmapDescriptorFactory.fromResource(R.drawable.loop_marker_green));
+            } else {
+                m.icon(BitmapDescriptorFactory.fromResource(R.drawable.loop_marker_yellow));
+            }
+
+
             mMap.addMarker(m);
 
         }
