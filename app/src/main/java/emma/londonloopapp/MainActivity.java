@@ -217,99 +217,14 @@ public class MainActivity extends ActionBarActivity
         }
     }
 
-    private void createWalks(){
 
-        NodeItem n1 = new NodeItem(1, "Erith", 51.483144, 0.177975);
-        NodeItem n2 = new NodeItem(2, "Old Bexley", 51.441233, 0.148956);
-        NodeItem n3 = new NodeItem(3, "Jubilee Park", 51.393209, 0.069081);
-        NodeItem n4 = new NodeItem(4, "West Wickham Common", 51.370944, 0.004860);
-        NodeItem n5 = new NodeItem(5, "Hamsey Green", 51.319035, -0.063420);
-        NodeItem n6 = new NodeItem(6, "Coulsdon South", 51.315728, -0.136744);
-        NodeItem n7 = new NodeItem(7, "Banstead Downs", 51.332148, -0.209290);
-        NodeItem n8 = new NodeItem(8, "Ewell", 51.351650, -0.250176);
-        NodeItem n9 = new NodeItem(9, "Kingston Bridge", 51.411854, -0.308274);
-        NodeItem n10 = new NodeItem(10, "Hatton Cross", 51.469927, -0.409793);
-        NodeItem n11 = new NodeItem(11, "Hayes and Harlington", 51.505117, -0.418654);
-        NodeItem n12 = new NodeItem(12, "Uxbridge Lock", 51.550933, -0.483414);
-        NodeItem n13 = new NodeItem(13, "Harefield West", 51.610477, -0.498761);
-        NodeItem n14 = new NodeItem(14, "Moor Park", 51.623932, -0.427529);
-        NodeItem n15 = new NodeItem(15, "Hatch End", 51.610702, -0.380326);
-        NodeItem n16 = new NodeItem(16, "Elstree", 51.653365, -0.281950);
-        NodeItem n17 = new NodeItem(17, "Cockfosters", 51.652244, -0.148998);
-        NodeItem n18 = new NodeItem(18, "Enfield Lock", 51.668264, -0.028316);
-        NodeItem n19 = new NodeItem(19, "Chingford", 51.634306, 0.012118);
-        NodeItem n20 = new NodeItem(20, "Chigwell", 51.621468, 0.078004);
-        NodeItem n21 = new NodeItem(21, "Havering-atte-Bower", 51.616860, 0.183245);
-        NodeItem n22 = new NodeItem(22, "Harold Wood", 51.593421, 0.234098);
-        NodeItem n23 = new NodeItem(23, "Upminster Bridge", 51.559197, 0.236748);
-        NodeItem n24 = new NodeItem(24, "Rainham", 51.516886, 0.191433);
-        NodeItem n25 = new NodeItem(25, "Purfleet", 51.480946, 0.236477);
+    private void createWalks(){
 
         Resources resources = getResources();
 
-        int loopimage1 =  R.drawable.loopimage1;
-        int loopimage2 = R.drawable.loopimage2;
+        NodeItem[] nodeItems = setUpNodes();
 
-        SectionItem[] sectionItems = new SectionItem[24];
-        sectionItems[0] = new SectionItem(1, n1, n2, resources.getString(R.string.loop1_description), 8.5, loopimage1);
-        sectionItems[1] = new SectionItem(2, n2, n3, resources.getString(R.string.loop2_description), 7, loopimage2);
-        sectionItems[2] = new SectionItem(3, n3, n4, resources.getString(R.string.loop3_description), 9, loopimage1);
-        sectionItems[3] = new SectionItem(4, n4, n5, resources.getString(R.string.loop4_description), 10, loopimage2);
-        sectionItems[4] = new SectionItem(5, n5, n6, resources.getString(R.string.loop5_description), 6, loopimage1);
-        sectionItems[5] = new SectionItem(6, n6, n7, resources.getString(R.string.loop6_description), 4.5, loopimage2);
-        sectionItems[6] = new SectionItem(7, n7, n8, resources.getString(R.string.loop7_description), 3.5, loopimage1);
-        sectionItems[7] = new SectionItem(8, n8, n9, resources.getString(R.string.loop8_description), 7.3, loopimage2);
-        sectionItems[8] = new SectionItem(9, n9, n10, resources.getString(R.string.loop9_description), 8.5, loopimage1);
-        sectionItems[9] = new SectionItem(10, n10, n11, resources.getString(R.string.loop10_description), 3.5, loopimage2);
-        sectionItems[10] = new SectionItem(11, n11, n12, resources.getString(R.string.loop11_description), 7.5, loopimage1);
-        sectionItems[11] = new SectionItem(12, n12, n13, resources.getString(R.string.loop12_description), 4.5, loopimage2);
-        sectionItems[12] = new SectionItem(13, n13, n14, resources.getString(R.string.loop13_description), 5, loopimage1);
-        sectionItems[13] = new SectionItem(14, n14, n15, resources.getString(R.string.loop14_description), 3.8, loopimage2);
-        sectionItems[14] = new SectionItem(15, n15, n16, resources.getString(R.string.loop15_description), 10, loopimage1);
-        sectionItems[15] = new SectionItem(16, n16, n17, resources.getString(R.string.loop16_description), 10, loopimage2);
-        sectionItems[16] = new SectionItem(17, n17, n18, resources.getString(R.string.loop17_description), 9.5, loopimage1);
-        sectionItems[17] = new SectionItem(18, n18, n19, resources.getString(R.string.loop18_description), 4, loopimage2);
-        sectionItems[18] = new SectionItem(19, n19, n20, resources.getString(R.string.loop19_description), 4, loopimage1);
-        sectionItems[19] = new SectionItem(20, n20, n21, resources.getString(R.string.loop20_description), 6, loopimage2);
-        sectionItems[20] = new SectionItem(21, n21, n22, resources.getString(R.string.loop21_description), 4.3, loopimage1);
-        sectionItems[21] = new SectionItem(22, n22, n23, resources.getString(R.string.loop22_description), 4, loopimage2);
-        sectionItems[22] = new SectionItem(23, n23, n24, resources.getString(R.string.loop23_description), 4, loopimage1);
-        sectionItems[23] = new SectionItem(24, n24, n25, resources.getString(R.string.loop24_description), 5, loopimage2);
-
-        if(db.hasTableCount(db.getReadableDatabase(), "Node") == false){
-            db.createNode(n1);
-            db.createNode(n2);
-            db.createNode(n3);
-            db.createNode(n4);
-            db.createNode(n5);
-            db.createNode(n6);
-            db.createNode(n7);
-            db.createNode(n8);
-            db.createNode(n9);
-            db.createNode(n10);
-            db.createNode(n11);
-            db.createNode(n12);
-            db.createNode(n13);
-            db.createNode(n14);
-            db.createNode(n15);
-            db.createNode(n16);
-            db.createNode(n17);
-            db.createNode(n18);
-            db.createNode(n19);
-            db.createNode(n20);
-            db.createNode(n21);
-            db.createNode(n22);
-            db.createNode(n23);
-            db.createNode(n24);
-            db.createNode(n25);
-        }
-
-        if (db.hasTableCount(db.getReadableDatabase(), "Section") == false){
-
-            for (int i = 0; i < 24; i++){
-                db.createSection(sectionItems[i]);
-            }
-        }
+        SectionItem[] sectionItems = setUpSections(nodeItems);
 
         if(db.hasTableCount(db.getReadableDatabase(), "Gps") == false){
             InputStream inputStream = resources.openRawResource(R.raw.gps);
@@ -347,5 +262,121 @@ public class MainActivity extends ActionBarActivity
                 }
             }
         }
+    }
+
+
+    private NodeItem[] setUpNodes(){
+        Resources resources = getResources();
+        NodeItem nodeItems[] = new NodeItem[25];
+
+        InputStream inputNodeStream = resources.openRawResource(R.raw.nodes);
+
+        BufferedReader br = null;
+        String line = "";
+        String cvsSplitBy = ",";
+
+        try {
+
+            br = new BufferedReader(new InputStreamReader(inputNodeStream));
+
+            int j = 0;
+            long k = 1;
+
+            while ((line = br.readLine()) != null) {
+
+                // use comma as separator
+                String[] nodeString = line.split(cvsSplitBy);
+
+                nodeItems[j] = new NodeItem(k, nodeString[0], Double.parseDouble(nodeString[1]), Double.parseDouble(nodeString[2]));
+                j++;
+                k++;
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        if(db.hasTableCount(db.getReadableDatabase(), "Node") == false){
+            for (int i = 0; i < 25; i++){
+                db.createNode(nodeItems[i]);
+            }
+        }
+
+        return nodeItems;
+    }
+
+    private SectionItem[] setUpSections(NodeItem[] nodeItems){
+
+        Resources resources = getResources();
+
+        int loopimage1 =  R.drawable.loopimage1;
+        int loopimage2 = R.drawable.loopimage2;
+
+        SectionItem[] sectionItems = new SectionItem[24];
+
+
+        InputStream inputSectionStream = resources.openRawResource(R.raw.sections);
+
+        BufferedReader br = null;
+        String line = "";
+        String cvsSplitBy = "\\+";
+
+        try {
+
+            br = new BufferedReader(new InputStreamReader(inputSectionStream));
+
+            int j = 0;
+            long k = 1;
+
+            while ((line = br.readLine()) != null) {
+
+                // use comma as separator
+                String[] sectionString = line.split(cvsSplitBy);
+
+                int currentImage;
+
+                if (j % 2 == 0){
+                    currentImage = loopimage1;
+                } else {
+                    currentImage = loopimage2;
+                }
+
+                sectionItems[j] = new SectionItem(k, nodeItems[j], nodeItems[j+1], sectionString[1], Double.parseDouble(sectionString[0]), currentImage);
+                j++;
+                k++;
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        if (db.hasTableCount(db.getReadableDatabase(), "Section") == false){
+
+            for (int i = 0; i < 24; i++){
+                db.createSection(sectionItems[i]);
+            }
+        }
+
+        return sectionItems;
     }
 }

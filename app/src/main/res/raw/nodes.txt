@@ -1,0 +1,25 @@
+Erith, 51.483144, 0.177975
+Old Bexley, 51.441233, 0.148956
+Jubilee Park, 51.393209, 0.069081
+West Wickham Common, 51.370944, 0.004860
+Hamsey Green, 51.319035, -0.063420
+Coulsdon South, 51.315728, -0.136744
+Banstead Downs, 51.332148, -0.209290
+Ewell, 51.351650, -0.250176
+Kingston Bridge, 51.411854, -0.308274
+Hatton Cross, 51.469927, -0.409793
+Hayes and Harlington, 51.505117, -0.418654
+Uxbridge Lock, 51.550933, -0.483414
+Harefield West, 51.610477, -0.498761
+Moor Park, 51.623932, -0.427529
+Hatch End, 51.610702, -0.380326
+Elstree, 51.653365, -0.281950
+Cockfosters, 51.652244, -0.148998
+Enfield Lock, 51.668264, -0.028316
+Chingford, 51.634306, 0.012118
+Chigwell, 51.621468, 0.078004
+Havering-atte-Bower, 51.616860, 0.183245
+Harold Wood, 51.593421, 0.234098
+Upminster Bridge, 51.559197, 0.236748
+Rainham, 51.516886, 0.191433
+Purfleet, 51.480946, 0.236477
