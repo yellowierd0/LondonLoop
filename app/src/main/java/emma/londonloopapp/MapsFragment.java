@@ -15,6 +15,7 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -96,21 +97,14 @@ public class MapsFragment extends Fragment {
         // set map type
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-        // Get latitude of the current location
-        double latitude = myLocation.getLatitude();
-
-        // Get longitude of the current location
-        double longitude = myLocation.getLongitude();
-
         // Create a LatLng object for the current location
-        LatLng latLng = new LatLng(latitude, longitude);
+        LatLng latLng = new LatLng(51.505665, -0.138428);
 
         // Show the current location in Google Map
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 
         // Zoom in the Google Map
         mMap.animateCamera(CameraUpdateFactory.zoomTo(10));
-        //mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("You are here!").snippet("Consider yourself located"));
 
         // add locations of start/end points
         addMarkers();
@@ -128,6 +122,15 @@ public class MapsFragment extends Fragment {
             MarkerOptions m = new MarkerOptions().position(new LatLng(w.getStartNode().getLatitude(),
                     w.getStartNode().getLongitude())).title(w.getId() + ". " +
                     w.getStartNode().getName() + " to " + w.getEndNode().getName());
+
+            if (w.getId() < 11){
+                m.icon(BitmapDescriptorFactory.fromResource(R.drawable.loop_marker_blue));
+            } else if (w.getId() < 17){
+                m.icon(BitmapDescriptorFactory.fromResource(R.drawable.loop_marker_green));
+            } else {
+                m.icon(BitmapDescriptorFactory.fromResource(R.drawable.loop_marker_yellow));
+            }
+
 
             mMap.addMarker(m);
 

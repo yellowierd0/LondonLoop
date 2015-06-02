@@ -21,7 +21,7 @@
         android:layout_weight="0.36"
         android:layout_width="270dp"
         android:layout_height="270dp"
-        android:src="@drawable/dummy"/>
+        android:src="@drawable/loopimage1"/>
 
     <TextView
         android:layout_width="340dp"

@@ -42,6 +42,7 @@ public class WalkAdapterItem extends ArrayAdapter<SectionItem> {
         viewHolder.walkImage.setImageDrawable(getContext().getResources().getDrawable(item.getIcon()));
         viewHolder.walkTitle.setText(item.getId() + ". " + item.getStartNode().getName() + " to " + item.getEndNode().getName());
         viewHolder.walkLength.setText(item.getMiles() + " miles (" + (double) Math.round(item.getMiles() * 1.6 * 100) / 100 + " kilometres)");
+
         return convertView;
     }
 

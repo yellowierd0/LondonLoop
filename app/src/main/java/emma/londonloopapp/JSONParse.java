@@ -48,7 +48,7 @@ public class JSONParse extends AsyncTask<String,String,JSONObject> {
 
     @Override
     protected JSONObject doInBackground(String... args) {
-        JSONParser jParser = new JSONParser();
+        JSONParser2 jParser = new JSONParser2();
 
         // Getting JSON from URL
         JSONObject json = jParser.getJSONFromUrl(url);
