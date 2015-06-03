@@ -1,20 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@color/primary_500">
 
     <Button
         android:id="@+id/navButton"
-        android:layout_marginTop="100dp"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:text="Take me to the Start Point"/>
 
     <Button
         android:id="@+id/noNavButton"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="10dp"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:text="I'm at the start point" />

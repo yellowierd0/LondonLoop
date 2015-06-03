@@ -41,10 +41,17 @@ public class NavigationListFragment extends ListFragment {
 
     private static String BASE_URL = "http://transportapi.com/v3/uk/public/journey";
 
-    private static String API_KEY = "377843b343d1e052ac4d024fd9b7c93a";
-    private static String APP_ID = "6109f899";
+    private static String API_KEY = "api_key=377843b343d1e052ac4d024fd9b7c93a";
+    private static String APP_ID = "&app_id=6109f899";
+
+    private static String FROM_URL = "/from/lonlat:";
+    private static String TO_URL = "/from/lonlat:";
+    private static String RESPONSE_TYPE = ".json?";
 
     private static String test_url = "http://transportapi.com/v3/uk/public/journey/from/lonlat:0.191433,51.516886/to/lonlat:-0.1276250,51.503363051.json?api_key=377843b343d1e052ac4d024fd9b7c93a&app_id=6109f899";
+
+
+    private Location mLastLocation;
 
     private boolean planRoute = false;
 
@@ -67,6 +74,7 @@ public class NavigationListFragment extends ListFragment {
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
+                mLastLocation = location;
                 if (planRoute == false){
                     planJourney(location, sectionItem);
                 }
@@ -84,6 +92,7 @@ public class NavigationListFragment extends ListFragment {
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
 
     }
+
 
     @Override
     public void onAttach(Activity activity)
@@ -108,14 +117,15 @@ public class NavigationListFragment extends ListFragment {
 
     private void planJourney(Location currentLocation, SectionItem destination){
 
+
         if (currentLocation != null) {
 
-            String from = "/from/lonlat:" + currentLocation.getLongitude() + "," + currentLocation.getLatitude();
-            String api_key = "?api_key=" + API_KEY + "&app_id=" + APP_ID;
-            String to = "/to/lonlat:" + destination.getStartNode().getLongitude() + "," + destination.getStartNode().getLatitude();
-            String endUrl = ".json";
+            String from = FROM_URL + currentLocation.getLongitude() + "," + currentLocation.getLatitude();
+            String api_key = API_KEY + APP_ID;
+            String to = TO_URL + destination.getStartNode().getLongitude() + "," + destination.getStartNode().getLatitude();
 
-            String getURL = BASE_URL + from + to + endUrl + api_key;
+            String getURL = BASE_URL + from + to + RESPONSE_TYPE + api_key;
+            Log.e("transport api request", getURL);
 
             // call AsynTask to perform network operation on separate thread
             new HttpAsyncTask().execute(getURL);
