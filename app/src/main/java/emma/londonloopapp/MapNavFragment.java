@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -25,7 +26,8 @@ public class MapNavFragment extends Fragment {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private RouteItem routeItem;
-    private Location myLocation;
+    private Location mLastLocation;
+    private boolean hasLocation = false;
 
     private TextView mapNavText;
 
@@ -38,20 +40,18 @@ public class MapNavFragment extends Fragment {
 
         mapNavText = (TextView) rootView.findViewById(R.id.mapText);
 
-
-        /*// Acquire a reference to the system Location Manager
+        // Acquire a reference to the system Location Manager
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
         // Define a listener that responds to location updates
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
+                mLastLocation = location;
 
-                for (RoutePart routePart : routeItem.getRouteParts()){
-                    if (location.distanceTo(routePart.getCoordinates().get(1)) < 10){
-                        mapNavText.setText(routePart.getTo_point_name());
-                    }
-                }
+                hasLocation = true;
+
+                setMapText();
 
             }
 
@@ -64,7 +64,8 @@ public class MapNavFragment extends Fragment {
 
         // Register the listener with the Location Manager to receive location updates
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
-*/
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+
         setUpMapIfNeeded();
         return rootView;
     }
@@ -118,16 +119,16 @@ public class MapNavFragment extends Fragment {
         String provider = locationManager.getBestProvider(criteria, true);
 
         // Get Current Location
-        myLocation = locationManager.getLastKnownLocation(provider);
+        mLastLocation = locationManager.getLastKnownLocation(provider);
 
         // set map type
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
         // Get latitude of the current location
-        double latitude = myLocation.getLatitude();
+        double latitude = mLastLocation.getLatitude();
 
         // Get longitude of the current location
-        double longitude = myLocation.getLongitude();
+        double longitude = mLastLocation.getLongitude();
 
         // Create a LatLng object for the current location
         LatLng latLng = new LatLng(latitude, longitude);
@@ -199,7 +200,7 @@ public class MapNavFragment extends Fragment {
                 }
             }
 
-            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(myLocation.getLatitude(),myLocation.getLongitude())));
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude())));
             mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
 
             polyLineOptions.addAll(points);
@@ -246,4 +247,21 @@ public class MapNavFragment extends Fragment {
         }
     }
 
+
+    private void setMapText(){
+
+        RoutePart[] routeParts = routeItem.getRouteParts();
+
+        RoutePart routeOne = routeParts[0];
+
+        for (RoutePart r : routeParts){
+            if (mLastLocation.distanceTo(r.getCoordinates().get(0)) < 100){
+                mapNavText.setText(getModeName(r.getMode()) + " to " + r.getTo_point_name());
+            }
+        }
+
+        if (mapNavText.getText().equals("")){
+            mapNavText.setText(getModeName(routeOne.getMode()) + " to " + routeOne.getTo_point_name());
+        }
+    }
 }
