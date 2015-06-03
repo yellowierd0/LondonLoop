@@ -1,12 +1,11 @@
 package emma.londonloopapp;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -27,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 /**
  * Created by Emma on 06/05/2015.
@@ -45,7 +45,7 @@ public class NavigationListFragment extends ListFragment {
     private static String APP_ID = "&app_id=6109f899";
 
     private static String FROM_URL = "/from/lonlat:";
-    private static String TO_URL = "/from/lonlat:";
+    private static String TO_URL = "/to/lonlat:";
     private static String RESPONSE_TYPE = ".json?";
 
     private static String test_url = "http://transportapi.com/v3/uk/public/journey/from/lonlat:0.191433,51.516886/to/lonlat:-0.1276250,51.503363051.json?api_key=377843b343d1e052ac4d024fd9b7c93a&app_id=6109f899";
@@ -53,9 +53,10 @@ public class NavigationListFragment extends ListFragment {
 
     private Location mLastLocation;
 
-    private boolean planRoute = false;
+    boolean hasLocation = false;
 
     private ArrayList<RouteItem> routeItems;
+    private SectionItem sectionItem;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,7 +66,7 @@ public class NavigationListFragment extends ListFragment {
 
         db = new MySQLiteHelper(getActivity());
 
-        final SectionItem sectionItem = db.getSection(walkNumber + 1);
+        sectionItem = db.getSection(walkNumber + 1);
 
         // Acquire a reference to the system Location Manager
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
@@ -75,9 +76,8 @@ public class NavigationListFragment extends ListFragment {
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
                 mLastLocation = location;
-                if (planRoute == false){
-                    planJourney(location, sectionItem);
-                }
+
+                hasLocation = true;
 
             }
 
@@ -90,6 +90,9 @@ public class NavigationListFragment extends ListFragment {
 
         // Register the listener with the Location Manager to receive location updates
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
+
+        new LocationControl().execute();
 
     }
 
@@ -117,20 +120,15 @@ public class NavigationListFragment extends ListFragment {
 
     private void planJourney(Location currentLocation, SectionItem destination){
 
+        String from = FROM_URL + currentLocation.getLongitude() + "," + currentLocation.getLatitude();
+        String api_key = API_KEY + APP_ID;
+        String to = TO_URL + destination.getStartNode().getLongitude() + "," + destination.getStartNode().getLatitude();
 
-        if (currentLocation != null) {
+        String getURL = BASE_URL + from + to + RESPONSE_TYPE + api_key;
+        Log.e("transport api request", getURL);
 
-            String from = FROM_URL + currentLocation.getLongitude() + "," + currentLocation.getLatitude();
-            String api_key = API_KEY + APP_ID;
-            String to = TO_URL + destination.getStartNode().getLongitude() + "," + destination.getStartNode().getLatitude();
-
-            String getURL = BASE_URL + from + to + RESPONSE_TYPE + api_key;
-            Log.e("transport api request", getURL);
-
-            // call AsynTask to perform network operation on separate thread
-            new HttpAsyncTask().execute(getURL);
-
-        }
+        // call AsynTask to perform network operation on separate thread
+        new HttpAsyncTask().execute(getURL);
 
     }
 
@@ -173,16 +171,16 @@ public class NavigationListFragment extends ListFragment {
 
     }
 
-    public boolean isConnected(){
-        ConnectivityManager connMgr = (ConnectivityManager) getActivity().getSystemService(Activity.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected())
-            return true;
-        else
-            return false;
-    }
-
     private class HttpAsyncTask extends AsyncTask<String, Void, String> {
+
+        private final ProgressDialog dialog = new ProgressDialog(getActivity());
+
+        protected void onPreExecute()
+        {
+            this.dialog.setMessage("Planning routes...");
+            this.dialog.show();
+        }
+
         @Override
         protected String doInBackground(String... urls) {
 
@@ -195,14 +193,15 @@ public class NavigationListFragment extends ListFragment {
 
             try {
 
-                if (planRoute == false) {
+                json = new JSONObject(result);
 
-                    json = new JSONObject(result);
-
-                    routeItems = getRouteItems(json);
-                    setListAdapter(new RouteAdapterItem(getActivity(), routeItems, getActivity()));
-                    planRoute = true;
+                routeItems = getRouteItems(json);
+                setListAdapter(new RouteAdapterItem(getActivity(), routeItems, getActivity()));
+                if(this.dialog.isShowing())
+                {
+                    this.dialog.dismiss();
                 }
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -267,6 +266,43 @@ public class NavigationListFragment extends ListFragment {
         bdl.putLong("walkNumber", walk);
         f.setArguments(bdl);
         return f;
+
+    }
+
+    private class LocationControl extends AsyncTask<Context, Void, Void>
+    {
+        private final ProgressDialog dialog = new ProgressDialog(getActivity());
+
+        protected void onPreExecute()
+        {
+            this.dialog.setMessage("Determining your location...");
+            this.dialog.show();
+        }
+
+        protected Void doInBackground(Context... params)
+        {
+
+            Long t = Calendar.getInstance().getTimeInMillis();
+            while (!hasLocation && Calendar.getInstance().getTimeInMillis() - t < 30000) {
+                try {
+                    Thread.sleep(Long.valueOf(1000));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            };
+            return null;
+        }
+
+        protected void onPostExecute(final Void unused)
+        {
+            if(this.dialog.isShowing())
+            {
+                this.dialog.dismiss();
+            }
+
+            //does the stuff that requires current location
+            planJourney(mLastLocation, sectionItem);
+        }
 
     }
 }
