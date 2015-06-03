@@ -39,7 +39,17 @@ public class WalkAdapterItem extends ArrayAdapter<SectionItem> {
         }
         // update the item view
         SectionItem item = getItem(position);
-        viewHolder.walkImage.setImageDrawable(getContext().getResources().getDrawable(item.getIcon()));
+
+        if (item.getId() < 11){
+            viewHolder.walkImage.setImageDrawable(getContext().getResources().getDrawable(R.drawable.south));
+        } else if (item.getId() < 17){
+            viewHolder.walkImage.setImageDrawable(getContext().getResources().getDrawable(R.drawable.northwest));
+        } else {
+            viewHolder.walkImage.setImageDrawable(getContext().getResources().getDrawable(R.drawable.northeast));
+        }
+
+
+
         viewHolder.walkTitle.setText(item.getId() + ". " + item.getStartNode().getName() + " to " + item.getEndNode().getName());
         viewHolder.walkLength.setText(item.getMiles() + " miles (" + (double) Math.round(item.getMiles() * 1.6 * 100) / 100 + " kilometres)");
 

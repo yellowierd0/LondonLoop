@@ -1,6 +1,5 @@
 package emma.londonloopapp;
 
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -9,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 public class WalkDetailFragment extends Fragment {
@@ -29,13 +27,9 @@ public class WalkDetailFragment extends Fragment {
 
         final SectionItem sectionItem = db.getSection(walkNumber + 1);
 
-        ImageView walkImage = (ImageView) rootView.findViewById(R.id.imageView);
         TextView title = (TextView) rootView.findViewById(R.id.walkDetailTitle);
         TextView description = (TextView) rootView.findViewById(R.id.walkDetailDescription);
 
-        Drawable image = getResources().getDrawable(sectionItem.getIcon());
-
-        walkImage.setImageDrawable(image);
         title.setText(sectionItem.getId() + ". " + sectionItem.getStartNode().getName() + " to " + sectionItem.getEndNode().getName());
         description.setText(sectionItem.getDescription());
         description.setMovementMethod(new ScrollingMovementMethod());

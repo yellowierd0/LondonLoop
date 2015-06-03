@@ -9,27 +9,24 @@ public class SectionItem {
     private NodeItem endNode; // the text for the ListView item title
     private String description; // the text for the ListView item description
     private double miles; //distance for walk in miles
-    private int icon; // the drawable for the ListView item ImageView
 
     public SectionItem() {
 
     }
 
-    public SectionItem(long id, NodeItem start_node, NodeItem end_node, String description, double miles, int icon) {
+    public SectionItem(long id, NodeItem start_node, NodeItem end_node, String description, double miles) {
         this.id = id;
         this.startNode = start_node;
         this.endNode = end_node;
         this.description = description;
         this.miles = miles;
-        this.icon = icon;
     }
 
-    public SectionItem(NodeItem start_node, NodeItem end_node, String description, double miles, int icon) {
+    public SectionItem(NodeItem start_node, NodeItem end_node, String description, double miles) {
         this.startNode = start_node;
         this.endNode = end_node;
         this.description = description;
         this.miles = miles;
-        this.icon = icon;
     }
 
     public long getId(){
@@ -52,10 +49,6 @@ public class SectionItem {
         return miles;
     }
 
-    public int getIcon(){
-        return icon;
-    }
-
     public void setId(long id){
         this.id = id;
     }
@@ -74,9 +67,5 @@ public class SectionItem {
 
     public void setMiles(double miles){
         this.miles = miles;
-    }
-
-    public void setIcon(int icon){
-        this.icon = icon;
     }
 }

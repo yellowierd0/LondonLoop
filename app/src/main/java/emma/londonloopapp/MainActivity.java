@@ -320,9 +320,6 @@ public class MainActivity extends ActionBarActivity
 
         Resources resources = getResources();
 
-        int loopimage1 =  R.drawable.loopimage1;
-        int loopimage2 = R.drawable.loopimage2;
-
         SectionItem[] sectionItems = new SectionItem[24];
 
 
@@ -344,15 +341,7 @@ public class MainActivity extends ActionBarActivity
                 // use comma as separator
                 String[] sectionString = line.split(cvsSplitBy);
 
-                int currentImage;
-
-                if (j % 2 == 0){
-                    currentImage = loopimage1;
-                } else {
-                    currentImage = loopimage2;
-                }
-
-                sectionItems[j] = new SectionItem(k, nodeItems[j], nodeItems[j+1], sectionString[1], Double.parseDouble(sectionString[0]), currentImage);
+                sectionItems[j] = new SectionItem(k, nodeItems[j], nodeItems[j+1], sectionString[1], Double.parseDouble(sectionString[0]));
                 j++;
                 k++;
             }

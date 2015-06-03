@@ -27,7 +27,7 @@ public class StartWalkFragment extends Fragment {
                 // Perform action on click
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 
-                NavigationListFragment wdf = NavigationListFragment.newInstance(walkNumber);
+                RouteListFragment wdf = RouteListFragment.newInstance(walkNumber);
 
                 fragmentManager.beginTransaction()
                         .add(R.id.container, wdf)

@@ -31,7 +31,7 @@ import java.util.Calendar;
 /**
  * Created by Emma on 06/05/2015.
  */
-public class NavigationListFragment extends ListFragment {
+public class RouteListFragment extends ListFragment {
 
     MySQLiteHelper db;
 
@@ -259,9 +259,9 @@ public class NavigationListFragment extends ListFragment {
     }
 
 
-    public static NavigationListFragment newInstance(long walk)
+    public static RouteListFragment newInstance(long walk)
     {
-        NavigationListFragment f = new NavigationListFragment();
+        RouteListFragment f = new RouteListFragment();
         final Bundle bdl = new Bundle(1);
         bdl.putLong("walkNumber", walk);
         f.setArguments(bdl);

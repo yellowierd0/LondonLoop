@@ -43,7 +43,6 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     private static final String KEY_SECTION_ID = "SectionID";
     private static final String KEY_DESCRIPTION = "Description";
     private static final String KEY_LENGTH = "Length";
-    private static final String KEY_IMAGE = "Image";
     private static final String KEY_START_NODE = "StartNode";
     private static final String KEY_END_NODE = "EndNode";
 
@@ -67,8 +66,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
             + KEY_START_NODE + " INTEGER,"
             + KEY_END_NODE + " INTEGER,"
             + KEY_DESCRIPTION + " TEXT,"
-            + KEY_LENGTH + " REAL,"
-            + KEY_IMAGE + " INTEGER" + ")";
+            + KEY_LENGTH + " REAL," + ")";
 
     // GPS table create statement
     private static final String CREATE_TABLE_GPS = "CREATE TABLE " + TABLE_GPS
@@ -135,7 +133,6 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         values.put(KEY_END_NODE, sectionItem.getEndNode().getId());
         values.put(KEY_DESCRIPTION, sectionItem.getDescription());
         values.put(KEY_LENGTH, sectionItem.getMiles());
-        values.put(KEY_IMAGE, sectionItem.getIcon());
         // insert row
         db.insert(TABLE_SECTION, null, values);
 
@@ -197,7 +194,6 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         sectionItem.setEndNode(getNode(c.getLong(c.getColumnIndex(KEY_END_NODE))));
         sectionItem.setDescription(c.getString(c.getColumnIndex(KEY_DESCRIPTION)));
         sectionItem.setMiles(c.getDouble(c.getColumnIndex(KEY_LENGTH)));
-        sectionItem.setIcon(c.getInt((c.getColumnIndex(KEY_IMAGE))));
         return sectionItem;
     }
 
@@ -267,7 +263,6 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 sectionItem.setEndNode(getNode(c.getLong (c.getColumnIndex(KEY_END_NODE))));
                 sectionItem.setDescription(c.getString(c.getColumnIndex(KEY_DESCRIPTION)));
                 sectionItem.setMiles(c.getDouble(c.getColumnIndex(KEY_LENGTH)));
-                sectionItem.setIcon(c.getInt(c.getColumnIndex(KEY_IMAGE)));
 
                 // adding to node list
                 sections.add(sectionItem);
@@ -356,7 +351,6 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         values.put(KEY_END_NODE, sectionItem.getEndNode().getId());
         values.put(KEY_DESCRIPTION, sectionItem.getDescription());
         values.put(KEY_LENGTH, sectionItem.getMiles());
-        values.put(KEY_IMAGE, sectionItem.getIcon());
 
         // updating row
         return db.update(TABLE_SECTION, values, KEY_SECTION_ID + " = ?",
