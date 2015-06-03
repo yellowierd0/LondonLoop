@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -26,11 +27,16 @@ public class MapNavFragment extends Fragment {
     private RouteItem routeItem;
     private Location myLocation;
 
+    private TextView mapNavText;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_maps, container, false);
+
+
+        mapNavText = (TextView) rootView.findViewById(R.id.mapText);
 
         setUpMapIfNeeded();
         return rootView;

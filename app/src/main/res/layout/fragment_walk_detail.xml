@@ -4,12 +4,13 @@
     android:layout_height="match_parent"
     android:id="@+id/walkDetail"
     android:orientation="vertical"
-    android:background="#ffffffff">
+    android:background="@color/primary_500">
 
     <TextView
         android:layout_marginTop="20dp"
         android:layout_width="340dp"
         android:gravity="center"
+        android:textColor="@color/black"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:id="@+id/walkDetailTitle"
@@ -25,6 +26,7 @@
 
     <TextView
         android:layout_width="340dp"
+        android:textColor="@color/black"
         android:layout_height="wrap_content"
         android:id="@+id/walkDetailDescription"
         android:layout_gravity="center_horizontal"
@@ -55,7 +57,7 @@
             android:gravity="left|center_vertical"
             android:layout_height="40dp"
             android:text="Previous"
-            android:background="@color/white"
+            android:background="@color/primary_500"
             android:id="@+id/previousButton"
             android:layout_weight="0.5"/>
         <Button
@@ -63,7 +65,7 @@
             android:layout_height="40dp"
             android:gravity="right|center_vertical"
             android:text="Next"
-            android:background="@color/white"
+            android:background="@color/primary_500"
             android:id="@+id/nextButton"
             android:layout_weight="0.5"/>
         <ImageView

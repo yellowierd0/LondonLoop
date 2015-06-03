@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -38,6 +39,10 @@ public class MapsFragment extends Fragment {
 
         db = new MySQLiteHelper(getActivity());
 
+
+        TextView mapInfo = (TextView) rootView.findViewById(R.id.mapText);
+
+        mapInfo.setText("Please choose a walk - blue for South London, green for North-West London, and yellow for North-East London");
 
         setUpMapIfNeeded();
         return rootView;
