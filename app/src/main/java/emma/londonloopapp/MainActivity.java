@@ -85,7 +85,7 @@ public class MainActivity extends ActionBarActivity
         switch(position) {
             default:
             case 0:
-                listFragment = new WalksFragment();
+                listFragment = new WalksListFragment();
                 fragmentManager.beginTransaction()
                         .add(R.id.container, listFragment)
                         // Add this transaction to the back stack

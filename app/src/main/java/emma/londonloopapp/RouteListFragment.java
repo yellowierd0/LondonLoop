@@ -196,7 +196,7 @@ public class RouteListFragment extends ListFragment {
                 json = new JSONObject(result);
 
                 routeItems = getRouteItems(json);
-                setListAdapter(new RouteAdapterItem(getActivity(), routeItems, getActivity()));
+                setListAdapter(new RouteAdapterItem(getActivity(), routeItems, getActivity(), sectionItem.getId()));
                 if(this.dialog.isShowing())
                 {
                     this.dialog.dismiss();

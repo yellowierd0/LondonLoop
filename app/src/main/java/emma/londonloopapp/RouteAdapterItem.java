@@ -22,12 +22,14 @@ public class RouteAdapterItem extends ArrayAdapter<RouteItem> {
 
     private int route_no = 0;
     private int route_max;
+    private long walkNumber;
 
-    public RouteAdapterItem(Context context, List <RouteItem> items, FragmentActivity listFragment) {
+    public RouteAdapterItem(Context context, List <RouteItem> items, FragmentActivity listFragment, long walkNumber) {
 
         super(context, R.layout.route_item, items);
         route_max = items.size();
         this.listFragment = listFragment;
+        this.walkNumber = walkNumber;
     }
 
 
@@ -107,7 +109,7 @@ public class RouteAdapterItem extends ArrayAdapter<RouteItem> {
                 // Perform action on click
 
                 FragmentManager fragmentManager = listFragment.getSupportFragmentManager();
-                MapNavFragment wdf = MapNavFragment.newInstance(item);
+                MapNavFragment wdf = MapNavFragment.newInstance(item, walkNumber);
 
                 fragmentManager.beginTransaction()
                         .add(R.id.container, wdf)
@@ -123,7 +125,7 @@ public class RouteAdapterItem extends ArrayAdapter<RouteItem> {
                 // Perform action on click
 
                 FragmentManager fragmentManager = listFragment.getSupportFragmentManager();
-                MapNavFragment wdf = MapNavFragment.newInstance(item);
+                MapNavFragment wdf = MapNavFragment.newInstance(item, walkNumber);
 
                 fragmentManager.beginTransaction()
                         .add(R.id.container, wdf)
@@ -139,7 +141,7 @@ public class RouteAdapterItem extends ArrayAdapter<RouteItem> {
                 // Perform action on click
 
                 FragmentManager fragmentManager = listFragment.getSupportFragmentManager();
-                MapNavFragment wdf = MapNavFragment.newInstance(item);
+                MapNavFragment wdf = MapNavFragment.newInstance(item, walkNumber);
 
                 fragmentManager.beginTransaction()
                         .add(R.id.container, wdf)
@@ -155,7 +157,7 @@ public class RouteAdapterItem extends ArrayAdapter<RouteItem> {
                 // Perform action on click
 
                 FragmentManager fragmentManager = listFragment.getSupportFragmentManager();
-                MapNavFragment wdf = MapNavFragment.newInstance(item);
+                MapNavFragment wdf = MapNavFragment.newInstance(item, walkNumber);
 
                 fragmentManager.beginTransaction()
                         .add(R.id.container, wdf)

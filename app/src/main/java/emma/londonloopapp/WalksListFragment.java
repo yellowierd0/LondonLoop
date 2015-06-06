@@ -6,7 +6,7 @@ import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.widget.ListView;
 
-public class WalksFragment extends ListFragment {
+public class WalksListFragment extends ListFragment {
 
     MySQLiteHelper db;
 
