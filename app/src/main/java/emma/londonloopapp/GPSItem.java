@@ -11,22 +11,25 @@ public class GPSItem {
     private LatLng latLng;
     private int incr;
     private long id;
+    private String note;
 
     public GPSItem(){
 
     }
 
-    public GPSItem(int incr, LatLng latLng, SectionItem sectionItem){
+    public GPSItem(int incr, LatLng latLng, SectionItem sectionItem, String note){
         this.incr = incr;
         this.latLng = latLng;
         this.sectionItem = sectionItem;
+        this.note = note;
     }
 
-    public GPSItem(long id, int incr, LatLng latLng, SectionItem sectionItem){
+    public GPSItem(long id, int incr, LatLng latLng, SectionItem sectionItem, String note){
         this.id = id;
         this.incr = incr;
         this.latLng = latLng;
         this.sectionItem = sectionItem;
+        this.note = note;
     }
 
     public SectionItem getSectionItem() {
@@ -60,5 +63,9 @@ public class GPSItem {
     public void setIncr(int incr) {
         this.incr = incr;
     }
+
+    public void setNote(String note) { this.note = note; }
+
+    public String getNote() { return note; }
 
 }

@@ -172,22 +172,8 @@ public class MapNavFragment extends Fragment {
                     MarkerOptions markerOptions = new MarkerOptions();
                     markerOptions.position(position)
                             .title(routeParts[i].getFrom_point_name());
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(getModeName(routeParts[i].getMode()));
-                    sb.append(" from ");
-                    sb.append(routeParts[i].getFrom_point_name());
-                    if (!(routeParts[i].getMode().equals("foot"))){
-                        sb.append(" towards ");
-                        sb.append(routeParts[i].getDestination());
-                    }
-                    sb.append(" to ");
-                    sb.append(routeParts[i].getTo_point_name());
-                    if(!(routeParts[i].getLine_name().equals("")) && !(routeParts[i].getMode().equals("train"))){
-                        sb.append(" (");
-                        sb.append(routeParts[i].getLine_name());
-                        sb.append(") ");
-                    }
-                    markerOptions.snippet(sb.toString());
+
+                    markerOptions.snippet(buildJourneyText(routeParts[i]));
                     mMap.addMarker(markerOptions);
                 }
 
@@ -223,6 +209,25 @@ public class MapNavFragment extends Fragment {
         this.routeItem = someObject;
     }
 
+    private String buildJourneyText(RoutePart r){
+        StringBuilder sb = new StringBuilder();
+        sb.append(getModeName(r.getMode()));
+        sb.append(" from ");
+        sb.append(r.getFrom_point_name());
+        if (!(r.getMode().equals("foot"))){
+            sb.append(" towards ");
+            sb.append(r.getDestination());
+        }
+        sb.append(" to ");
+        sb.append(r.getTo_point_name());
+        if(!(r.getLine_name().equals("")) && !(r.getMode().equals("train"))){
+            sb.append(" (");
+            sb.append(r.getLine_name());
+            sb.append(") ");
+        }
+        return sb.toString();
+    }
+
     private String getModeName(String mode){
         if (mode.equals("foot")){
             return "Walk";
@@ -252,16 +257,15 @@ public class MapNavFragment extends Fragment {
 
         RoutePart[] routeParts = routeItem.getRouteParts();
 
-        RoutePart routeOne = routeParts[0];
+        RoutePart currentRoute = routeParts[0];
+
+        mapNavText.setText(getModeName(currentRoute.getMode()) + " to " + currentRoute.getTo_point_name());
 
         for (RoutePart r : routeParts){
-            if (mLastLocation.distanceTo(r.getCoordinates().get(0)) < 100){
-                mapNavText.setText(getModeName(r.getMode()) + " to " + r.getTo_point_name());
+            if (r != currentRoute && mLastLocation.distanceTo(r.getCoordinates().get(0)) < 100){
+                mapNavText.setText(buildJourneyText(r));
             }
         }
 
-        if (mapNavText.getText().equals("")){
-            mapNavText.setText(getModeName(routeOne.getMode()) + " to " + routeOne.getTo_point_name());
-        }
     }
 }

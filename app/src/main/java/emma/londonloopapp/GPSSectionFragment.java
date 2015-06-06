@@ -16,6 +16,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -40,7 +41,9 @@ public class GPSSectionFragment extends Fragment {
     private MySQLiteHelper db;
     private Map<Integer, GPSItem> gpsItemList;
     private final double degreesPerRadian = 180.0 / Math.PI;
-
+    private TextView mapNavText;
+    private Location mLastLocation;
+    private boolean hasLocation;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -57,6 +60,8 @@ public class GPSSectionFragment extends Fragment {
         gpsItemList = db.getGPSItemFromSection(sectionItem);
 
 
+        mapNavText = (TextView) rootView.findViewById(R.id.mapText);
+
         // Acquire a reference to the system Location Manager
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
@@ -64,11 +69,11 @@ public class GPSSectionFragment extends Fragment {
         LocationListener locationListener = new LocationListener() {
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
-                /*mLastLocation = location;
+                mLastLocation = location;
 
                 hasLocation = true;
 
-                setMapText();*/
+                setMapText();
 
             }
 
@@ -318,6 +323,22 @@ public class GPSSectionFragment extends Fragment {
         angle = angle * degreesPerRadian;
 
         return angle;
+    }
+
+    private void setMapText(){
+
+        //RoutePart[] routeParts = routeItem.getRouteParts();
+
+        //RoutePart currentRoute = routeParts[0];
+
+        //mapNavText.setText(getModeName(currentRoute.getMode()) + " to " + currentRoute.getTo_point_name());
+/*
+        for (RoutePart r : routeParts){
+            if (r != currentRoute && mLastLocation.distanceTo(r.getCoordinates().get(0)) < 100){
+                mapNavText.setText(buildJourneyText(r));
+            }
+        }
+*/
     }
 
     public static GPSSectionFragment newInstance(long walk)

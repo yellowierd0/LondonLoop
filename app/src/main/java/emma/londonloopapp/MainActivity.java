@@ -66,7 +66,7 @@ public class MainActivity extends ActionBarActivity
         //new JSONParse(sectionUrl, MainActivity.this).execute();
 
         db = new MySQLiteHelper(getApplicationContext());
-        //db.onUpgrade(db.getWritableDatabase(), 0, 1);
+        db.onUpgrade(db.getWritableDatabase(), 0, 1);
         //db.onCreate(db.getWritableDatabase());
         createWalks();
 
@@ -242,11 +242,21 @@ public class MainActivity extends ActionBarActivity
                     // use comma as separator
                     String[] gpsString = line.split(cvsSplitBy);
 
-                    GPSItem gpsItem = new GPSItem(Long.parseLong(gpsString[0]),
-                            Integer.parseInt(gpsString[1]),
-                            new LatLng(Double.parseDouble(gpsString[2]), Double.parseDouble(gpsString[3])),
-                            sectionItems[Integer.parseInt(gpsString[4])-1]);
-                    db.createGPSItem(gpsItem);
+                    if (gpsString.length < 6){
+                        GPSItem gpsItem = new GPSItem(Long.parseLong(gpsString[0]),
+                                Integer.parseInt(gpsString[1]),
+                                new LatLng(Double.parseDouble(gpsString[2]), Double.parseDouble(gpsString[3])),
+                                sectionItems[Integer.parseInt(gpsString[4])-1], null);
+                        db.createGPSItem(gpsItem);
+                    } else {
+                        GPSItem gpsItem = new GPSItem(Long.parseLong(gpsString[0]),
+                                Integer.parseInt(gpsString[1]),
+                                new LatLng(Double.parseDouble(gpsString[2]), Double.parseDouble(gpsString[3])),
+                                sectionItems[Integer.parseInt(gpsString[4])-1], gpsString[5]);
+                        db.createGPSItem(gpsItem);
+                    }
+
+
                 }
 
             } catch (FileNotFoundException e) {

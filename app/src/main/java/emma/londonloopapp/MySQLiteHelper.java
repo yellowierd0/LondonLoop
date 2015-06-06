@@ -52,6 +52,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     private static final String KEY_GPS_LAT = "GPSLat";
     private static final String KEY_GPS_LONG = "GPSLong";
     private static final String KEY_GPS_SECTION = "GPSSection";
+    private static final String KEY_GPS_NOTE = "GPSNote";
 
     // Table Create Statements
     // Node table create statement
@@ -66,7 +67,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
             + KEY_START_NODE + " INTEGER,"
             + KEY_END_NODE + " INTEGER,"
             + KEY_DESCRIPTION + " TEXT,"
-            + KEY_LENGTH + " REAL," + ")";
+            + KEY_LENGTH + " REAL" + ")";
 
     // GPS table create statement
     private static final String CREATE_TABLE_GPS = "CREATE TABLE " + TABLE_GPS
@@ -74,7 +75,8 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
             + KEY_GPS_NO + " INTEGER,"
             + KEY_GPS_LAT + " REAL,"
             + KEY_GPS_LONG + " REAL,"
-            + KEY_GPS_SECTION + " INTEGER" + ")";
+            + KEY_GPS_SECTION + " INTEGER,"
+            + KEY_GPS_NOTE + " TEXT" + ")";
 
     public MySQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -147,6 +149,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         values.put(KEY_GPS_LAT, gpsItem.getLatLng().latitude);
         values.put(KEY_GPS_LONG, gpsItem.getLatLng().longitude);
         values.put(KEY_GPS_SECTION, gpsItem.getSectionItem().getId());
+        values.put(KEY_GPS_NOTE, gpsItem.getNote());
         // insert row
         db.insert(TABLE_GPS, null, values);
 
@@ -212,8 +215,9 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         GPSItem gpsItem = new GPSItem();
         gpsItem.setId(c.getLong(c.getColumnIndex(KEY_GPS_ID)));
         gpsItem.setIncr(c.getInt(c.getColumnIndex(KEY_GPS_NO)));
-        gpsItem.setLatLng(new LatLng(c.getDouble(c.getColumnIndex(KEY_GPS_LAT)),c.getDouble(c.getColumnIndex(KEY_GPS_LONG))));
+        gpsItem.setLatLng(new LatLng(c.getDouble(c.getColumnIndex(KEY_GPS_LAT)), c.getDouble(c.getColumnIndex(KEY_GPS_LONG))));
         gpsItem.setSectionItem(getSection(c.getLong(c.getColumnIndex(KEY_GPS_SECTION))));
+        gpsItem.setNote(c.getString(c.getColumnIndex((KEY_GPS_NOTE))));
         return gpsItem;
     }
 
@@ -290,8 +294,9 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 GPSItem gpsItem = new GPSItem();
                 gpsItem.setId(c.getLong(c.getColumnIndex(KEY_GPS_ID)));
                 gpsItem.setIncr(c.getInt(c.getColumnIndex(KEY_GPS_NO)));
-                gpsItem.setLatLng(new LatLng(c.getDouble(c.getColumnIndex(KEY_GPS_LAT)),c.getDouble(c.getColumnIndex(KEY_GPS_LONG))));
+                gpsItem.setLatLng(new LatLng(c.getDouble(c.getColumnIndex(KEY_GPS_LAT)), c.getDouble(c.getColumnIndex(KEY_GPS_LONG))));
                 gpsItem.setSectionItem(getSection(c.getLong(c.getColumnIndex(KEY_GPS_SECTION))));
+                gpsItem.setNote(c.getString(c.getColumnIndex(KEY_GPS_NOTE)));
 
                 gpsItems.put(gpsItem.getIncr(), gpsItem);
             } while (c.moveToNext());
@@ -319,6 +324,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 gpsItem.setIncr(c.getInt(c.getColumnIndex(KEY_GPS_NO)));
                 gpsItem.setLatLng(new LatLng(c.getDouble(c.getColumnIndex(KEY_GPS_LAT)),c.getDouble(c.getColumnIndex(KEY_GPS_LONG))));
                 gpsItem.setSectionItem(getSection(c.getLong(c.getColumnIndex(KEY_GPS_SECTION))));
+                gpsItem.setNote(c.getString(c.getColumnIndex(KEY_GPS_NOTE)));
 
                 gpsItems.add(gpsItem);
             } while (c.moveToNext());
@@ -367,6 +373,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         values.put(KEY_GPS_LAT, gpsItem.getLatLng().latitude);
         values.put(KEY_GPS_LONG, gpsItem.getLatLng().longitude);
         values.put(KEY_GPS_SECTION, gpsItem.getSectionItem().getId());
+        values.put(KEY_GPS_NOTE, gpsItem.getNote());
 
         // updating row
         return db.update(TABLE_GPS, values, KEY_NODE_ID + " = ?",
