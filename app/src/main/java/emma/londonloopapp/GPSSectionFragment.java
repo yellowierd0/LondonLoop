@@ -196,22 +196,20 @@ public class GPSSectionFragment extends Fragment {
 
     private void setMapText(){
 
-        GPSItem currentItem = gpsItemList.get(0);
+        GPSItem currentItem = gpsItemList.get(1);
 
-        if (currentItem.getNote() != null){
-            mapNavText.setText(currentItem.getNote());
-        }
+        mapNavText.setText(currentItem.getNote());
 
-        for (int i = 1; i < gpsItemList.size(); i++){
+
+        for (int i = 2; i <= gpsItemList.size(); i++){
             Location l = new Location("gpsCoord");
             l.setLatitude(gpsItemList.get(i).getLatLng().latitude);
             l.setLongitude(gpsItemList.get(i).getLatLng().longitude);
             if (gpsItemList.get(i) != currentItem && mLastLocation.distanceTo(l) < 100){
                 if (i != gpsItemList.size()){
-                    if (gpsItemList.get(i).getNote() != null){
-                        mapNavText.setText(gpsItemList.get(i).getNote());
-                        currentItem = gpsItemList.get(i);
-                    }
+
+                    mapNavText.setText(gpsItemList.get(i).getNote());
+                    currentItem = gpsItemList.get(i);
 
                 } else {
                     mapNavText.setText("You have reached the end of this section of the Loop!");

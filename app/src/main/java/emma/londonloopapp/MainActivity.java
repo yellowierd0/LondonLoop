@@ -245,13 +245,15 @@ public class MainActivity extends ActionBarActivity
                     if (gpsString.length < 6){
                         GPSItem gpsItem = new GPSItem(Long.parseLong(gpsString[0]),
                                 Integer.parseInt(gpsString[1]),
-                                new LatLng(Double.parseDouble(gpsString[2]), Double.parseDouble(gpsString[3])),
-                                sectionItems[Integer.parseInt(gpsString[4])-1], null);
+                                new LatLng(Double.parseDouble(gpsString[2]),
+                                        Double.parseDouble(gpsString[3])),
+                                sectionItems[Integer.parseInt(gpsString[4])-1], "");
                         db.createGPSItem(gpsItem);
                     } else {
                         GPSItem gpsItem = new GPSItem(Long.parseLong(gpsString[0]),
                                 Integer.parseInt(gpsString[1]),
-                                new LatLng(Double.parseDouble(gpsString[2]), Double.parseDouble(gpsString[3])),
+                                new LatLng(Double.parseDouble(gpsString[2]),
+                                        Double.parseDouble(gpsString[3])),
                                 sectionItems[Integer.parseInt(gpsString[4])-1], gpsString[5]);
                         db.createGPSItem(gpsItem);
                     }
