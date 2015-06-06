@@ -8,6 +8,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,7 @@ public class MapNavFragment extends Fragment {
     private RouteItem routeItem;
     private Location mLastLocation;
     private boolean hasLocation = false;
+    private long walkNumber;
 
     private TextView mapNavText;
 
@@ -198,15 +200,16 @@ public class MapNavFragment extends Fragment {
     }
 
 
-    public static MapNavFragment newInstance(RouteItem routeItem) {
+    public static MapNavFragment newInstance(RouteItem routeItem, long walkNumber) {
         MapNavFragment fragment = new MapNavFragment();
-        fragment.setSomeObject(routeItem);
+        fragment.setSomeObject(routeItem, walkNumber);
         return fragment;
     }
 
-    public void setSomeObject(RouteItem someObject) {
+    public void setSomeObject(RouteItem someObject, long walkNumber) {
 
         this.routeItem = someObject;
+        this.walkNumber = walkNumber;
     }
 
     private String buildJourneyText(RoutePart r){
@@ -263,7 +266,21 @@ public class MapNavFragment extends Fragment {
 
         for (RoutePart r : routeParts){
             if (r != currentRoute && mLastLocation.distanceTo(r.getCoordinates().get(0)) < 100){
-                mapNavText.setText(buildJourneyText(r));
+                if (r != routeParts[routeParts.length-1]){
+                    mapNavText.setText(buildJourneyText(r));
+                    currentRoute = r;
+                } else {
+                    mapNavText.setText("You have now reached the London Loop. The walk will now begin.");
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                    GPSSectionFragment wdf = GPSSectionFragment.newInstance(walkNumber);
+
+                    fragmentManager.beginTransaction()
+                            .add(R.id.container, wdf)
+                                    // Add this transaction to the back stack
+                            .addToBackStack("routeFrag")
+                            .commit();
+                }
+
             }
         }
 
