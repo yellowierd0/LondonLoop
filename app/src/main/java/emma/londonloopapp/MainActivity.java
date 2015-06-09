@@ -67,7 +67,7 @@ public class MainActivity extends ActionBarActivity
         //new JSONParse(sectionUrl, MainActivity.this).execute();
 
         db = new MySQLiteHelper(getApplicationContext());
-        db.onUpgrade(db.getWritableDatabase(), 0, 1);
+        //db.onUpgrade(db.getWritableDatabase(), 0, 1);
         //db.onCreate(db.getWritableDatabase());
         createWalks();
 
@@ -227,6 +227,8 @@ public class MainActivity extends ActionBarActivity
         NodeItem[] nodeItems = setUpNodes();
 
         SectionItem[] sectionItems = setUpSections(nodeItems);
+
+        setUpMarkers(sectionItems);
 
         if(db.hasTableCount(db.getReadableDatabase(), "Gps") == false){
             InputStream inputStream = resources.openRawResource(R.raw.gps);
@@ -403,15 +405,21 @@ public class MainActivity extends ActionBarActivity
                 // use comma as separator
                 String[] markerString = line.split(cvsSplitBy);
 
-                SectionItem s = sectionItems[Integer.getInteger(markerString[1])];
+                int sectionNo = Integer.parseInt(markerString[1])-1;
+
+                SectionItem s = sectionItems[sectionNo];
                 LatLng l = new LatLng(Double.parseDouble(markerString[2]),Double.parseDouble(markerString[3]));
+                String name = markerString[4];
+                Long id = Long.parseLong(markerString[0]);
 
                 MarkerItem markerItem;
 
                 if (markerString.length == 5){
-                    markerItem = new MarkerItem(Long.getLong(markerString[0]), s, l, markerString[4]);
+                    markerItem = new MarkerItem(id, s, l, name);
                 } else {
-                    markerItem = new MarkerItem(Long.getLong(markerString[0]), s, l, markerString[4], markerString[5], markerString[6]);
+                    String text = markerString[5];
+                    String url = markerString[6];
+                    markerItem = new MarkerItem(id, s, l, name, text, url);
                 }
 
                 markerItems.add(markerItem);

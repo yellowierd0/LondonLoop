@@ -26,8 +26,7 @@ public class EndWalkFragment extends Fragment {
             public void onClick(View v) {
                 // Perform action on click
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-
-                RouteListFragment wdf = RouteListFragment.newInstance(walkNumber);
+                GPSSectionFragment wdf = GPSSectionFragment.newInstance(walkNumber+1);
 
                 fragmentManager.beginTransaction()
                         .add(R.id.container, wdf)

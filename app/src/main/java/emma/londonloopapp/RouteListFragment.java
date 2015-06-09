@@ -50,6 +50,8 @@ public class RouteListFragment extends ListFragment {
 
     private static String test_url = "http://transportapi.com/v3/uk/public/journey/from/lonlat:0.191433,51.516886/to/lonlat:-0.1276250,51.503363051.json?api_key=377843b343d1e052ac4d024fd9b7c93a&app_id=6109f899";
 
+    private long walkNumber;
+    private String modes;
 
     private Location mLastLocation;
 
@@ -61,8 +63,6 @@ public class RouteListFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        long walkNumber = getArguments().getLong("walkNumber", 0);
 
         db = new MySQLiteHelper(getActivity());
 
@@ -124,7 +124,9 @@ public class RouteListFragment extends ListFragment {
         String api_key = API_KEY + APP_ID;
         String to = TO_URL + destination.getStartNode().getLongitude() + "," + destination.getStartNode().getLatitude();
 
-        String getURL = BASE_URL + from + to + RESPONSE_TYPE + api_key;
+        String include = "&modes=" + modes;
+
+        String getURL = BASE_URL + from + to + RESPONSE_TYPE + api_key + include;
         Log.e("transport api request", getURL);
 
         // call AsynTask to perform network operation on separate thread
@@ -259,14 +261,17 @@ public class RouteListFragment extends ListFragment {
     }
 
 
-    public static RouteListFragment newInstance(long walk)
+    public static RouteListFragment newInstance(long walk, String modes)
     {
         RouteListFragment f = new RouteListFragment();
-        final Bundle bdl = new Bundle(1);
-        bdl.putLong("walkNumber", walk);
-        f.setArguments(bdl);
+        f.setSomeObject(walk, modes);
         return f;
+    }
 
+    public void setSomeObject(long walk, String modes) {
+
+        this.walkNumber = walk;
+        this.modes= modes;
     }
 
     private class LocationControl extends AsyncTask<Context, Void, Void>

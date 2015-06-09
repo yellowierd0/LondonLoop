@@ -190,7 +190,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         values.put(KEY_MARK_TEXT, mItem.getText());
         values.put(KEY_MARK_URL, mItem.getUrl());
         // insert row
-        db.insert(TABLE_GPS, null, values);
+        db.insert(TABLE_MARKER, null, values);
 
     }
 
