@@ -12,16 +12,21 @@ import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Emma on 14/05/2015.
@@ -31,17 +36,24 @@ public class GPSSectionFragment extends Fragment {
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private MySQLiteHelper db;
     private Map<Integer, GPSItem> gpsItemList;
-    private final double degreesPerRadian = 180.0 / Math.PI;
-    private TextView mapNavText;
+    private List<MarkerItem> markerItemList;
+
     private long walkNumber;
     private Location mLastLocation;
     private boolean hasLocation;
+
+    private GPSItem currentItem;
+
+    private TextView mapNavText;
+    private Button gpsButton;
+    private Button pButton;
+    private Button nButton;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.fragment_maps, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_gps_maps, container, false);
 
         walkNumber = getArguments().getLong("walkNumber", 0);
 
@@ -50,10 +62,42 @@ public class GPSSectionFragment extends Fragment {
         final SectionItem sectionItem = db.getSection(walkNumber + 1);
 
         gpsItemList = db.getGPSItemFromSection(sectionItem);
+        markerItemList = db.getMarkerItemFromSection(sectionItem);
 
+        //set current item to first gpsItem
+        currentItem = gpsItemList.get(1);
 
-        mapNavText = (TextView) rootView.findViewById(R.id.mapText);
-        mapNavText.setBackgroundColor(getResources().getColor(R.color.material_blue_grey_800));
+        //get buttons and textview from xml
+        mapNavText = (TextView) rootView.findViewById(R.id.gpsMapText);
+
+        gpsButton = (Button) rootView.findViewById(R.id.gpsButton);
+        pButton = (Button) rootView.findViewById(R.id.preGPSButton);
+        nButton = (Button) rootView.findViewById(R.id.nextGPSButton);
+
+        //set on click listeners for pre/next buttons
+        pButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentItem.getIncr()==1){
+                    //do nothing
+                } else{
+                    setText(prevItemWithNote(gpsItemList.get(currentItem.getIncr())));
+                }
+
+            }
+        });
+
+        nButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentItem.getIncr()==gpsItemList.size()){
+                    //do nothing
+                } else{
+                    setText(nextItemWithNote(gpsItemList.get(currentItem.getIncr())));
+                }
+            }
+        });
+
 
         // Acquire a reference to the system Location Manager
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
@@ -81,9 +125,12 @@ public class GPSSectionFragment extends Fragment {
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 
-
-
         setUpMapIfNeeded();
+
+        drawPaths();
+
+        drawMarkers();
+
         return rootView;
     }
 
@@ -154,10 +201,8 @@ public class GPSSectionFragment extends Fragment {
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 
         // Zoom in the Google Map
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(10));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
         //mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("You are here!").snippet("Consider yourself located"));
-
-        drawPaths();
 
     }
 
@@ -173,9 +218,9 @@ public class GPSSectionFragment extends Fragment {
         ArrayList<LatLng> points = new ArrayList<LatLng>();
         PolylineOptions polyLineOptions = new PolylineOptions();
 
-        for (int i = 0; i < gpsItemList.size(); i++){
+        for (int i = 1; i <= gpsItemList.size(); i++){
 
-            LatLng latLng = gpsItemList.get(i+1).getLatLng();
+            LatLng latLng = gpsItemList.get(i).getLatLng();
             points.add(latLng);
             /*MarkerOptions markerOptions = new MarkerOptions();
             markerOptions.position(latLng);
@@ -196,40 +241,94 @@ public class GPSSectionFragment extends Fragment {
 
     private void setMapText(){
 
-        GPSItem currentItem = gpsItemList.get(1);
-
         mapNavText.setText(currentItem.getNote());
-
 
         for (int i = 2; i <= gpsItemList.size(); i++){
             Location l = new Location("gpsCoord");
             l.setLatitude(gpsItemList.get(i).getLatLng().latitude);
             l.setLongitude(gpsItemList.get(i).getLatLng().longitude);
             if (gpsItemList.get(i) != currentItem && mLastLocation.distanceTo(l) < 100){
-                if (i != gpsItemList.size()){
+                setText(gpsItemList.get(i));
+            }
+        }
+    }
 
-                    mapNavText.setText(gpsItemList.get(i).getNote());
-                    currentItem = gpsItemList.get(i);
+    private void setText(GPSItem gpsItem){
 
-                } else {
-                    mapNavText.setText("You have reached the end of this section of the Loop!");
-                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+        if (gpsItem.getNote().equals("")){
 
-                    EndWalkFragment wdf = EndWalkFragment.newInstance(walkNumber);
+        } else{
+            mapNavText.setText(gpsItem.getNote());
+            currentItem = gpsItem;
 
-                    fragmentManager.beginTransaction()
-                            .add(R.id.container, wdf)
-                                    // Add this transaction to the back stack
-                            .addToBackStack("gpsFrag")
-                            .commit();
-                }
+            if (gpsItem.getIncr() == gpsItemList.size()){
+
+                gpsButton.setText("What do you want to do now?");
+                gpsButton.setVisibility(View.VISIBLE);
+                gpsButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+
+                        EndWalkFragment wdf = EndWalkFragment.newInstance(walkNumber);
+
+                        fragmentManager.beginTransaction()
+                                .add(R.id.container, wdf)
+                                        // Add this transaction to the back stack
+                                .addToBackStack("gpsFrag")
+                                .commit();
+                    }
+                });
             }
 
+        }
+    }
 
+    private GPSItem nextItemWithNote(GPSItem gpsItem){
+        GPSItem curr = gpsItemList.get(gpsItem.getIncr()+1);
+        while (curr.getNote().equals("")){
+            //last item will always have a note
+            curr = gpsItemList.get(curr.getIncr()+1);
+        }
+        return curr;
+    }
+
+    private GPSItem prevItemWithNote(GPSItem gpsItem){
+        GPSItem curr = gpsItemList.get(gpsItem.getIncr()-1);
+        while (curr.getNote().equals("")){
+            //first item will always have a note
+            curr = gpsItemList.get(curr.getIncr()-1);
+        }
+        return curr;
+    }
+
+    private void drawMarkers(){
+        for (MarkerItem m : markerItemList){
+            MarkerOptions options = new MarkerOptions().position(m.getLocation())
+                    .title(m.getName()).snippet(m.getText());
+            mMap.addMarker(options);
         }
 
+        /*mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
 
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                WalkDetailFragment wdf= WalkDetailFragment.newInstance(getMarkerPos(marker.getTitle()));
+                fragmentManager.beginTransaction()
+                        .add(R.id.container, wdf)
+                                // Add this transaction to the back stack
+                        .addToBackStack("mapFrag")
+                        .commit();
 
+            }});*/
+
+    }
+
+    private long getMarkerPos(String s){
+        Matcher matcher = Pattern.compile("\\d+").matcher(s);
+        matcher.find();
+        return Long.valueOf(matcher.group()) - 1;
     }
 
     public static GPSSectionFragment newInstance(long walk)

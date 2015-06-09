@@ -24,6 +24,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 
 
 public class MainActivity extends ActionBarActivity
@@ -232,7 +233,7 @@ public class MainActivity extends ActionBarActivity
 
             BufferedReader br = null;
             String line = "";
-            String cvsSplitBy = ",";
+            String cvsSplitBy = "\\+";
 
             try {
 
@@ -242,7 +243,7 @@ public class MainActivity extends ActionBarActivity
                     // use comma as separator
                     String[] gpsString = line.split(cvsSplitBy);
 
-                    if (gpsString.length < 6){
+                    if (gpsString.length == 5){
                         GPSItem gpsItem = new GPSItem(Long.parseLong(gpsString[0]),
                                 Integer.parseInt(gpsString[1]),
                                 new LatLng(Double.parseDouble(gpsString[2]),
@@ -380,5 +381,62 @@ public class MainActivity extends ActionBarActivity
         }
 
         return sectionItems;
+    }
+
+    private void setUpMarkers(SectionItem[] sectionItems){
+
+        Resources resources = getResources();
+        InputStream inputSectionStream = resources.openRawResource(R.raw.markers);
+
+        BufferedReader br = null;
+        String line = "";
+        String cvsSplitBy = ",";
+
+        ArrayList<MarkerItem> markerItems = new ArrayList<MarkerItem>();
+
+        try {
+
+            br = new BufferedReader(new InputStreamReader(inputSectionStream));
+
+            while ((line = br.readLine()) != null) {
+
+                // use comma as separator
+                String[] markerString = line.split(cvsSplitBy);
+
+                SectionItem s = sectionItems[Integer.getInteger(markerString[1])];
+                LatLng l = new LatLng(Double.parseDouble(markerString[2]),Double.parseDouble(markerString[3]));
+
+                MarkerItem markerItem;
+
+                if (markerString.length == 5){
+                    markerItem = new MarkerItem(Long.getLong(markerString[0]), s, l, markerString[4]);
+                } else {
+                    markerItem = new MarkerItem(Long.getLong(markerString[0]), s, l, markerString[4], markerString[5], markerString[6]);
+                }
+
+                markerItems.add(markerItem);
+
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        if (db.hasTableCount(db.getReadableDatabase(), "Marker") == false){
+
+            for (MarkerItem m : markerItems){
+                db.createMarkerItem(m);
+            }
+        }
+
     }
 }

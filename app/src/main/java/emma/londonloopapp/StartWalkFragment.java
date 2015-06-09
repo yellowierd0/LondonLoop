@@ -21,7 +21,7 @@ public class StartWalkFragment extends Fragment {
 
         final long walkNumber = getArguments().getLong("walkNumber", 0);
 
-        final Button navButton = (Button) rootView.findViewById(R.id.navButton);
+        final Button navButton = (Button) rootView.findViewById(R.id.gpsButton);
         navButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Perform action on click

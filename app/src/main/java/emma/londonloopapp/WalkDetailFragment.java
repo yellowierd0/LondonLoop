@@ -49,7 +49,7 @@ public class WalkDetailFragment extends Fragment {
             }
         });
 
-        final Button nButton = (Button) rootView.findViewById(R.id.nextButton);
+        final Button nButton = (Button) rootView.findViewById(R.id.nextGPSButton);
         nButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Perform action on click
@@ -70,7 +70,7 @@ public class WalkDetailFragment extends Fragment {
             }
         });
 
-        final Button pButton = (Button) rootView.findViewById(R.id.previousButton);
+        final Button pButton = (Button) rootView.findViewById(R.id.preGPSButton);
         pButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Perform action on click

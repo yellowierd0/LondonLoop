@@ -40,7 +40,7 @@ public class MapNavFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_maps, container, false);
 
 
-        mapNavText = (TextView) rootView.findViewById(R.id.mapText);
+        mapNavText = (TextView) rootView.findViewById(R.id.gpsMapText);
 
         // Acquire a reference to the system Location Manager
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);

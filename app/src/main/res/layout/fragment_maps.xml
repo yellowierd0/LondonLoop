@@ -3,16 +3,16 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/primary_500" >
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+        android:layout_height="400dp" android:id="@+id/mapView"
+        tools:context="emma.londonloopapp.MapsFragment"
+        android:name="com.google.android.gms.maps.SupportMapFragment" />
     <TextView
         android:layout_width="match_parent"
         android:layout_height="100dp"
         android:padding="5dp"
         android:gravity="center"
         android:textAppearance="@android:style/TextAppearance.Medium"
-        android:id="@+id/mapText"/>
-    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
-        android:layout_height="match_parent" android:id="@+id/mapView"
-        tools:context="emma.londonloopapp.MapsFragment"
-        android:name="com.google.android.gms.maps.SupportMapFragment" />
+        android:id="@+id/gpsMapText"/>
 </LinearLayout>

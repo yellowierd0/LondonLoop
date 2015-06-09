@@ -12,8 +12,9 @@
         android:layout_width="200dp"
         android:layout_height="60dp"
         android:layout_gravity="center"
+        android:textColor="@color/white"
         android:text="I want to start the next walk"
-        android:background="@drawable/round_corners_selector"/>
+        android:background="@drawable/button_dark"/>
 
     <Button
         android:id="@+id/leaveWalkButton"
@@ -21,8 +22,9 @@
         android:layout_width="200dp"
         android:layout_height="60dp"
         android:layout_gravity="center"
+        android:textColor="@color/white"
         android:text="I want to go somewhere else"
-        android:background="@drawable/round_corners_selector"/>
+        android:background="@drawable/button_dark"/>
 
 
 </LinearLayout>

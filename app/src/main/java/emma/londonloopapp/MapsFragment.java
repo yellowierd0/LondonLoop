@@ -40,7 +40,7 @@ public class MapsFragment extends Fragment {
         db = new MySQLiteHelper(getActivity());
 
 
-        TextView mapInfo = (TextView) rootView.findViewById(R.id.mapText);
+        TextView mapInfo = (TextView) rootView.findViewById(R.id.gpsMapText);
 
         mapInfo.setText("Please choose a walk - blue for South London, green for North-West London, and yellow for North-East London");
 
@@ -117,8 +117,6 @@ public class MapsFragment extends Fragment {
     }
 
     private void addMarkers(){
-
-        final MarkerOptions markers = new MarkerOptions();
 
         for  (int i = 1; i <= WALK_NUMBERS; i++){
 

@@ -32,6 +32,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     private static final String TABLE_NODE = "Node";
     private static final String TABLE_SECTION = "Section";
     private static final String TABLE_GPS = "Gps";
+    private static final String TABLE_MARKER = "Marker";
 
     // NODES Table - column names
     private static final String KEY_NODE_ID = "NodeId";
@@ -53,6 +54,15 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     private static final String KEY_GPS_LONG = "GPSLong";
     private static final String KEY_GPS_SECTION = "GPSSection";
     private static final String KEY_GPS_NOTE = "GPSNote";
+
+    // Marker Table - column names
+    private static final String KEY_MARK_ID = "MarkerId";
+    private static final String KEY_MARK_SECTION = "MarkSection";
+    private static final String KEY_MARK_LAT = "MarkLatitude";
+    private static final String KEY_MARK_LONG = "MarkLongitude";
+    private static final String KEY_MARK_NAME = "MarkName";
+    private static final String KEY_MARK_TEXT = "MarkText";
+    private static final String KEY_MARK_URL = "MarkUrl";
 
     // Table Create Statements
     // Node table create statement
@@ -78,6 +88,17 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
             + KEY_GPS_SECTION + " INTEGER,"
             + KEY_GPS_NOTE + " TEXT" + ")";
 
+    // Marker table create table statement
+    private static final String CREATE_TABLE_MARKER = "CREATE TABLE " + TABLE_MARKER
+            + "(" + KEY_MARK_ID + " INTEGER PRIMARY KEY,"
+            + KEY_MARK_SECTION + " INTEGER,"
+            + KEY_MARK_LAT + " REAL,"
+            + KEY_MARK_LONG + " REAL,"
+            + KEY_MARK_NAME + " INTEGER,"
+            + KEY_MARK_TEXT + " TEXT,"
+            + KEY_MARK_URL + " TEXT" + ")";
+
+
     public MySQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
@@ -88,6 +109,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_NODE);
         db.execSQL(CREATE_TABLE_SECTION);
         db.execSQL(CREATE_TABLE_GPS);
+        db.execSQL(CREATE_TABLE_MARKER);
     }
 
     @Override
@@ -96,6 +118,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NODE);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SECTION);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_GPS);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_MARKER);
         // create new tables
         onCreate(db);
     }
@@ -150,6 +173,22 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         values.put(KEY_GPS_LONG, gpsItem.getLatLng().longitude);
         values.put(KEY_GPS_SECTION, gpsItem.getSectionItem().getId());
         values.put(KEY_GPS_NOTE, gpsItem.getNote());
+        // insert row
+        db.insert(TABLE_GPS, null, values);
+
+    }
+
+    public void createMarkerItem(MarkerItem mItem) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_MARK_ID, mItem.getId());
+        values.put(KEY_MARK_SECTION, mItem.getSection().getId());
+        values.put(KEY_MARK_LAT, mItem.getLocation().latitude);
+        values.put(KEY_MARK_LONG, mItem.getLocation().longitude);
+        values.put(KEY_MARK_NAME, mItem.getName());
+        values.put(KEY_MARK_TEXT, mItem.getText());
+        values.put(KEY_MARK_URL, mItem.getUrl());
         // insert row
         db.insert(TABLE_GPS, null, values);
 
@@ -221,6 +260,29 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         return gpsItem;
     }
 
+    //Get a Marker
+    public MarkerItem getMarkerItem(long marker_id){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT * FROM " + TABLE_MARKER + " WHERE "
+                + KEY_MARK_ID + " = " + marker_id;
+        Log.e(LOG, selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c!=null)
+            c.moveToFirst();
+        MarkerItem markerItem = new MarkerItem();
+        markerItem.setId(c.getLong(c.getColumnIndex(KEY_MARK_ID)));
+        markerItem.setSection(getSection(c.getLong(c.getColumnIndex(KEY_MARK_SECTION))));
+        markerItem.setLocation(new LatLng(c.getDouble(c.getColumnIndex(KEY_MARK_LAT)), c.getDouble(c.getColumnIndex(KEY_MARK_LONG))));
+        markerItem.setName(c.getString(c.getColumnIndex(KEY_MARK_NAME)));
+        markerItem.setText(c.getString(c.getColumnIndex(KEY_MARK_TEXT)));
+        markerItem.setUrl(c.getString(c.getColumnIndex(KEY_MARK_URL)));
+
+        return markerItem;
+    }
+
     //Get all Nodes
     public List<NodeItem> getAllNodes() {
         List<NodeItem> nodes = new ArrayList<NodeItem>();
@@ -264,7 +326,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 SectionItem sectionItem = new SectionItem();
                 sectionItem.setId(c.getLong(c.getColumnIndex(KEY_SECTION_ID)));
                 sectionItem.setStartNode(getNode(c.getLong(c.getColumnIndex(KEY_START_NODE))));
-                sectionItem.setEndNode(getNode(c.getLong (c.getColumnIndex(KEY_END_NODE))));
+                sectionItem.setEndNode(getNode(c.getLong(c.getColumnIndex(KEY_END_NODE))));
                 sectionItem.setDescription(c.getString(c.getColumnIndex(KEY_DESCRIPTION)));
                 sectionItem.setMiles(c.getDouble(c.getColumnIndex(KEY_LENGTH)));
 
@@ -333,6 +395,64 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         return gpsItems;
     }
 
+    //Get all MarkerItems from section
+    public List<MarkerItem> getMarkerItemFromSection(SectionItem sectionItem){
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        List<MarkerItem> markerItems = new ArrayList<MarkerItem>();
+        String selectQuery = "SELECT * FROM " + TABLE_MARKER + " WHERE "
+                + KEY_MARK_SECTION + " = " + sectionItem.getId();
+        Log.e(LOG, selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()){
+            do {
+                MarkerItem markerItem = new MarkerItem();
+                markerItem.setId(c.getLong(c.getColumnIndex(KEY_MARK_ID)));
+                markerItem.setSection(getSection(c.getLong(c.getColumnIndex(KEY_MARK_SECTION))));
+                markerItem.setLocation(new LatLng(c.getDouble(c.getColumnIndex(KEY_MARK_LAT)), c.getDouble(c.getColumnIndex(KEY_MARK_LONG))));
+                markerItem.setName(c.getString(c.getColumnIndex(KEY_MARK_NAME)));
+                markerItem.setText(c.getString(c.getColumnIndex(KEY_MARK_TEXT)));
+                markerItem.setUrl(c.getString(c.getColumnIndex(KEY_MARK_URL)));
+
+                markerItems.add(markerItem);
+            } while (c.moveToNext());
+        }
+
+        return markerItems;
+    }
+
+    // Get all MarkerItems
+    public List<MarkerItem> getAllMarkerItems(){
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        List<MarkerItem> markerItems = new ArrayList<MarkerItem>();
+        String selectQuery = "SELECT * FROM " + TABLE_GPS;
+        Log.e(LOG, selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()){
+            do {
+                MarkerItem markerItem = new MarkerItem();
+                markerItem.setId(c.getLong(c.getColumnIndex(KEY_MARK_ID)));
+                markerItem.setSection(getSection(c.getLong(c.getColumnIndex(KEY_MARK_SECTION))));
+                markerItem.setLocation(new LatLng(c.getDouble(c.getColumnIndex(KEY_MARK_LAT)), c.getDouble(c.getColumnIndex(KEY_MARK_LONG))));
+                markerItem.setName(c.getString(c.getColumnIndex(KEY_MARK_NAME)));
+                markerItem.setText(c.getString(c.getColumnIndex(KEY_MARK_TEXT)));
+                markerItem.setUrl(c.getString(c.getColumnIndex(KEY_MARK_URL)));
+
+                markerItems.add(markerItem);
+            } while (c.moveToNext());
+        }
+
+        return markerItems;
+    }
 
     //Updating a node
     public int updateNode(NodeItem nodeItem) {
@@ -380,6 +500,24 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
                 new String[] { String.valueOf(gpsItem.getId())});
     }
 
+    public int updateMarkerItem(MarkerItem mItem){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_MARK_ID, mItem.getId());
+        values.put(KEY_MARK_SECTION, mItem.getSection().getId());
+        values.put(KEY_MARK_LAT, mItem.getLocation().latitude);
+        values.put(KEY_MARK_LONG, mItem.getLocation().longitude);
+        values.put(KEY_MARK_NAME, mItem.getName());
+        values.put(KEY_MARK_TEXT, mItem.getText());
+        values.put(KEY_MARK_URL, mItem.getUrl());
+
+        // updating row
+        return db.update(TABLE_MARKER, values, KEY_MARK_ID + " = ?",
+                new String[] { String.valueOf(mItem.getId())});
+
+    }
+
     //Deleting a node
     public void deleteNode(long node_id) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -399,6 +537,13 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_GPS, KEY_GPS_ID + " = ?",
                 new String[] { String.valueOf(gps_id)} );
+    }
+
+    //Deleting a markerItem
+    public void deleteMarkerItem(long mark_id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_MARKER, KEY_MARK_ID + " = ?",
+                new String[] { String.valueOf(mark_id)} );
     }
 
     // closing database

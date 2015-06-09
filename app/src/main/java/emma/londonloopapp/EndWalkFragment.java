@@ -17,7 +17,7 @@ public class EndWalkFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.fragment_start, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_end, container, false);
 
         final long walkNumber = getArguments().getLong("walkNumber", 0);
 
