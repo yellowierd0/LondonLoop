@@ -1,11 +1,13 @@
 package emma.londonloopapp;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -19,6 +21,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
@@ -188,25 +191,25 @@ public class GPSSectionFragment extends Fragment {
         // set map type
         mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
 
-        // Get latitude of the current location
-        double latitude = myLocation.getLatitude();
+        if (myLocation!= null){
+            // Get latitude of the current location
+            double latitude = myLocation.getLatitude();
 
-        // Get longitude of the current location
-        double longitude = myLocation.getLongitude();
+            // Get longitude of the current location
+            double longitude = myLocation.getLongitude();
 
-        // Create a LatLng object for the current location
-        LatLng latLng = new LatLng(latitude, longitude);
+            // Create a LatLng object for the current location
+            LatLng latLng = new LatLng(latitude, longitude);
 
-        // Show the current location in Google Map
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            // Show the current location in Google Map
+            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 
-        // Zoom in the Google Map
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
-        //mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("You are here!").snippet("Consider yourself located"));
+            // Zoom in the Google Map
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(13));
+            //mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("You are here!").snippet("Consider yourself located"));
+        }
 
     }
-
-
 
     private void drawPaths( )
     {
@@ -306,29 +309,31 @@ public class GPSSectionFragment extends Fragment {
         for (MarkerItem m : markerItemList){
             MarkerOptions options = new MarkerOptions().position(m.getLocation())
                     .title(m.getName()).snippet(m.getText());
+
             mMap.addMarker(options);
         }
 
-        /*mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+        mMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
 
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                WalkDetailFragment wdf= WalkDetailFragment.newInstance(getMarkerPos(marker.getTitle()));
-                fragmentManager.beginTransaction()
-                        .add(R.id.container, wdf)
-                                // Add this transaction to the back stack
-                        .addToBackStack("mapFrag")
-                        .commit();
+                int pos = getMarkerPos(marker.getTitle());
 
-            }});*/
+                if (markerItemList.get(pos).getUrl().equals("")) {
+                    //do nothing
+                } else {
+                    Intent browser = new Intent(Intent.ACTION_VIEW, Uri.parse(markerItemList.get(pos).getUrl()));
+                    startActivity(browser);
+                }
+            }
+        });
 
     }
 
-    private long getMarkerPos(String s){
+    private int getMarkerPos(String s){
         Matcher matcher = Pattern.compile("\\d+").matcher(s);
         matcher.find();
-        return Long.valueOf(matcher.group()) - 1;
+        return Integer.valueOf(matcher.group()) - 1;
     }
 
     public static GPSSectionFragment newInstance(long walk)

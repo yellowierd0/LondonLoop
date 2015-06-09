@@ -67,7 +67,7 @@ public class MainActivity extends ActionBarActivity
         //new JSONParse(sectionUrl, MainActivity.this).execute();
 
         db = new MySQLiteHelper(getApplicationContext());
-        //db.onUpgrade(db.getWritableDatabase(), 0, 1);
+        db.onUpgrade(db.getWritableDatabase(), 0, 1);
         //db.onCreate(db.getWritableDatabase());
         createWalks();
 
