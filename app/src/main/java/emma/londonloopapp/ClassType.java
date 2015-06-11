@@ -6,7 +6,9 @@ package emma.londonloopapp;
 public enum ClassType {
     NODE(1),
     SECTION(2),
-    JOURNEY(3);
+    JOURNEY(3),
+    STATISTIC(4),
+    USER(5);
 
     private int value;
 

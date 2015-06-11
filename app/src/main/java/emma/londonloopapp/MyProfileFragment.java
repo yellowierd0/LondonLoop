@@ -1,7 +1,6 @@
 package emma.londonloopapp;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,26 +9,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.Toast;
+import android.widget.TextView;
 
-import com.facebook.AccessToken;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
-import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
 
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 public class MyProfileFragment extends Fragment {
@@ -37,19 +29,34 @@ public class MyProfileFragment extends Fragment {
 
 	CallbackManager callbackManager;
 
+    private String url = "http://146.169.46.77:55000";
+    private String getStatsUrl = url + "/getStats.php";
+    private String getUserUrl = url + "/getUsers.php";
+    private String setStatsUrl = url + "/setStats.php";
+    private String setUserUrl = url + "/setUsers.php";
+
+
     private Button postImageBtn;
     private Button updateStatusBtn;
 
     private static String url_insert_new = "http://146.169.46.77:55000/insertUser.php";
 
 
-    private JSONParser jsonParser;
     private int success;//to determine JSON signal insert success/fail
     // JSON Node names
     private static final String TAG_SUCCESS = "success";
 
     private static final List<String> PERMISSIONS = Arrays.asList("publish_actions");
 
+    private Date walking_time;
+    private Date last_updated;
+
+    private int id;
+    private int currently_walking = 0;
+    private int walks_completed = 0;
+
+    private  TextView userCount;
+    private  TextView walksCompleted;
 
     private static String message = "Sample status posted from android app";
     private AccessTokenTracker accessTokenTracker;
@@ -58,6 +65,19 @@ public class MyProfileFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
+        View rootView = inflater.inflate(R.layout.fragment_myprofile, container, false);
+
+        //get statistics
+        new myProfileJSONParse(getStatsUrl, ClassType.STATISTIC).execute();
+
+        userCount = (TextView) rootView.findViewById(R.id.userCount);
+        walksCompleted = (TextView) rootView.findViewById(R.id.walksCompleted);
+
+
+        //new JSONParse(getUserUrl, ClassType.USER).execute();
+
+
+        /* FACEBOOK LOGIN
         FacebookSdk.sdkInitialize(getActivity());
 		callbackManager = CallbackManager.Factory.create();
 
@@ -68,9 +88,7 @@ public class MyProfileFragment extends Fragment {
             }
         };
 
-		View rootView = inflater.inflate(R.layout.fragment_myprofile, container, false);
-
-        jsonParser = new JSONParser();
+		jsonParser = new JSONParser();
         LoginButton loginButton = (LoginButton) rootView.findViewById(R.id.fb_login_button);
         loginButton.setReadPermissions("public_profile", "user_friends");
 
@@ -104,7 +122,7 @@ public class MyProfileFragment extends Fragment {
                                         Toast.makeText(getActivity(), "New user saved...", Toast.LENGTH_LONG).show();
                                     }else{
                                         Toast.makeText(getActivity(), "New idiom FAILED to saved...", Toast.LENGTH_LONG).show();
-                                    }*/
+                                    }
 
                                 }
                             }
@@ -122,11 +140,11 @@ public class MyProfileFragment extends Fragment {
                 Toast.makeText(getActivity(),"Error logging into Facebook", Toast.LENGTH_SHORT).show();
 			}
 		});
-
+        */
 
 		return rootView;
 	}
-
+/*
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -147,7 +165,7 @@ public class MyProfileFragment extends Fragment {
         }
 
         /** * Before starting background thread Show Progress Dialog * */
-        @Override protected void onPreExecute() {
+        /*@Override protected void onPreExecute() {
             super.onPreExecute();
             pDialog = new ProgressDialog(getActivity());
             pDialog.setMessage("Saving the new USER ("+name+")...");
@@ -156,7 +174,7 @@ public class MyProfileFragment extends Fragment {
             pDialog.show();
         }
         /** * Inserting the new idiom * */
-        protected String doInBackground(String... args) {
+        /*protected String doInBackground(String... args) {
             // Building Parameters
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("name", name));
@@ -185,10 +203,104 @@ public class MyProfileFragment extends Fragment {
 
         /** * After completing background task Dismiss the progress dialog * **/
 
-        protected void onPostExecute(String file_url) {
+        /*protected void onPostExecute(String file_url) {
             // dismiss the dialog once done
             //
             pDialog.dismiss();
+        }
+    }*/
+
+
+    private class myProfileJSONParse extends AsyncTask<String,String,JSONObject> {
+
+        final String TAG = "JSONParse.java";
+
+        private JSONArray jsonArray = null;
+
+        private static final String TAG_STATS = "statistics";
+        private static final String TAG_ID = "id";
+        private static final String TAG_CURR = "currently_walking";
+        private static final String TAG_WALK_TIME = "walk_time";
+        private static final String TAG_WALK_COMP = "walks_completed";
+        private static final String TAG_STATS_UPDATE = "'last_updated'";
+
+        private ClassType type;
+        private String url;
+        private final ProgressDialog dialog = new ProgressDialog(getActivity());
+
+        public myProfileJSONParse(String url, ClassType type){
+            this.url = url;
+            this.type = type;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            this.dialog.setMessage("Planning routes...");
+            this.dialog.show();
+        }
+
+        @Override
+        protected JSONObject doInBackground(String... args) {
+            JSONParser2 jParser = new JSONParser2();
+
+            // Getting JSON from URL
+            JSONObject json = jParser.getJSONFromUrl(url);
+            return json;
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject json) {
+            try {
+
+                switch (type) {
+                    case STATISTIC:
+                        jsonArray = json.getJSONArray(TAG_STATS);
+                        if (jsonArray != null){
+                            for (int i = 0; i < jsonArray.length(); i++){
+                                JSONObject c = jsonArray.getJSONObject(i);
+
+
+                                SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+                                walking_time = new Date();
+                                last_updated = new Date();
+                                try{
+                                    walking_time = format.parse(c.getString(TAG_WALK_TIME));
+                                    //last_updated = format.parse(c.getString(TAG_STATS_UPDATE));
+                                } catch (ParseException e){
+                                    Log.e(TAG, "wrong time format");
+                                }
+
+
+                                id = Integer.parseInt(c.getString(TAG_ID));
+                                currently_walking = Integer.parseInt(c.getString(TAG_CURR));
+                                walks_completed = Integer.parseInt(c.getString(TAG_WALK_COMP));
+
+                                // show the values in our logcat
+                                Log.e(TAG, "id: " + id
+                                                + ", currently walking: " + currently_walking
+                                                + ", walking_time: " + walking_time
+                                                + ", walked completed: " + walks_completed
+                                                + ", last updated: " + last_updated
+                                );
+
+                                userCount.setText(String.valueOf(currently_walking));
+                                walksCompleted.setText(String.valueOf(walks_completed));
+
+                                if(this.dialog.isShowing())
+                                {
+                                    this.dialog.dismiss();
+                                }
+
+
+                            }
+                        }
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 

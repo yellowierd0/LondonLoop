@@ -7,6 +7,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by Emma on 30/04/2015.
  */
@@ -27,11 +31,13 @@ public class JSONParse extends AsyncTask<String,String,JSONObject> {
     private static final String TAG_END_NODE = "end_node";
     private static final String TAG_DESCRIPTION = "description";
     private static final String TAG_LENGTH = "length";
-    private static final String TAG_IMAGE= "image";
 
-    private static final String TAG_ROUTES = "routes";
-
-
+    private static final String TAG_STATS = "statistics";
+    private static final String TAG_ID = "id";
+    private static final String TAG_CURR = "currently_walking";
+    private static final String TAG_WALK_TIME = "walk_time";
+    private static final String TAG_WALK_COMP = "walks_completed";
+    private static final String TAG_STATS_UPDATE = "'last_updated'";
 
     private ClassType type;
     private String url;
@@ -104,6 +110,39 @@ public class JSONParse extends AsyncTask<String,String,JSONObject> {
                         }
                     }
                     break;
+                case STATISTIC:
+                    jsonArray = json.getJSONArray(TAG_STATS);
+                    if (jsonArray != null){
+                        for (int i = 0; i < jsonArray.length(); i++){
+                            JSONObject c = jsonArray.getJSONObject(i);
+
+
+                            SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
+                            Date walking_time = new Date();
+                            Date last_updated = new Date();
+                            try{
+                                walking_time = format.parse(c.getString(TAG_WALK_TIME));
+                                last_updated = format.parse(c.getString(TAG_STATS_UPDATE));
+                            } catch (ParseException e){
+                                Log.e(TAG, "wrong time format");
+                            }
+
+
+                            int id = Integer.parseInt(c.getString(TAG_ID));
+                            int currently_walking = Integer.parseInt(c.getString(TAG_CURR));
+                            int walks_completed = Integer.parseInt(c.getString(TAG_WALK_COMP));
+
+                            // show the values in our logcat
+                            Log.e(TAG, "id: " + id
+                                    + ", currently walking: " + currently_walking
+                                    + ", walking_time: " + walking_time.getTime()
+                                    + ", walked completed: " + walks_completed
+                                    + ", last updated: " + last_updated
+                                    );
+
+
+                        }
+                    }
             }
 
         } catch (JSONException e) {

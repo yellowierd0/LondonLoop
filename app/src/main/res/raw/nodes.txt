@@ -7,9 +7,9 @@ Coulsdon South, 51.315728, -0.136744
 Banstead Downs, 51.332148, -0.209290
 Ewell, 51.351650, -0.250176
 Kingston Bridge, 51.411854, -0.308274
-Hatton Cross, 51.469927, -0.409793
-Hayes and Harlington, 51.505117, -0.418654
-Uxbridge Lock, 51.550933, -0.483414
+Hatton Cross, 51.470567, -0.411109
+Hayes and Harlington, 51.505938, -0.422437
+Uxbridge Lock, 51.550407, -0.484643
 Harefield West, 51.610477, -0.498761
 Moor Park, 51.623932, -0.427529
 Hatch End, 51.610702, -0.380326
