@@ -14,12 +14,6 @@ import android.widget.CheckBox;
  */
 public class StartWalkFragment extends Fragment {
 
-
-    private boolean bus = true;
-    private boolean tube = true;
-    private boolean train = true;
-    private boolean boat = true;
-
     private String modes = "bus-tube-train-boat";
 
     @Override
@@ -112,7 +106,6 @@ public class StartWalkFragment extends Fragment {
         switch(view.getId()) {
             case R.id.checkbox_bus:
                 if (checked){
-                    bus = true;
                     if (modes.equals("")){
                         modes = "bus";
                     } else if(modes.contains("bus")) {
@@ -121,7 +114,6 @@ public class StartWalkFragment extends Fragment {
                         modes += "-bus";
                     }
                 } else{
-                    bus = false;
                     if (modes.contains("-bus")){
                         modes =  modes.replace("-bus", "");
                     } else if (modes.contains("bus")){
@@ -131,7 +123,6 @@ public class StartWalkFragment extends Fragment {
                 break;
             case R.id.checkbox_tube:
                 if (checked) {
-                    tube = true;
                     if (modes.equals("")){
                         modes = "tube";
                     } else if(modes.contains("tube")) {
@@ -140,7 +131,6 @@ public class StartWalkFragment extends Fragment {
                         modes += "-tube";
                     }
                 }else {
-                    tube = false;
                     if (modes.contains("-tube")){
                         modes = modes.replace("-tube", "");
                     } else if (modes.contains("tube")){
@@ -150,7 +140,6 @@ public class StartWalkFragment extends Fragment {
                 break;
             case R.id.checkbox_train:
                 if (checked) {
-                    train = true;
                     if (modes.equals("")){
                         modes = "train";
                     } else if (modes.contains("train")){
@@ -159,7 +148,6 @@ public class StartWalkFragment extends Fragment {
                         modes += "-train";
                     }
                 }else {
-                    train = false;
                     if (modes.contains("-train")){
                         modes = modes.replace("-train", "");
                     } else if (modes.contains("train")){
@@ -169,7 +157,6 @@ public class StartWalkFragment extends Fragment {
                 break;
             case R.id.checkbox_boat:
                 if (checked) {
-                    boat = true;
                     if (modes.equals("")){
                         modes = "boat";
                     } else if(modes.contains("boat")) {
@@ -178,7 +165,6 @@ public class StartWalkFragment extends Fragment {
                         modes += "-boat";
                     }
                 }else {
-                    boat = false;
                     if (modes.contains("-boat")){
                         modes = modes.replace("-boat", "");
                     } else if (modes.contains("boat")){

@@ -46,12 +46,18 @@ public class RouteListFragment extends ListFragment {
 
     private static String FROM_URL = "/from/lonlat:";
     private static String TO_URL = "/to/lonlat:";
+    private static String TO_STOP = "/to/stop:";
+    private static String TO_POSTCODE = "/to/postcode:";
     private static String RESPONSE_TYPE = ".json?";
 
     private static String test_url = "http://transportapi.com/v3/uk/public/journey/from/lonlat:0.191433,51.516886/to/lonlat:-0.1276250,51.503363051.json?api_key=377843b343d1e052ac4d024fd9b7c93a&app_id=6109f899";
 
     private long walkNumber;
     private String modes;
+
+    private int type;
+
+    private String destination;
 
     private Location mLastLocation;
 
@@ -269,10 +275,36 @@ public class RouteListFragment extends ListFragment {
         return f;
     }
 
+
     public void setSomeObject(long walk, String modes) {
 
         this.walkNumber = walk;
         this.modes= modes;
+    }
+
+    private String toUrl(String loc){
+        String out = "";
+        String pattern = "^(([gG][iI][rR] {0,}0[aA]{2})|((([a-pr-uwyzA-PR-UWYZ][a-hk-yA-HK-Y]?[0-9][0-9]?)|(([a-pr-uwyzA-PR-UWYZ][0-9][a-hjkstuwA-HJKSTUW])|([a-pr-uwyzA-PR-UWYZ][a-hk-yA-HK-Y][0-9][abehmnprv-yABEHMNPRV-Y]))) {0,}[0-9][abd-hjlnp-uw-zABD-HJLNP-UW-Z]{2}))$\n";
+        if (loc.matches(pattern)){
+            if (loc.contains(" ")){
+                out = loc.replaceAll("\\s+", "+");
+            } else {
+                if (loc.length() == 5){
+                    out = loc.substring(0, 2) + "+" + loc.substring(3,5);
+                } else if (loc.length() == 6) {
+                    out = loc.substring(0, 3) + "+" + loc.substring(4,6);
+                } else {
+                    out = loc.substring(0, 4) + "+" + loc.substring(5,7);
+                }
+            }
+            out = TO_POSTCODE + out;
+
+        } else {
+            out = TO_STOP + loc.replaceAll("\\s+", "+");
+        }
+        System.out.println(out);
+        return out;
+
     }
 
     private class LocationControl extends AsyncTask<Context, Void, Void>

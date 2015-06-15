@@ -11,7 +11,8 @@
     <string name="fb_app_id">633865813414554</string>
 
     <string name="currently_walking">are currently walking</string>
-    <string name="toal_miles">Users have collectively walked</string>
+    <string name="total_miles">Users have collectively walked</string>
+    <string name="total_time">Users have collectively spent</string>
     <string name="total_walks">have collectively been completed</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>

@@ -1,5 +1,6 @@
 package emma.londonloopapp;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -8,6 +9,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -24,6 +26,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +54,8 @@ public class GPSSectionFragment extends Fragment {
     private boolean hasLocation;
 
     private GPSItem currentItem;
+
+    private List<NameValuePair> params;
 
     private TextView mapNavText;
     private Button gpsButton;
@@ -133,6 +143,8 @@ public class GPSSectionFragment extends Fragment {
         drawPaths();
 
         drawMarkers();
+
+        params = new ArrayList<NameValuePair>();
 
         return rootView;
     }
@@ -345,4 +357,85 @@ public class GPSSectionFragment extends Fragment {
         return f;
 
     }
+
+
+    private class gpsJSONParse extends AsyncTask<String,String,JSONObject> {
+
+        final String TAG = "JSONParse.java";
+
+        private JSONArray jsonArray = null;
+
+        private static final String TAG_STATS = "statistics";
+        private static final String TAG_ID = "id";
+        private static final String TAG_CURR = "currently_walking";
+        private static final String TAG_WALK_TIME = "walk_time";
+        private static final String TAG_MILES = "miles_walked";
+        private static final String TAG_WALK_COMP = "walks_completed";
+        private static final String TAG_STATS_UPDATE = "'last_updated'";
+
+        private ClassType type;
+        private String url;
+        private final ProgressDialog dialog = new ProgressDialog(getActivity());
+
+        public gpsJSONParse(String url, ClassType type){
+            this.url = url;
+            this.type = type;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            this.dialog.setMessage("Getting your statistics...");
+            this.dialog.show();
+        }
+
+        @Override
+        protected JSONObject doInBackground(String... args) {
+            JSONParser2 jParser = new JSONParser2();
+
+            // Getting JSON from URL
+            JSONObject json = jParser.getJSONFromUrl(url);
+            return json;
+        }
+
+        @Override
+        protected void onPostExecute(JSONObject json) {
+            try {
+
+                switch (type) {
+                    case STATISTIC:
+                        jsonArray = json.getJSONArray(TAG_STATS);
+                        if (jsonArray != null){
+                            for (int i = 0; i < jsonArray.length(); i++){
+                                JSONObject c = jsonArray.getJSONObject(i);
+
+                                String walking_time = c.getString(TAG_WALK_TIME);
+                                //last_updated = c.getString(TAG_STATS_UPDATE);
+
+                                int id = Integer.parseInt(c.getString(TAG_ID));
+                                int currently_walking = Integer.parseInt(c.getString(TAG_CURR)) + 1;
+                                double miles_walked = Double.parseDouble(c.getString(TAG_MILES));
+
+
+
+                                params.add(new BasicNameValuePair("currently_walking", String.valueOf(currently_walking)));
+
+
+                                if(this.dialog.isShowing())
+                                {
+                                    this.dialog.dismiss();
+                                }
+
+
+                            }
+                        }
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
 }

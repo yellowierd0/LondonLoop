@@ -18,10 +18,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 public class MyProfileFragment extends Fragment {
@@ -48,15 +45,18 @@ public class MyProfileFragment extends Fragment {
 
     private static final List<String> PERMISSIONS = Arrays.asList("publish_actions");
 
-    private Date walking_time;
-    private Date last_updated;
+    private String walking_time;
+    private String last_updated;
 
+    private double miles_walked;
     private int id;
     private int currently_walking = 0;
     private int walks_completed = 0;
 
     private  TextView userCount;
     private  TextView walksCompleted;
+    private  TextView totalTime;
+    private  TextView totalMiles;
 
     private static String message = "Sample status posted from android app";
     private AccessTokenTracker accessTokenTracker;
@@ -71,8 +71,9 @@ public class MyProfileFragment extends Fragment {
         new myProfileJSONParse(getStatsUrl, ClassType.STATISTIC).execute();
 
         userCount = (TextView) rootView.findViewById(R.id.userCount);
-        walksCompleted = (TextView) rootView.findViewById(R.id.walksCompleted);
-
+        walksCompleted = (TextView) rootView.findViewById(R.id.total_walks);
+        totalTime = (TextView) rootView.findViewById(R.id.total_time);
+        totalMiles = (TextView) rootView.findViewById(R.id.total_miles);
 
         //new JSONParse(getUserUrl, ClassType.USER).execute();
 
@@ -221,6 +222,7 @@ public class MyProfileFragment extends Fragment {
         private static final String TAG_ID = "id";
         private static final String TAG_CURR = "currently_walking";
         private static final String TAG_WALK_TIME = "walk_time";
+        private static final String TAG_MILES = "miles_walked";
         private static final String TAG_WALK_COMP = "walks_completed";
         private static final String TAG_STATS_UPDATE = "'last_updated'";
 
@@ -236,7 +238,7 @@ public class MyProfileFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            this.dialog.setMessage("Planning routes...");
+            this.dialog.setMessage("Getting your statistics...");
             this.dialog.show();
         }
 
@@ -260,32 +262,28 @@ public class MyProfileFragment extends Fragment {
                             for (int i = 0; i < jsonArray.length(); i++){
                                 JSONObject c = jsonArray.getJSONObject(i);
 
-
-                                SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss");
-                                walking_time = new Date();
-                                last_updated = new Date();
-                                try{
-                                    walking_time = format.parse(c.getString(TAG_WALK_TIME));
-                                    //last_updated = format.parse(c.getString(TAG_STATS_UPDATE));
-                                } catch (ParseException e){
-                                    Log.e(TAG, "wrong time format");
-                                }
-
+                                walking_time = c.getString(TAG_WALK_TIME);
+                                //last_updated = c.getString(TAG_STATS_UPDATE);
 
                                 id = Integer.parseInt(c.getString(TAG_ID));
                                 currently_walking = Integer.parseInt(c.getString(TAG_CURR));
-                                walks_completed = Integer.parseInt(c.getString(TAG_WALK_COMP));
+                                miles_walked = Double.parseDouble(c.getString(TAG_MILES));
+
+                                //walks_completed = Integer.parseInt(c.(TAG_WALK_COMP));
 
                                 // show the values in our logcat
                                 Log.e(TAG, "id: " + id
                                                 + ", currently walking: " + currently_walking
                                                 + ", walking_time: " + walking_time
                                                 + ", walked completed: " + walks_completed
-                                                + ", last updated: " + last_updated
+                                                + ", miles walked: " + miles_walked
+                                                //+ ", last updated: " + last_updated
                                 );
 
-                                userCount.setText(String.valueOf(currently_walking));
-                                walksCompleted.setText(String.valueOf(walks_completed));
+                                userCount.setText(String.valueOf(currently_walking) + " users");
+                                walksCompleted.setText(String.valueOf(walks_completed) + " walks");
+                                totalTime.setText(walking_time + " walking");
+                                totalMiles.setText(miles_walked + " miles");
 
                                 if(this.dialog.isShowing())
                                 {
