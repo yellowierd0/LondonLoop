@@ -88,7 +88,7 @@ public class EndWalkFragment extends Fragment {
                 // Perform action on click
                 FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 
-                /*RouteListFragment wdf = RouteListFragment.newInstance(modes, destination.getText().toString());
+                EndRouteListFragment wdf = EndRouteListFragment.newInstance(walkNumber, modes, replaceAtTheEnd(destination.getText().toString()));
                 System.out.println(destination.getText().toString());
 
                 fragmentManager.beginTransaction()
@@ -96,7 +96,6 @@ public class EndWalkFragment extends Fragment {
                                 // Add this transaction to the back stack
                         .addToBackStack("endFrag")
                         .commit();
-*/
             }
         });
 
@@ -177,6 +176,11 @@ public class EndWalkFragment extends Fragment {
                     }
                 }break;
         }
+    }
+
+    public static String replaceAtTheEnd(String input){
+        input = input.replaceAll("\\s+$", "");
+        return input;
     }
 
     public static EndWalkFragment newInstance(long walk)
