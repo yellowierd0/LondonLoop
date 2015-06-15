@@ -3,6 +3,7 @@ package emma.londonloopapp;
 import android.content.Context;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,7 @@ public class EndRouteAdapterItem extends ArrayAdapter<RouteItem> {
 
     private int route_no = 0;
     private int route_max;
+    private int current_position = 0;
 
     public EndRouteAdapterItem(Context context, List<RouteItem> items, FragmentActivity listFragment) {
 
@@ -56,45 +58,51 @@ public class EndRouteAdapterItem extends ArrayAdapter<RouteItem> {
 
         if (route_no < route_max){
             // Stop duplicate icons
-            final RouteItem item = getItem(position);
-            RoutePart[] routeParts = item.getRouteParts();
-            viewHolder.time.setText("Depart: " + routeParts[0].getDeparture_time() + ", Arrive: " + routeParts[routeParts.length-1].getArrival_time());
-            viewHolder.duration.setText("(" + getDuration(item.getDuration()) + ")");
+            Log.e("position", String.valueOf(position));
+            Log.e("curr position", String.valueOf(current_position));
 
-            for (int i = 0; i < routeParts.length; i++){
+            if (position==current_position) {
+                final RouteItem item = getItem(current_position);
+                RoutePart[] routeParts = item.getRouteParts();
+                viewHolder.time.setText("Depart: " + routeParts[0].getDeparture_time() + ", Arrive: " + routeParts[routeParts.length-1].getArrival_time());
+                viewHolder.duration.setText("(" + getDuration(item.getDuration()) + ")");
+
+                for (int i = 0; i < routeParts.length; i++){
 
 
-                if ((i == 0) || (getModeView(routeParts[i-1].getMode()) != getModeView(routeParts[i].getMode()))) {
-                    ImageView imageView = new ImageView(getContext());
-                    imageView.setBackgroundResource(getModeView(routeParts[i].getMode()));
-                    viewHolder.route_parts.addView(imageView);
+                    if ((i == 0) || (getModeView(routeParts[i-1].getMode()) != getModeView(routeParts[i].getMode()))) {
+                        ImageView imageView = new ImageView(getContext());
+                        imageView.setBackgroundResource(getModeView(routeParts[i].getMode()));
+                        viewHolder.route_parts.addView(imageView);
+                    }
+
+                    TextView textView = new TextView(getContext());
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(routeParts[i].getDeparture_time());
+                    sb.append(": ");
+                    sb.append(getModeName(routeParts[i].getMode()));
+                    if(!(routeParts[i].getLine_name().equals("")) && !(routeParts[i].getMode().equals("train"))){
+                        sb.append(" (");
+                        sb.append(routeParts[i].getLine_name());
+                        sb.append(") ");
+                    }
+                    sb.append(" from ");
+                    sb.append(routeParts[i].getFrom_point_name());
+                    if (!(routeParts[i].getMode().equals("foot"))){
+                        sb.append(" towards ");
+                        sb.append(routeParts[i].getDestination());
+                    }
+                    sb.append(" to ");
+                    sb.append(routeParts[i].getTo_point_name());
+                    textView.setText(sb.toString());
+                    textView.setPadding(5, 5, 5, 5);
+                    viewHolder.route_detail.addView(textView);
                 }
 
-                TextView textView = new TextView(getContext());
-                StringBuilder sb = new StringBuilder();
-                sb.append(routeParts[i].getDeparture_time());
-                sb.append(": ");
-                sb.append(getModeName(routeParts[i].getMode()));
-                if(!(routeParts[i].getLine_name().equals("")) && !(routeParts[i].getMode().equals("train"))){
-                    sb.append(" (");
-                    sb.append(routeParts[i].getLine_name());
-                    sb.append(") ");
-                }
-                sb.append(" from ");
-                sb.append(routeParts[i].getFrom_point_name());
-                if (!(routeParts[i].getMode().equals("foot"))){
-                    sb.append(" towards ");
-                    sb.append(routeParts[i].getDestination());
-                }
-                sb.append(" to ");
-                sb.append(routeParts[i].getTo_point_name());
-                textView.setText(sb.toString());
-                textView.setPadding(5, 5, 5, 5);
-                viewHolder.route_detail.addView(textView);
+                setClickListeners(viewHolder, item);
+                route_no++;
+                current_position++;
             }
-
-            setClickListeners(viewHolder, item);
-            route_no++;
         }
 
         return convertView;

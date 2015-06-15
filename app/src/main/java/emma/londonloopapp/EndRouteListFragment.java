@@ -53,13 +53,7 @@ public class EndRouteListFragment extends ListFragment {
     private long walkNumber;
     private String modes;
 
-    private int type;
-
     private String destination;
-
-    private Location mLastLocation;
-
-    boolean hasLocation = false;
 
     private ArrayList<RouteItem> routeItems;
     private SectionItem sectionItem;
@@ -260,23 +254,21 @@ public class EndRouteListFragment extends ListFragment {
         String out = "";
         String pattern = "(([gG][iI][rR] {0,}0[aA]{2})|((([a-pr-uwyzA-PR-UWYZ][a-hk-yA-HK-Y]?[0-9][0-9]?)|(([a-pr-uwyzA-PR-UWYZ][0-9][a-hjkstuwA-HJKSTUW])|([a-pr-uwyzA-PR-UWYZ][a-hk-yA-HK-Y][0-9][abehmnprv-yABEHMNPRV-Y]))) {0,}[0-9][abd-hjlnp-uw-zABD-HJLNP-UW-Z]{2}))$";
         if (loc.matches(pattern)){
+            out = TO_POSTCODE;
             if (loc.contains(" ")){
-                out = loc.replaceAll("\\s+", "+");
+                out += loc.replaceAll("\\s+", "+");
             } else {
                 if (loc.length() == 5){
-                    out = loc.substring(0, 2) + "+" + loc.substring(2,5);
+                    out += loc.substring(0, 2) + "+" + loc.substring(2,5);
                 } else if (loc.length() == 6) {
-                    out = loc.substring(0, 3) + "+" + loc.substring(3,6);
+                    out += loc.substring(0, 3) + "+" + loc.substring(3,6);
                 } else {
-                    out = loc.substring(0, 4) + "+" + loc.substring(4,7);
+                    out += loc.substring(0, 4) + "+" + loc.substring(4,7);
                 }
             }
-            out = TO_POSTCODE + out;
-
         } else {
             out = TO_STOP + loc.replaceAll("\\s+", "+");
         }
-        System.out.println(out);
         return out;
 
     }
