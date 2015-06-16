@@ -9,6 +9,7 @@ import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -179,7 +180,12 @@ public class EndRouteListFragment extends ListFragment {
                 }
 
             } catch (JSONException e) {
-                e.printStackTrace();
+                Toast.makeText(getActivity(), "Location not found, please try again", Toast.LENGTH_SHORT).show();
+                if(this.dialog.isShowing())
+                {
+                    this.dialog.dismiss();
+                }
+                getActivity().getSupportFragmentManager().popBackStack();
             }
         }
     }

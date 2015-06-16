@@ -37,7 +37,7 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:textColor="@color/primary_700"
-        android:hint="enter location"
+        android:hint="enter postcode or station name"
         android:background="@drawable/button_light"/>
 
     <CheckBox android:id="@+id/end_checkbox_bus"

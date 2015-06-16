@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -50,9 +51,7 @@ public class MapNavFragment extends Fragment {
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
                 mLastLocation = location;
-
                 hasLocation = true;
-
                 setMapText();
 
             }
@@ -173,7 +172,8 @@ public class MapNavFragment extends Fragment {
                 if (j == 0){
                     MarkerOptions markerOptions = new MarkerOptions();
                     markerOptions.position(position)
-                            .title(routeParts[i].getFrom_point_name());
+                            .title(routeParts[i].getFrom_point_name())
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.push_pin_blue));
 
                     markerOptions.snippet(buildJourneyText(routeParts[i]));
                     mMap.addMarker(markerOptions);
@@ -182,7 +182,8 @@ public class MapNavFragment extends Fragment {
                 if (i == routeParts.length-1 && j == coordinates.size()-1){
                     MarkerOptions markerOptions = new MarkerOptions();
                     markerOptions.position(position)
-                            .title(routeParts[i].getTo_point_name());
+                            .title(routeParts[i].getTo_point_name())
+                            .icon(BitmapDescriptorFactory.fromResource(R.drawable.flag));
                     markerOptions.snippet("Your destination!");
                     mMap.addMarker(markerOptions);
                 }

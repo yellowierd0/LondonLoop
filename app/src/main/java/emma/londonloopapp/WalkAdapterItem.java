@@ -48,10 +48,24 @@ public class WalkAdapterItem extends ArrayAdapter<SectionItem> {
             viewHolder.walkImage.setImageDrawable(getContext().getResources().getDrawable(R.drawable.northeast));
         }
 
+        double miles = item.getMiles();
+        long m = 0;
+        long time = Math.round(miles) * 20;
+        if (miles%1==0){
+            m = Math.round(miles);
+        } else {
+            m = (long) miles;
+        }
 
+        long hours = Math.round(time / 60);
+        long min = Math.round(time % 60);
 
         viewHolder.walkTitle.setText(item.getId() + ". " + item.getStartNode().getName() + " to " + item.getEndNode().getName());
-        viewHolder.walkLength.setText(item.getMiles() + " miles (" + (double) Math.round(item.getMiles() * 1.6 * 100) / 100 + " kilometres)");
+        if (min==0){
+            viewHolder.walkLength.setText(m + " miles (approx " + hours + " hours)");
+        } else {
+            viewHolder.walkLength.setText(m + " miles (approx " + hours + " hours, " + min + " minutes)");
+        }
 
         return convertView;
     }

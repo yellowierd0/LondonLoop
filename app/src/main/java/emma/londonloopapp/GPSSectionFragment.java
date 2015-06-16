@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -237,9 +238,19 @@ public class GPSSectionFragment extends Fragment {
 
             LatLng latLng = gpsItemList.get(i).getLatLng();
             points.add(latLng);
-            /*MarkerOptions markerOptions = new MarkerOptions();
-            markerOptions.position(latLng);
-            mMap.addMarker(markerOptions);*/
+            if (!(gpsItemList.get(i).getNote().equals(""))){
+                MarkerOptions markerOptions = new MarkerOptions();
+                markerOptions.position(latLng);
+                if(i==gpsItemList.size()){
+                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.flag));
+                } else {
+                    markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.push_pin_blue));
+                }
+
+
+                mMap.addMarker(markerOptions);
+
+            }
         }
 
         //DrawArrowHead(mMap, points.get(0), points.get(1));
@@ -320,7 +331,8 @@ public class GPSSectionFragment extends Fragment {
     private void drawMarkers(){
         for (MarkerItem m : markerItemList){
             MarkerOptions options = new MarkerOptions().position(m.getLocation())
-                    .title(m.getName()).snippet(m.getText());
+                    .title(m.getName()).snippet(m.getText())
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.push_pin));
 
             mMap.addMarker(options);
         }
