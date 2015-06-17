@@ -14,5 +14,5 @@
         android:padding="5dp"
         android:gravity="center"
         android:textAppearance="@android:style/TextAppearance.Medium"
-        android:id="@+id/gpsMapText"/>
+        android:id="@+id/mapText"/>
 </LinearLayout>

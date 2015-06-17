@@ -67,6 +67,7 @@ public class MainActivity extends ActionBarActivity
         //new JSONParse(sectionUrl, MainActivity.this).execute();
 
         db = new MySQLiteHelper(getApplicationContext());
+
         //db.onUpgrade(db.getWritableDatabase(), 0, 1);
         //db.onCreate(db.getWritableDatabase());
         createWalks();
@@ -229,6 +230,17 @@ public class MainActivity extends ActionBarActivity
         SectionItem[] sectionItems = setUpSections(nodeItems);
 
         setUpMarkers(sectionItems);
+
+        if(db.hasTableCount(db.getReadableDatabase(), "Statistics") == false){
+
+            long i = 0;
+            while (i < 25){
+                //index i-0 for all walks collectively, i=1-24 for individual walks
+                db.createStatItem(new StatItem(i, 0, 0, 0));
+                i++;
+            }
+
+        }
 
         if(db.hasTableCount(db.getReadableDatabase(), "Gps") == false){
             InputStream inputStream = resources.openRawResource(R.raw.gps);

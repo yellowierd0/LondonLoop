@@ -8,7 +8,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.facebook.AccessTokenTracker;
@@ -27,27 +26,21 @@ public class MyProfileFragment extends Fragment {
 	CallbackManager callbackManager;
 
     private String url = "http://146.169.46.77:55000";
-    private String getStatsUrl = url + "/getStats.php";
-    private String getUserUrl = url + "/getUsers.php";
+    private String getStatsUrl = url + "/getGlobalStat.php";
     private String setStatsUrl = url + "/setStats.php";
-    private String setUserUrl = url + "/setUsers.php";
 
-
+/*
     private Button postImageBtn;
     private Button updateStatusBtn;
 
-    private static String url_insert_new = "http://146.169.46.77:55000/insertUser.php";
-
-
     private int success;//to determine JSON signal insert success/fail
     // JSON Node names
+*/
     private static final String TAG_SUCCESS = "success";
 
     private static final List<String> PERMISSIONS = Arrays.asList("publish_actions");
 
     private String walking_time;
-    private String last_updated;
-
     private double miles_walked;
     private int id;
     private int currently_walking = 0;
@@ -75,7 +68,6 @@ public class MyProfileFragment extends Fragment {
         totalTime = (TextView) rootView.findViewById(R.id.total_time);
         totalMiles = (TextView) rootView.findViewById(R.id.total_miles);
 
-        //new JSONParse(getUserUrl, ClassType.USER).execute();
 
 
         /* FACEBOOK LOGIN
@@ -224,7 +216,6 @@ public class MyProfileFragment extends Fragment {
         private static final String TAG_WALK_TIME = "walk_time";
         private static final String TAG_MILES = "miles_walked";
         private static final String TAG_WALK_COMP = "walks_completed";
-        private static final String TAG_STATS_UPDATE = "'last_updated'";
 
         private ClassType type;
         private String url;
@@ -244,7 +235,25 @@ public class MyProfileFragment extends Fragment {
 
         @Override
         protected JSONObject doInBackground(String... args) {
-            JSONParser2 jParser = new JSONParser2();
+            MySQLiteHelper db = new MySQLiteHelper(getActivity());
+            List<StatItem> statItems = db.getAllStats();
+
+            if (statItems.get(0).getCompleted()==1){
+                walksCompleted.setText(String.valueOf(statItems.get(0).getCompleted()) + " walk");
+            } else {
+                walksCompleted.setText(String.valueOf(statItems.get(0).getCompleted()) + " walks");
+            }
+
+            if (statItems.get(0).getTime() >= 60){
+                totalTime.setText(String.valueOf(statItems.get(0).getTime()/60) + " hrs, " +String.valueOf(statItems.get(0).getTime()%60) + " mins walking");
+            } else {
+                totalTime.setText(String.valueOf(statItems.get(0).getTime()) + " mins walking");
+            }
+
+
+            totalMiles.setText(String.valueOf(statItems.get(0).getMiles()) + " miles");
+
+            JSONParser jParser = new JSONParser();
 
             // Getting JSON from URL
             JSONObject json = jParser.getJSONFromUrl(url);
@@ -263,13 +272,10 @@ public class MyProfileFragment extends Fragment {
                                 JSONObject c = jsonArray.getJSONObject(i);
 
                                 walking_time = c.getString(TAG_WALK_TIME);
-                                //last_updated = c.getString(TAG_STATS_UPDATE);
-
                                 id = Integer.parseInt(c.getString(TAG_ID));
                                 currently_walking = Integer.parseInt(c.getString(TAG_CURR));
                                 miles_walked = Double.parseDouble(c.getString(TAG_MILES));
-
-                                //walks_completed = Integer.parseInt(c.(TAG_WALK_COMP));
+                                walks_completed = Integer.parseInt(c.getString(TAG_WALK_COMP));
 
                                 // show the values in our logcat
                                 Log.e(TAG, "id: " + id
@@ -281,9 +287,9 @@ public class MyProfileFragment extends Fragment {
                                 );
 
                                 userCount.setText(String.valueOf(currently_walking) + " users");
-                                walksCompleted.setText(String.valueOf(walks_completed) + " walks");
+                                /*walksCompleted.setText(String.valueOf(walks_completed) + " walks");
                                 totalTime.setText(walking_time + " walking");
-                                totalMiles.setText(miles_walked + " miles");
+                                totalMiles.setText(miles_walked + " miles");*/
 
                                 if(this.dialog.isShowing())
                                 {

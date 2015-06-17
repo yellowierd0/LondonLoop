@@ -33,6 +33,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     private static final String TABLE_SECTION = "Section";
     private static final String TABLE_GPS = "Gps";
     private static final String TABLE_MARKER = "Marker";
+    private static final String TABLE_STATS = "Statistics";
 
     // NODES Table - column names
     private static final String KEY_NODE_ID = "NodeId";
@@ -63,6 +64,13 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     private static final String KEY_MARK_NAME = "MarkName";
     private static final String KEY_MARK_TEXT = "MarkText";
     private static final String KEY_MARK_URL = "MarkUrl";
+
+    // Stats Table - column names
+    private static final String KEY_WALK_ID = "WalkId";
+    private static final String KEY_WALK_TIME = "WalkTime";
+    private static final String KEY_WALKS_COMPLETED = "WalksCompleted";
+    private static final String KEY_MILES_WALKED = "MilesWalked";
+
 
     // Table Create Statements
     // Node table create statement
@@ -98,6 +106,12 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
             + KEY_MARK_TEXT + " TEXT,"
             + KEY_MARK_URL + " TEXT" + ")";
 
+    // Stat table create table statement
+    private static final String CREATE_TABLE_STATS = "CREATE TABLE " + TABLE_STATS
+            + "(" + KEY_WALK_ID + " INTEGER PRIMARY KEY,"
+            + KEY_WALK_TIME + " INTEGER,"
+            + KEY_WALKS_COMPLETED + " INTEGER,"
+            + KEY_MILES_WALKED + " REAL" + ")";
 
     public MySQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -110,6 +124,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_SECTION);
         db.execSQL(CREATE_TABLE_GPS);
         db.execSQL(CREATE_TABLE_MARKER);
+        db.execSQL(CREATE_TABLE_STATS);
     }
 
     @Override
@@ -119,6 +134,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_SECTION);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_GPS);
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_MARKER);
+        db.execSQL("DROP TABLE IF EXISTS " + TABLE_STATS);
         // create new tables
         onCreate(db);
     }
@@ -191,6 +207,19 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         values.put(KEY_MARK_URL, mItem.getUrl());
         // insert row
         db.insert(TABLE_MARKER, null, values);
+
+    }
+
+    public void createStatItem(StatItem statItem){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_WALK_ID, statItem.getId());
+        values.put(KEY_WALKS_COMPLETED, statItem.getCompleted());
+        values.put(KEY_WALK_TIME, statItem.getTime());
+        values.put(KEY_MILES_WALKED, statItem.getMiles());
+        //insert row
+        db.insert(TABLE_STATS, null, values);
 
     }
 
@@ -281,6 +310,27 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         markerItem.setUrl(c.getString(c.getColumnIndex(KEY_MARK_URL)));
 
         return markerItem;
+    }
+
+    //get Stat item
+    public StatItem getStatItem(long walk_id){
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        String selectQuery = "SELECT * FROM " + TABLE_STATS + " WHERE "
+                + KEY_WALK_ID + " = " + walk_id;
+        Log.e(LOG, selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c!=null)
+            c.moveToFirst();
+        StatItem statItem = new StatItem();
+        statItem.setId(c.getLong(c.getColumnIndex(KEY_WALK_ID)));
+        statItem.setCompleted(c.getInt(c.getColumnIndex(KEY_WALKS_COMPLETED)));
+        statItem.setTime(c.getInt(c.getColumnIndex(KEY_WALK_TIME)));
+        statItem.setMiles(c.getDouble(c.getColumnIndex(KEY_MILES_WALKED)));
+
+        return statItem;
     }
 
     //Get all Nodes
@@ -431,7 +481,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
 
         List<MarkerItem> markerItems = new ArrayList<MarkerItem>();
-        String selectQuery = "SELECT * FROM " + TABLE_GPS;
+        String selectQuery = "SELECT * FROM " + TABLE_MARKER;
         Log.e(LOG, selectQuery);
 
         Cursor c = db.rawQuery(selectQuery, null);
@@ -452,6 +502,33 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         }
 
         return markerItems;
+    }
+
+    // Get all StatItems
+    public List<StatItem> getAllStats(){
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        List<StatItem> statItems= new ArrayList<StatItem>();
+        String selectQuery = "SELECT * FROM " + TABLE_STATS;
+        Log.e(LOG, selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        // looping through all rows and adding to list
+        if (c.moveToFirst()){
+            do {
+                StatItem statItem = new StatItem();
+                statItem.setId(c.getLong(c.getColumnIndex(KEY_WALK_ID)));
+                statItem.setCompleted(c.getInt(c.getColumnIndex(KEY_WALKS_COMPLETED)));
+                statItem.setTime(c.getInt(c.getColumnIndex(KEY_WALK_TIME)));
+                statItem.setMiles(c.getDouble(c.getColumnIndex(KEY_MILES_WALKED)));
+
+                statItems.add(statItem);
+            } while (c.moveToNext());
+        }
+
+        return statItems;
     }
 
     //Updating a node
@@ -518,6 +595,21 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
 
     }
 
+    public int updateStatItem(StatItem statItem){
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        ContentValues values = new ContentValues();
+        values.put(KEY_WALK_ID, statItem.getId());
+        values.put(KEY_WALKS_COMPLETED, statItem.getCompleted());
+        values.put(KEY_WALK_TIME, statItem.getTime());
+        values.put(KEY_MILES_WALKED, statItem.getMiles());
+
+        // updating row
+        return db.update(TABLE_STATS, values, KEY_WALK_ID + " = ?",
+                new String[] { String.valueOf(statItem.getId())});
+
+    }
+
     //Deleting a node
     public void deleteNode(long node_id) {
         SQLiteDatabase db = this.getWritableDatabase();
@@ -544,6 +636,13 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         db.delete(TABLE_MARKER, KEY_MARK_ID + " = ?",
                 new String[] { String.valueOf(mark_id)} );
+    }
+
+    //Deleting a statItem
+    public void deleteStatItem(long walk_id){
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.delete(TABLE_STATS, KEY_WALK_ID + " = ?",
+                new String[] { String.valueOf(walk_id)} );
     }
 
     // closing database

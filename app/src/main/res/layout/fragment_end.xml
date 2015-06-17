@@ -36,8 +36,9 @@
         android:layout_height="60dp"
         android:layout_gravity="center"
         android:gravity="center"
+        android:padding="6dp"
         android:textColor="@color/primary_700"
-        android:hint="enter postcode or station name"
+        android:hint="please enter postcode or station name"
         android:background="@drawable/button_light"/>
 
     <CheckBox android:id="@+id/end_checkbox_bus"

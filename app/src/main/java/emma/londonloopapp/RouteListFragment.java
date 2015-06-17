@@ -12,6 +12,7 @@ import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -180,43 +181,6 @@ public class RouteListFragment extends ListFragment {
 
     }
 
-    private class HttpAsyncTask extends AsyncTask<String, Void, String> {
-
-        private final ProgressDialog dialog = new ProgressDialog(getActivity());
-
-        protected void onPreExecute()
-        {
-            this.dialog.setMessage("Planning routes...");
-            this.dialog.show();
-        }
-
-        @Override
-        protected String doInBackground(String... urls) {
-
-            return GET(urls[0]);
-        }
-        // onPostExecute displays the results of the AsyncTask.
-        @Override
-        protected void onPostExecute(String result) {
-            JSONObject json = null;
-
-            try {
-
-                json = new JSONObject(result);
-
-                routeItems = getRouteItems(json);
-                setListAdapter(new RouteAdapterItem(getActivity(), routeItems, getActivity(), sectionItem.getId()));
-                if(this.dialog.isShowing())
-                {
-                    this.dialog.dismiss();
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
     private ArrayList<RouteItem> getRouteItems(JSONObject jsonObject) throws JSONException {
 
         JSONArray routeArray = jsonObject.getJSONArray("routes");
@@ -282,31 +246,6 @@ public class RouteListFragment extends ListFragment {
         this.modes= modes;
     }
 
-    private String toUrl(String loc){
-        String out = "";
-        String pattern = "^(([gG][iI][rR] {0,}0[aA]{2})|((([a-pr-uwyzA-PR-UWYZ][a-hk-yA-HK-Y]?[0-9][0-9]?)|(([a-pr-uwyzA-PR-UWYZ][0-9][a-hjkstuwA-HJKSTUW])|([a-pr-uwyzA-PR-UWYZ][a-hk-yA-HK-Y][0-9][abehmnprv-yABEHMNPRV-Y]))) {0,}[0-9][abd-hjlnp-uw-zABD-HJLNP-UW-Z]{2}))$\n";
-        if (loc.matches(pattern)){
-            if (loc.contains(" ")){
-                out = loc.replaceAll("\\s+", "+");
-            } else {
-                if (loc.length() == 5){
-                    out = loc.substring(0, 2) + "+" + loc.substring(3,5);
-                } else if (loc.length() == 6) {
-                    out = loc.substring(0, 3) + "+" + loc.substring(4,6);
-                } else {
-                    out = loc.substring(0, 4) + "+" + loc.substring(5,7);
-                }
-            }
-            out = TO_POSTCODE + out;
-
-        } else {
-            out = TO_STOP + loc.replaceAll("\\s+", "+");
-        }
-        System.out.println(out);
-        return out;
-
-    }
-
     private class LocationControl extends AsyncTask<Context, Void, Void>
     {
         private final ProgressDialog dialog = new ProgressDialog(getActivity());
@@ -342,5 +281,46 @@ public class RouteListFragment extends ListFragment {
             planJourney(mLastLocation, sectionItem);
         }
 
+    }
+    private class HttpAsyncTask extends AsyncTask<String, Void, String> {
+
+        private final ProgressDialog dialog = new ProgressDialog(getActivity());
+
+        protected void onPreExecute()
+        {
+            this.dialog.setMessage("Planning routes...");
+            this.dialog.show();
+        }
+
+        @Override
+        protected String doInBackground(String... urls) {
+
+            return GET(urls[0]);
+        }
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(String result) {
+            JSONObject json = null;
+
+            try {
+
+                json = new JSONObject(result);
+
+                routeItems = getRouteItems(json);
+                setListAdapter(new RouteAdapterItem(getActivity(), routeItems, getActivity(), sectionItem.getId()));
+                if(this.dialog.isShowing())
+                {
+                    this.dialog.dismiss();
+                }
+
+            } catch (JSONException e) {
+                Toast.makeText(getActivity(), "Unable to retrieve routes, please check internet connection and try again", Toast.LENGTH_SHORT).show();
+                if(this.dialog.isShowing())
+                {
+                    this.dialog.dismiss();
+                }
+                getActivity().getSupportFragmentManager().popBackStack();
+            }
+        }
     }
 }

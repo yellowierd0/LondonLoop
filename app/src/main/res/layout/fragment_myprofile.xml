@@ -90,15 +90,6 @@
         android:orientation="vertical"
         android:background="@drawable/bg_card">
         <TextView
-            android:layout_width="300dp"
-            android:id="@+id/total_walks"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="12dp"
-            android:textSize="40dp"
-            android:layout_height="60dp"
-            android:layout_gravity="center"
-            android:gravity="center" />
-        <TextView
             android:layout_width="340dp"
             android:layout_marginLeft="12dp"
             android:layout_marginRight="12dp"
@@ -107,6 +98,15 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:text="@string/total_walks"/>
+        <TextView
+            android:layout_width="300dp"
+            android:id="@+id/total_walks"
+            android:layout_marginLeft="12dp"
+            android:layout_marginRight="12dp"
+            android:textSize="40dp"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:gravity="center" />
     </LinearLayout>
 
     <!--com.facebook.login.widget.LoginButton

@@ -3,7 +3,7 @@
 
     <string name="title_walks">Walks</string>
     <string name="title_maps">Maps</string>
-    <string name="title_myprofile">My Profile</string>
+    <string name="title_myprofile">Statistics</string>
 
     <string name="update_status">Update Status</string>
     <string name="post_image">Post Image</string>
@@ -11,9 +11,9 @@
     <string name="fb_app_id">633865813414554</string>
 
     <string name="currently_walking">are currently walking</string>
-    <string name="total_miles">Users have collectively walked</string>
-    <string name="total_time">Users have collectively spent</string>
-    <string name="total_walks">have collectively been completed</string>
+    <string name="total_miles">You have walked</string>
+    <string name="total_time">You have spent</string>
+    <string name="total_walks">You have completed</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>

@@ -2,6 +2,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:clickable="true"
     android:background="@color/primary_500" >
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
@@ -23,10 +24,12 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:gravity="end|center_vertical"
+        android:gravity="center"
         android:background="@drawable/button_light"
         android:id="@+id/nextGPSButton"
         android:layout_weight="0.5"
+        android:layout_gravity="center"
+        android:text="N\nE\nX\nT"
         android:layout_below="@+id/mapView"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
@@ -35,12 +38,14 @@
 
     <Button
         android:layout_width="wrap_content"
-        android:gravity="start|center_vertical"
+        android:gravity="center"
         android:layout_height="match_parent"
         android:background="@drawable/button_light"
         android:id="@+id/preGPSButton"
         android:layout_weight="0.5"
         android:layout_below="@+id/mapView"
+        android:layout_gravity="center"
+        android:text="P\nR\nE\nV\nI\nO\nU\nS"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_toLeftOf="@+id/gpsButton"

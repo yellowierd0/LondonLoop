@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -32,16 +33,78 @@ public class MapNavFragment extends Fragment {
     private boolean hasLocation = false;
     private long walkNumber;
 
+    private Button pButton;
+    private Button nButton;
+    private Button gpsButton;
     private TextView mapNavText;
+
+    private RoutePart[] routeParts;
+    private RoutePart currentRoute;
+    private int currentRouteNo = 0;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View rootView = inflater.inflate(R.layout.fragment_maps, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_gps_maps, container, false);
 
+        routeParts = routeItem.getRouteParts();
+        currentRoute = routeParts[0];
 
         mapNavText = (TextView) rootView.findViewById(R.id.gpsMapText);
+        mapNavText.setText(buildJourneyText(currentRoute));
+        gpsButton = (Button) rootView.findViewById(R.id.gpsButton);
+        nButton = (Button) rootView.findViewById(R.id.nextGPSButton);
+        pButton = (Button) rootView.findViewById(R.id.preGPSButton);
+
+
+        //set on click listeners for buttons
+        gpsButton.setOnClickListener(new View.OnClickListener(){
+                 @Override
+                 public void onClick(View v) {
+                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                     YesNoFragment wdf = YesNoFragment.newInstance(walkNumber);
+                     fragmentManager.beginTransaction()
+                             .add(R.id.container, wdf)
+                                     // Add this transaction to the back stack
+                             .addToBackStack("mapnavFrag")
+                             .commit();
+
+                 }
+             }
+        );
+
+        pButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentRouteNo == 0) {
+                    //do nothing
+                } else {
+                    currentRouteNo--;
+                    mapNavText.setText(buildJourneyText(routeParts[currentRouteNo]));
+                }
+
+            }
+        });
+
+        nButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (currentRouteNo == routeParts.length-1) {
+                    //do nothing
+                    currentRouteNo++;
+                    mapNavText.setText("You have now reached the London Loop.");
+                    gpsButton.setText("What do you want to do now?");
+                    gpsButton.setVisibility(View.VISIBLE);
+                } else if (currentRouteNo < routeParts.length-1) {
+                    currentRouteNo++;
+                    mapNavText.setText(buildJourneyText(routeParts[currentRouteNo]));
+                } else {
+                    // do nothing
+                }
+            }
+        });
+
 
         // Acquire a reference to the system Location Manager
         LocationManager locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
@@ -68,6 +131,7 @@ public class MapNavFragment extends Fragment {
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 
         setUpMapIfNeeded();
+
         return rootView;
     }
 
@@ -259,31 +323,32 @@ public class MapNavFragment extends Fragment {
 
     private void setMapText(){
 
-        RoutePart[] routeParts = routeItem.getRouteParts();
 
-        RoutePart currentRoute = routeParts[0];
-
-        mapNavText.setText(getModeName(currentRoute.getMode()) + " to " + currentRoute.getTo_point_name());
-
-        for (RoutePart r : routeParts){
-            if (r != currentRoute && mLastLocation.distanceTo(r.getCoordinates().get(0)) < 100){
-                if (r != routeParts[routeParts.length-1]){
-                    mapNavText.setText(buildJourneyText(r));
-                    currentRoute = r;
+        for (int i = 0; i < routeParts.length; i++){
+            if (routeParts[i] != currentRoute && mLastLocation.distanceTo(routeParts[i].getCoordinates().get(0)) < 100){
+                if (routeParts[i] != routeParts[routeParts.length-1]){
+                    mapNavText.setText(buildJourneyText(routeParts[i]));
+                    currentRoute = routeParts[i];
+                    currentRouteNo = i;
                 } else {
-                    mapNavText.setText("You have now reached the London Loop. The walk will now begin.");
-                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                    mapNavText.setText("You have now reached the London Loop.");
+                    gpsButton.setText("What do you want to do now?");
+                    gpsButton.setVisibility(View.VISIBLE);
+                    /*FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                     GPSSectionFragment wdf = GPSSectionFragment.newInstance(walkNumber);
 
                     fragmentManager.beginTransaction()
                             .add(R.id.container, wdf)
                                     // Add this transaction to the back stack
                             .addToBackStack("routeFrag")
-                            .commit();
+                            .commit();*/
                 }
 
             }
         }
+
+
+
 
     }
 }

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/black">
+
+    <Button
+        android:id="@+id/yesButton"
+        android:layout_marginTop="100dp"
+        android:layout_width="200dp"
+        android:layout_height="60dp"
+        android:padding="6dp"
+        android:layout_gravity="center"
+        android:textColor="@color/white"
+        android:background="@drawable/button_dark"
+        android:text="I am ready to start the walk now" />
+
+    <Button
+        android:id="@+id/noButton"
+        android:layout_marginTop="10dp"
+        android:layout_width="200dp"
+        android:padding="6dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:textColor="@color/white"
+        android:text="I'm not ready to start the walk yet, take my back to the main screen"
+        android:background="@drawable/button_dark"/>
+
+
+</LinearLayout>

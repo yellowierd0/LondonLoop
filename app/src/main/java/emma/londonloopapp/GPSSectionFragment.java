@@ -31,10 +31,12 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -56,12 +58,20 @@ public class GPSSectionFragment extends Fragment {
 
     private GPSItem currentItem;
 
+    private Date startDate;
+    private DateFormat dateFormat;
+    private StatItem statItem;
+    private StatItem globalStat;
+
     private List<NameValuePair> params;
 
     private TextView mapNavText;
     private Button gpsButton;
     private Button pButton;
     private Button nButton;
+
+    private int currentNo;
+    private SectionItem sectionItem;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -73,13 +83,20 @@ public class GPSSectionFragment extends Fragment {
 
         db = new MySQLiteHelper(getActivity());
 
-        final SectionItem sectionItem = db.getSection(walkNumber + 1);
+        dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        startDate = new Date();
+
+        statItem = db.getStatItem(walkNumber);
+        globalStat = db.getStatItem(0);
+
+        sectionItem = db.getSection(walkNumber + 1);
 
         gpsItemList = db.getGPSItemFromSection(sectionItem);
         markerItemList = db.getMarkerItemFromSection(sectionItem);
 
         //set current item to first gpsItem
         currentItem = gpsItemList.get(1);
+        currentNo = currentItem.getIncr();
 
         //get buttons and textview from xml
         mapNavText = (TextView) rootView.findViewById(R.id.gpsMapText);
@@ -88,6 +105,9 @@ public class GPSSectionFragment extends Fragment {
         pButton = (Button) rootView.findViewById(R.id.preGPSButton);
         nButton = (Button) rootView.findViewById(R.id.nextGPSButton);
 
+        //initialise text
+        mapNavText.setText(currentItem.getNote());
+
         //set on click listeners for pre/next buttons
         pButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,7 +115,7 @@ public class GPSSectionFragment extends Fragment {
                 if (currentItem.getIncr()==1){
                     //do nothing
                 } else{
-                    setText(prevItemWithNote(gpsItemList.get(currentItem.getIncr())));
+                    setText(prevItemWithNote(gpsItemList.get(currentNo)));
                 }
 
             }
@@ -107,7 +127,7 @@ public class GPSSectionFragment extends Fragment {
                 if (currentItem.getIncr()==gpsItemList.size()){
                     //do nothing
                 } else{
-                    setText(nextItemWithNote(gpsItemList.get(currentItem.getIncr())));
+                    setText(nextItemWithNote(gpsItemList.get(currentNo)));
                 }
             }
         });
@@ -286,6 +306,7 @@ public class GPSSectionFragment extends Fragment {
         } else{
             mapNavText.setText(gpsItem.getNote());
             currentItem = gpsItem;
+            currentNo = gpsItem.getIncr();
 
             if (gpsItem.getIncr() == gpsItemList.size()){
 
@@ -294,6 +315,22 @@ public class GPSSectionFragment extends Fragment {
                 gpsButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+
+                        Date date = new Date();
+                        long diff = date.getTime() - startDate.getTime();
+                        long minutes = diff / (60 * 1000) % 60;
+
+                        statItem.setMiles(statItem.getMiles() + sectionItem.getMiles());
+                        statItem.setTime(statItem.getTime() + minutes);
+                        statItem.setCompleted(statItem.getCompleted() + 1);
+                        globalStat.setMiles(globalStat.getMiles() + sectionItem.getMiles());
+                        globalStat.setTime(globalStat.getTime() + minutes);
+                        globalStat.setCompleted(globalStat.getCompleted() + 1);
+                        db.updateStatItem(statItem);
+                        db.updateStatItem(globalStat);
+
+                        new putDataTask().execute();
+
                         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 
                         EndWalkFragment wdf = EndWalkFragment.newInstance(walkNumber);
@@ -310,12 +347,14 @@ public class GPSSectionFragment extends Fragment {
         }
     }
 
+
     private GPSItem nextItemWithNote(GPSItem gpsItem){
         GPSItem curr = gpsItemList.get(gpsItem.getIncr()+1);
         while (curr.getNote().equals("")){
             //last item will always have a note
             curr = gpsItemList.get(curr.getIncr()+1);
         }
+        currentNo = curr.getIncr();
         return curr;
     }
 
@@ -325,6 +364,7 @@ public class GPSSectionFragment extends Fragment {
             //first item will always have a note
             curr = gpsItemList.get(curr.getIncr()-1);
         }
+        currentNo = curr.getIncr();
         return curr;
     }
 
@@ -371,8 +411,7 @@ public class GPSSectionFragment extends Fragment {
     }
 
 
-    private class gpsJSONParse extends AsyncTask<String,String,JSONObject> {
-
+    private class putDataTask extends AsyncTask<String, String, JSONObject>{
         final String TAG = "JSONParse.java";
 
         private JSONArray jsonArray = null;
@@ -385,69 +424,42 @@ public class GPSSectionFragment extends Fragment {
         private static final String TAG_WALK_COMP = "walks_completed";
         private static final String TAG_STATS_UPDATE = "'last_updated'";
 
-        private ClassType type;
-        private String url;
         private final ProgressDialog dialog = new ProgressDialog(getActivity());
 
-        public gpsJSONParse(String url, ClassType type){
-            this.url = url;
-            this.type = type;
-        }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            this.dialog.setMessage("Getting your statistics...");
+            this.dialog.setMessage("Updating your statistics...");
             this.dialog.show();
         }
 
         @Override
-        protected JSONObject doInBackground(String... args) {
-            JSONParser2 jParser = new JSONParser2();
+        protected JSONObject doInBackground(String... params) {
+            // TODO Auto-generated method stub
 
-            // Getting JSON from URL
-            JSONObject json = jParser.getJSONFromUrl(url);
-            return json;
+            HTTPRequest httpRequest = new HTTPRequest();
+
+            // create a list to store HTTP variables and their values
+            List nameValuePairs = new ArrayList();
+            // add an HTTP variable and value pair
+            nameValuePairs.add(new BasicNameValuePair("WalkId", String.valueOf(walkNumber)));
+            nameValuePairs.add(new BasicNameValuePair("CurrentlyWalking", "0"));
+            nameValuePairs.add(new BasicNameValuePair("WalkTime", "1"));
+            nameValuePairs.add(new BasicNameValuePair("WalksCompleted", "1"));
+            nameValuePairs.add(new BasicNameValuePair("MilesWalked", "1"));
+
+            return httpRequest.makeHttpRequest("http://146.169.46.77:55000/putStat.php", "POST", nameValuePairs);
+
         }
 
-        @Override
-        protected void onPostExecute(JSONObject json) {
-            try {
-
-                switch (type) {
-                    case STATISTIC:
-                        jsonArray = json.getJSONArray(TAG_STATS);
-                        if (jsonArray != null){
-                            for (int i = 0; i < jsonArray.length(); i++){
-                                JSONObject c = jsonArray.getJSONObject(i);
-
-                                String walking_time = c.getString(TAG_WALK_TIME);
-                                //last_updated = c.getString(TAG_STATS_UPDATE);
-
-                                int id = Integer.parseInt(c.getString(TAG_ID));
-                                int currently_walking = Integer.parseInt(c.getString(TAG_CURR)) + 1;
-                                double miles_walked = Double.parseDouble(c.getString(TAG_MILES));
-
-
-
-                                params.add(new BasicNameValuePair("currently_walking", String.valueOf(currently_walking)));
-
-
-                                if(this.dialog.isShowing())
-                                {
-                                    this.dialog.dismiss();
-                                }
-
-
-                            }
-                        }
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
+        protected void onPostExecute(JSONObject result){
+            if(this.dialog.isShowing())
+            {
+                this.dialog.dismiss();
             }
-
         }
+
     }
 
 }
