@@ -79,6 +79,7 @@ public class GPSSectionFragment extends Fragment {
 
         View rootView = inflater.inflate(R.layout.fragment_gps_maps, container, false);
 
+        //initialize layout
         walkNumber = getArguments().getLong("walkNumber", 0);
 
         db = new MySQLiteHelper(getActivity());
@@ -307,7 +308,7 @@ public class GPSSectionFragment extends Fragment {
             mapNavText.setText(gpsItem.getNote());
             currentItem = gpsItem;
             currentNo = gpsItem.getIncr();
-
+            //if final gpsItem
             if (gpsItem.getIncr() == gpsItemList.size()){
 
                 gpsButton.setText("What do you want to do now?");
@@ -320,6 +321,7 @@ public class GPSSectionFragment extends Fragment {
                         long diff = date.getTime() - startDate.getTime();
                         long minutes = diff / (60 * 1000) % 60;
 
+                        //save stats internally
                         statItem.setMiles(statItem.getMiles() + sectionItem.getMiles());
                         statItem.setTime(statItem.getTime() + minutes);
                         statItem.setCompleted(statItem.getCompleted() + 1);
@@ -329,6 +331,7 @@ public class GPSSectionFragment extends Fragment {
                         db.updateStatItem(statItem);
                         db.updateStatItem(globalStat);
 
+                        //save stats online
                         new putDataTask().execute();
 
                         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();

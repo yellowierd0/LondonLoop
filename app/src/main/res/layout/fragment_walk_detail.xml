@@ -38,11 +38,10 @@
         android:layout_marginRight="12dp"
         android:layout_marginTop="12dp"
         android:padding="12dp"
-        android:textColor="@color/primary_500"
+        android:textColor="@color/primary_700"
         android:background="@drawable/bg_300"
         android:layout_height="80dp"
         android:id="@+id/weather"
-        android:text="It's a nice clear day today. Perfect day for a walk. \n Temperature: between 7° and 18°"
         android:layout_gravity="center_horizontal"
         android:layout_weight="0.00"
         android:scrollbars="vertical"/>

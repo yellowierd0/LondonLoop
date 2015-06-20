@@ -13,11 +13,18 @@ import android.widget.TextView;
 import com.facebook.AccessTokenTracker;
 import com.facebook.CallbackManager;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Arrays;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.List;
 
 public class MyProfileFragment extends Fragment {
@@ -26,30 +33,26 @@ public class MyProfileFragment extends Fragment {
 	CallbackManager callbackManager;
 
     private String url = "http://146.169.46.77:55000";
-    private String getStatsUrl = url + "/getGlobalStat.php";
+    private String getStatsUrl = url + "/getStats.php";
     private String setStatsUrl = url + "/setStats.php";
 
-/*
-    private Button postImageBtn;
-    private Button updateStatusBtn;
+    private int global_time;
 
-    private int success;//to determine JSON signal insert success/fail
-    // JSON Node names
-*/
-    private static final String TAG_SUCCESS = "success";
+    private double global_miles;
 
-    private static final List<String> PERMISSIONS = Arrays.asList("publish_actions");
-
-    private String walking_time;
-    private double miles_walked;
-    private int id;
     private int currently_walking = 0;
-    private int walks_completed = 0;
 
-    private  TextView userCount;
-    private  TextView walksCompleted;
-    private  TextView totalTime;
-    private  TextView totalMiles;
+    private int walks_completed = 0;
+    private int global_walks = 0;
+
+    private TextView userCount;
+    private TextView walksCompleted;
+    private TextView totalTime;
+    private TextView totalMiles;
+    private TextView globalTime;
+    private TextView globalWalks;
+    private TextView globalMiles;
+
 
     private static String message = "Sample status posted from android app";
     private AccessTokenTracker accessTokenTracker;
@@ -61,13 +64,35 @@ public class MyProfileFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_myprofile, container, false);
 
         //get statistics
-        new myProfileJSONParse(getStatsUrl, ClassType.STATISTIC).execute();
+        new HttpAsyncTask().execute(getStatsUrl);
 
         userCount = (TextView) rootView.findViewById(R.id.userCount);
+
         walksCompleted = (TextView) rootView.findViewById(R.id.total_walks);
         totalTime = (TextView) rootView.findViewById(R.id.total_time);
         totalMiles = (TextView) rootView.findViewById(R.id.total_miles);
 
+        globalMiles = (TextView) rootView.findViewById(R.id.global_miles);
+        globalTime = (TextView) rootView.findViewById(R.id.global_time);
+        globalWalks = (TextView) rootView.findViewById(R.id.global_walks);
+
+        MySQLiteHelper db = new MySQLiteHelper(getActivity());
+        List<StatItem> statItems = db.getAllStats();
+
+        if (statItems.get(0).getCompleted()==1){
+            walksCompleted.setText(String.valueOf(statItems.get(0).getCompleted()) + " walk");
+        } else {
+            walksCompleted.setText(String.valueOf(statItems.get(0).getCompleted()) + " walks");
+        }
+
+        if (statItems.get(0).getTime() >= 60){
+            totalTime.setText(String.valueOf(statItems.get(0).getTime()/60) + " hrs, " +String.valueOf(statItems.get(0).getTime()%60) + " mins");
+        } else {
+            totalTime.setText(String.valueOf(statItems.get(0).getTime()) + " mins");
+        }
+
+
+        totalMiles.setText(String.valueOf(statItems.get(0).getMiles()) + " miles");
 
 
         /* FACEBOOK LOGIN
@@ -203,28 +228,85 @@ public class MyProfileFragment extends Fragment {
         }
     }*/
 
+    private void setGlobalStats(JSONObject jsonObject) throws JSONException {
 
-    private class myProfileJSONParse extends AsyncTask<String,String,JSONObject> {
 
-        final String TAG = "JSONParse.java";
+        JSONArray jsonArray = jsonObject.getJSONArray("statistics");
+        int i = 0;
+        while (i < jsonArray.length()){
+            JSONObject global = jsonArray.getJSONObject(i);
+            if (global.getString("id").equals("0")){
 
-        private JSONArray jsonArray = null;
+                currently_walking = Integer.valueOf(global.getString("currently_walking"));
+                global_miles = Integer.valueOf(global.getString("miles_walked"));
+                global_time = Integer.valueOf(global.getString("walk_time"));
+                global_walks = Integer.valueOf(global.getString("walks_completed"));
 
-        private static final String TAG_STATS = "statistics";
-        private static final String TAG_ID = "id";
-        private static final String TAG_CURR = "currently_walking";
-        private static final String TAG_WALK_TIME = "walk_time";
-        private static final String TAG_MILES = "miles_walked";
-        private static final String TAG_WALK_COMP = "walks_completed";
+                Log.e("getStats request",
+                        "current: " + currently_walking +
+                                "walked: " + global_miles +
+                                "time: " + global_time +
+                                " completed: " + global_walks);
 
-        private ClassType type;
-        private String url;
-        private final ProgressDialog dialog = new ProgressDialog(getActivity());
+                userCount.setText(String.valueOf(currently_walking) + " users");
+                globalMiles.setText(String.valueOf(global_miles) + " miles");
+                globalWalks.setText(String.valueOf(global_walks) + " walks");
 
-        public myProfileJSONParse(String url, ClassType type){
-            this.url = url;
-            this.type = type;
+                if (global_time >= 60){
+                    globalTime.setText(global_time/60 + " hrs, " + global_time%60 + " mins");
+                } else {
+                    globalTime.setText(global_time + " mins");
+                }
+
+                break;
+            }
+            i++;
+
         }
+    }
+
+    private static String GET(String url){
+        InputStream inputStream = null;
+        String result = "";
+        try {
+
+            // create HttpClient
+            HttpClient httpclient = new DefaultHttpClient();
+
+            // make GET request to the given URL
+            HttpResponse httpResponse = httpclient.execute(new HttpGet(url));
+
+            // receive response as inputStream
+            inputStream = httpResponse.getEntity().getContent();
+
+            // convert inputstream to string
+            if(inputStream != null)
+                result = convertInputStreamToString(inputStream);
+            else
+                result = "Did not work!";
+
+        } catch (Exception e) {
+            Log.d("InputStream", e.getLocalizedMessage());
+        }
+
+        return result;
+    }
+
+    private static String convertInputStreamToString(InputStream inputStream) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
+        String line = "";
+        String result = "";
+        while((line = bufferedReader.readLine()) != null)
+            result += line;
+
+        inputStream.close();
+        return result;
+
+    }
+
+    private class HttpAsyncTask extends AsyncTask<String, Void, String> {
+
+        private final ProgressDialog dialog = new ProgressDialog(getActivity());
 
         @Override
         protected void onPreExecute() {
@@ -234,75 +316,30 @@ public class MyProfileFragment extends Fragment {
         }
 
         @Override
-        protected JSONObject doInBackground(String... args) {
-            MySQLiteHelper db = new MySQLiteHelper(getActivity());
-            List<StatItem> statItems = db.getAllStats();
+        protected String doInBackground(String... urls) {
 
-            if (statItems.get(0).getCompleted()==1){
-                walksCompleted.setText(String.valueOf(statItems.get(0).getCompleted()) + " walk");
-            } else {
-                walksCompleted.setText(String.valueOf(statItems.get(0).getCompleted()) + " walks");
-            }
+            return GET(urls[0]);
 
-            if (statItems.get(0).getTime() >= 60){
-                totalTime.setText(String.valueOf(statItems.get(0).getTime()/60) + " hrs, " +String.valueOf(statItems.get(0).getTime()%60) + " mins walking");
-            } else {
-                totalTime.setText(String.valueOf(statItems.get(0).getTime()) + " mins walking");
-            }
-
-
-            totalMiles.setText(String.valueOf(statItems.get(0).getMiles()) + " miles");
-
-            JSONParser jParser = new JSONParser();
-
-            // Getting JSON from URL
-            JSONObject json = jParser.getJSONFromUrl(url);
-            return json;
         }
 
         @Override
-        protected void onPostExecute(JSONObject json) {
+        protected void onPostExecute(String result) {
+            JSONObject json = null;
+
             try {
+                json = new JSONObject(result);
 
-                switch (type) {
-                    case STATISTIC:
-                        jsonArray = json.getJSONArray(TAG_STATS);
-                        if (jsonArray != null){
-                            for (int i = 0; i < jsonArray.length(); i++){
-                                JSONObject c = jsonArray.getJSONObject(i);
+                Log.e("json result", result);
 
-                                walking_time = c.getString(TAG_WALK_TIME);
-                                id = Integer.parseInt(c.getString(TAG_ID));
-                                currently_walking = Integer.parseInt(c.getString(TAG_CURR));
-                                miles_walked = Double.parseDouble(c.getString(TAG_MILES));
-                                walks_completed = Integer.parseInt(c.getString(TAG_WALK_COMP));
+                setGlobalStats(json);
 
-                                // show the values in our logcat
-                                Log.e(TAG, "id: " + id
-                                                + ", currently walking: " + currently_walking
-                                                + ", walking_time: " + walking_time
-                                                + ", walked completed: " + walks_completed
-                                                + ", miles walked: " + miles_walked
-                                                //+ ", last updated: " + last_updated
-                                );
-
-                                userCount.setText(String.valueOf(currently_walking) + " users");
-                                /*walksCompleted.setText(String.valueOf(walks_completed) + " walks");
-                                totalTime.setText(walking_time + " walking");
-                                totalMiles.setText(miles_walked + " miles");*/
-
-                                if(this.dialog.isShowing())
-                                {
-                                    this.dialog.dismiss();
-                                }
-
-
-                            }
-                        }
+                if(this.dialog.isShowing())
+                {
+                    this.dialog.dismiss();
                 }
 
             } catch (JSONException e) {
-                e.printStackTrace();
+                Log.e("JSONException: ", e.toString());
             }
 
         }

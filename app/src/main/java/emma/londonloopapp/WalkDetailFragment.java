@@ -1,6 +1,5 @@
 package emma.londonloopapp;
 
-import android.app.ProgressDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -12,12 +11,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -29,10 +28,13 @@ import java.io.InputStreamReader;
 public class WalkDetailFragment extends Fragment {
     private final int WALK_NUMBERS = 24;
     private SectionItem sectionItem;
-    private View walkDetailView;
     private MySQLiteHelper db;
 
-    private String weatherUrl = "api.openweathermap.org/data/2.5/weather?";
+    private TextView weatherTextView;
+
+    private String WEATHER_API = "http://api.openweathermap.org/data/2.5/weather?";
+    private String METRIC = "&units=metric";
+    private String DEGREE  = "\u00b0";
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,16 +45,22 @@ public class WalkDetailFragment extends Fragment {
 
         db = new MySQLiteHelper(getActivity());
 
-        final SectionItem sectionItem = db.getSection(walkNumber + 1);
+        sectionItem = db.getSection(walkNumber + 1);
+
+        String url = WEATHER_API + "lat=" + sectionItem.getStartNode().getLatitude() + "&lon=" + sectionItem.getStartNode().getLongitude() + METRIC;
 
         TextView title = (TextView) rootView.findViewById(R.id.walkDetailTitle);
         TextView description = (TextView) rootView.findViewById(R.id.walkDetailDescription);
+
+        weatherTextView = (TextView) rootView.findViewById(R.id.weather);
 
         title.setText(sectionItem.getId() + ". " + sectionItem.getStartNode().getName() + " to " + sectionItem.getEndNode().getName());
         description.setText(sectionItem.getDescription());
         description.setMovementMethod(new ScrollingMovementMethod());
 
-        new HttpAsyncTask().execute(weatherUrl);
+        Log.e("weather api request", url);
+
+        new HttpAsyncTask().execute(url);
 
         final Button startButton = (Button) rootView.findViewById(R.id.startButton);
         startButton.setOnClickListener(new View.OnClickListener() {
@@ -123,6 +131,39 @@ public class WalkDetailFragment extends Fragment {
 
     }
 
+    private void getWeather(JSONObject jsonObject) throws JSONException {
+
+        JSONArray weatherArray = jsonObject.getJSONArray("weather");
+        JSONObject mainObject = jsonObject.getJSONObject("main");
+
+        String description = weatherArray.getJSONObject(0).getString("description");
+        String main = weatherArray.getJSONObject(0).getString("main");
+        int id = Integer.parseInt(weatherArray.getJSONObject(0).getString("id"));
+
+        String weather = "Today's weather: " + description + "\n";
+        int current_temp = Math.round(Float.valueOf(mainObject.getString("temp")));
+        int min_temp = Math.round(Float.valueOf(mainObject.getString("temp_min")));
+        int max_temp = Math.round(Float.valueOf(mainObject.getString("temp_max")));
+
+        if (main.equals("Thunderstorm")){
+            weather += "Don't forget a coat and some warm clothes!";
+        } else if (main.equals("Drizzle") || main.equals("Rain")){
+            weather += "Don't forget a coat!";
+        } else if (main.equals("Snow")){
+            weather += "Be careful and don't forget a warm coat and boots!";
+        } else if (main.equals("Clouds")){
+            weather += "Nothing to worry about today. Enjoy your walk!";
+        } else if (main.equals("Additional") && id < 956){
+            weather += "Enjoy your walk!";
+        } else {
+            weather += "Be careful when walking today!";
+        }
+        weather += "\nTemperature: " + current_temp + DEGREE + "  (min: " + min_temp + DEGREE + ", max: " + max_temp + DEGREE + ")";
+
+        weatherTextView.setText(weather);
+
+    }
+
     public static String GET(String url){
         InputStream inputStream = null;
         String result = "";
@@ -164,12 +205,9 @@ public class WalkDetailFragment extends Fragment {
 
     private class HttpAsyncTask extends AsyncTask<String, Void, String> {
 
-        private final ProgressDialog dialog = new ProgressDialog(getActivity());
-
         protected void onPreExecute()
         {
-            this.dialog.setMessage("Getting data...");
-            this.dialog.show();
+            weatherTextView.setText("Getting weather data...");
         }
 
         @Override
@@ -186,17 +224,11 @@ public class WalkDetailFragment extends Fragment {
 
                 json = new JSONObject(result);
 
-                if(this.dialog.isShowing())
-                {
-                    this.dialog.dismiss();
-                }
+                getWeather(json);
 
             } catch (JSONException e) {
-                Toast.makeText(getActivity(), "Error retrieving weather data", Toast.LENGTH_SHORT).show();
-                if(this.dialog.isShowing())
-                {
-                    this.dialog.dismiss();
-                }
+                Log.e("Error", e.toString());
+                weatherTextView.setText("Oops! Something seems to have gone wrong!");
             }
         }
     }
