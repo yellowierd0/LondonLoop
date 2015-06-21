@@ -1,6 +1,5 @@
 package emma.londonloopapp;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
@@ -29,11 +28,15 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -58,20 +61,16 @@ public class GPSSectionFragment extends Fragment {
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private MySQLiteHelper db;
+
+    private static String POST_URL = "http://146.169.46.77:55000/newWalker.php";
+    private static String GET_URL = "http://146.169.46.77:55000/getStats.php";
+
     private Map<Integer, GPSItem> gpsItemList;
     private List<MarkerItem> markerItemList;
-
-    private static String POST_URL = "http://146.169.46.77:55000/putStat.php";
 
     private long walkNumber;
     private Location mLastLocation;
     private boolean hasLocation;
-
-    private int global_time;
-    private double global_miles;
-    private int currently_walking = 0;
-    private int global_walks = 0;
-    private int id = 0;
 
     private GPSItem currentItem;
 
@@ -79,8 +78,6 @@ public class GPSSectionFragment extends Fragment {
     private DateFormat dateFormat;
     private StatItem statItem;
     private StatItem globalStat;
-
-    private List<NameValuePair> params;
 
     private TextView mapNavText;
     private Button gpsButton;
@@ -183,7 +180,8 @@ public class GPSSectionFragment extends Fragment {
 
         drawMarkers();
 
-        params = new ArrayList<NameValuePair>();
+        //set online db stat
+        new StatisticsAsyncTask().execute(GET_URL);
 
         return rootView;
     }
@@ -338,22 +336,21 @@ public class GPSSectionFragment extends Fragment {
                         long diff = date.getTime() - startDate.getTime();
                         long minutes = diff / (60 * 1000) % 60;
 
-                        //save stats internally
-                        statItem.setMiles(statItem.getMiles() + sectionItem.getMiles());
+                        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+
                         statItem.setTime(statItem.getTime() + minutes);
                         statItem.setCompleted(statItem.getCompleted() + 1);
+                        statItem.setMiles(statItem.getMiles() + sectionItem.getMiles());
+
+                        globalStat.setTime(globalStat.getTime()+minutes);
+                        globalStat.setCompleted(globalStat.getCompleted()+1);
                         globalStat.setMiles(globalStat.getMiles() + sectionItem.getMiles());
-                        globalStat.setTime(globalStat.getTime() + minutes);
-                        globalStat.setCompleted(globalStat.getCompleted() + 1);
+
+
                         db.updateStatItem(statItem);
                         db.updateStatItem(globalStat);
 
-                        //save stats online
-                        //new putDataTask().execute();
-
-                        FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-
-                        EndWalkFragment wdf = EndWalkFragment.newInstance(walkNumber);
+                        EndWalkFragment wdf = EndWalkFragment.newInstance(walkNumber, minutes);
 
                         fragmentManager.beginTransaction()
                                 .add(R.id.container, wdf)
@@ -469,16 +466,7 @@ public class GPSSectionFragment extends Fragment {
 
     }
 
-    private class HttpAsyncTask extends AsyncTask<String, Void, String> {
-
-        private final ProgressDialog dialog = new ProgressDialog(getActivity());
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            this.dialog.setMessage("Getting your statistics...");
-            this.dialog.show();
-        }
+    private class StatisticsAsyncTask extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... urls) {
@@ -494,14 +482,8 @@ public class GPSSectionFragment extends Fragment {
             try {
                 json = new JSONObject(result);
 
-                Log.e("json result", result);
-
-                setGlobalStats(json);
-
-                if(this.dialog.isShowing())
-                {
-                    this.dialog.dismiss();
-                }
+                setStats(json, 0);
+                setStats(json, walkNumber + 1);
 
             } catch (JSONException e) {
                 Log.e("JSONException: ", e.toString());
@@ -510,47 +492,45 @@ public class GPSSectionFragment extends Fragment {
         }
     }
 
-    private void setGlobalStats(JSONObject jsonObject) throws JSONException {
+    private void setStats(JSONObject jsonObject, long walkId) throws JSONException {
 
 
         JSONArray jsonArray = jsonObject.getJSONArray("statistics");
         int i = 0;
         while (i < jsonArray.length()){
             JSONObject global = jsonArray.getJSONObject(i);
-            if (global.getString("id").equals(String.valueOf(id))){
+            if (global.getString("id").equals(String.valueOf(walkId))){
 
-                currently_walking = Integer.valueOf(global.getString("currently_walking")) + 1;
-                global_miles = Integer.valueOf(global.getString("miles_walked"));
-                global_time = Integer.valueOf(global.getString("walk_time"));
-                global_walks = Integer.valueOf(global.getString("walks_completed"));
+                int curr_walking = Integer.valueOf(global.getString("currently_walking")) + 1;
 
-                Log.e("getStats request",
-                        "current: " + currently_walking +
-                                "walked: " + global_miles +
-                                "time: " + global_time +
-                                " completed: " + global_walks);
+                ArrayList<NameValuePair> values = new ArrayList<NameValuePair>();
 
+                values.add(new BasicNameValuePair("WalkId", String.valueOf(walkId)));
+                values.add(new BasicNameValuePair("CurrentlyWalking", String.valueOf(curr_walking)));
 
+                new insertDATA(values).execute();
                 break;
             }
             i++;
 
         }
     }
-/*
+
     private class insertDATA extends AsyncTask<String, String, String> {
 
         InputStream is = null;
+        String line;
+        String result;
+        int code;
+
+        ArrayList<NameValuePair> values ;
+
+        public insertDATA(ArrayList<NameValuePair> values){
+            this.values = values;
+        }
+
         @Override
         protected String doInBackground(String... arg0) {
-            ArrayList<NameValuePair> values = new ArrayList<NameValuePair>();
-
-            values.add(new BasicNameValuePair("id", String.valueOf(id)));
-            values.add(new BasicNameValuePair("currently_walking", String.valueOf(currently_walking)));
-            values.add(new BasicNameValuePair("miles_walked", String.valueOf(global_miles)));
-            values.add(new BasicNameValuePair("walk_time",String.valueOf(global_time)));
-            values.add(new BasicNameValuePair("walks_completed",String.valueOf(global_walks)));
-
 
             try {
                 DefaultHttpClient httpclient = new DefaultHttpClient();
@@ -574,26 +554,32 @@ public class GPSSectionFragment extends Fragment {
                 }
                 is.close();
                 result = sb.toString();
-                Log.i(“TAG”, “Result Retrieved”);
+                Log.i("TAG", "Result Retrieved");
             } catch (Exception e) {
-                Log.i(“TAG”, e.toString());
+                Log.i("TAG", e.toString());
             }
 
             try {
+
+                Log.i("result", result);
+
                 JSONObject json = new JSONObject(result);
-                code = (json.getInt(“code”));
-                if (code == 1) {
-                    Log.i(“msg”, “Data Successfully Inserted”);
+                code = (json.getInt("code"));
+
+                if (code == 0) {
+                    Log.i("msg", "Data Successfully Inserted");
                     //Data Successfully Inserted
                 } else {
                     //Data Not Inserted
+                    Log.i("msg", "Data Not Inserted");
                 }
             } catch (Exception e) {
-                Log.i(“TAG”, e.toString());
+                Log.i("TAG", e.toString());
             }
             return null;
         }
 
     }
-*/
+
+
 }

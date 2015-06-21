@@ -33,8 +33,7 @@ public class MyProfileFragment extends Fragment {
 	CallbackManager callbackManager;
 
     private String url = "http://146.169.46.77:55000";
-    private String getStatsUrl = url + "/getStats.php";
-    private String setStatsUrl = url + "/setStats.php";
+    private String GET_URL = url + "/getStats.php";
 
     private int global_time;
 
@@ -42,7 +41,6 @@ public class MyProfileFragment extends Fragment {
 
     private int currently_walking = 0;
 
-    private int walks_completed = 0;
     private int global_walks = 0;
 
     private TextView userCount;
@@ -64,7 +62,7 @@ public class MyProfileFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_myprofile, container, false);
 
         //get statistics
-        new HttpAsyncTask().execute(getStatsUrl);
+        new HttpAsyncTask().execute(GET_URL);
 
         userCount = (TextView) rootView.findViewById(R.id.userCount);
 
@@ -238,15 +236,9 @@ public class MyProfileFragment extends Fragment {
             if (global.getString("id").equals("0")){
 
                 currently_walking = Integer.valueOf(global.getString("currently_walking"));
-                global_miles = Integer.valueOf(global.getString("miles_walked"));
+                global_miles = Double.valueOf(global.getString("miles_walked"));
                 global_time = Integer.valueOf(global.getString("walk_time"));
                 global_walks = Integer.valueOf(global.getString("walks_completed"));
-
-                Log.e("getStats request",
-                        "current: " + currently_walking +
-                                "walked: " + global_miles +
-                                "time: " + global_time +
-                                " completed: " + global_walks);
 
                 userCount.setText(String.valueOf(currently_walking) + " users");
                 globalMiles.setText(String.valueOf(global_miles) + " miles");

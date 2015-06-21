@@ -14,7 +14,7 @@
     <string name="total_miles">You have walked</string>
     <string name="total_time">You have walked for</string>
     <string name="total_walks">You have completed</string>
-    <string name="global_miles">Users have collectively\<nw></nw>alked</string>
+    <string name="global_miles">Users have collectively\nwalked</string>
     <string name="global_time">Users have collectively\nwalked for</string>
     <string name="global_walks">Users have collectively\ncompleted</string>
 
