@@ -3,15 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <android.support.v7.widget.CardView
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp">
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
-        android:layout_marginTop="6dp"
-        android:layout_marginBottom="6dp"
-        android:background="@drawable/bg_card">
+        android:layout_height="match_parent">
 
         <!-- Card Contents go here -->
 
@@ -46,5 +47,6 @@
             android:padding="5dp"
             android:id="@+id/transportRoute"></LinearLayout>
     </LinearLayout>
+    </android.support.v7.widget.CardView>
 
 </FrameLayout>

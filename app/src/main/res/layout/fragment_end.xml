@@ -5,6 +5,7 @@
     android:background="@color/black">
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
+    android:clickable="true"
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:alpha="0.9">

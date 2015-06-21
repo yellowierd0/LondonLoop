@@ -77,7 +77,7 @@ public class WalkDetailFragment extends Fragment {
             }
         });
 
-        final Button nButton = (Button) rootView.findViewById(R.id.nextGPSButton);
+        final Button nButton = (Button) rootView.findViewById(R.id.nextWalkDetButton);
         nButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Perform action on click
@@ -98,7 +98,7 @@ public class WalkDetailFragment extends Fragment {
             }
         });
 
-        final Button pButton = (Button) rootView.findViewById(R.id.preGPSButton);
+        final Button pButton = (Button) rootView.findViewById(R.id.preWalkDetButton);
         pButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Perform action on click
@@ -151,7 +151,7 @@ public class WalkDetailFragment extends Fragment {
             weather += "Don't forget a coat!";
         } else if (main.equals("Snow")){
             weather += "Be careful and don't forget a warm coat and boots!";
-        } else if (main.equals("Clouds")){
+        } else if (main.equals("Clouds") || main.equals("Clear")){
             weather += "Nothing to worry about today. Enjoy your walk!";
         } else if (main.equals("Additional") && id < 956){
             weather += "Enjoy your walk!";

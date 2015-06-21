@@ -13,6 +13,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,11 +29,19 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -52,9 +61,17 @@ public class GPSSectionFragment extends Fragment {
     private Map<Integer, GPSItem> gpsItemList;
     private List<MarkerItem> markerItemList;
 
+    private static String POST_URL = "http://146.169.46.77:55000/putStat.php";
+
     private long walkNumber;
     private Location mLastLocation;
     private boolean hasLocation;
+
+    private int global_time;
+    private double global_miles;
+    private int currently_walking = 0;
+    private int global_walks = 0;
+    private int id = 0;
 
     private GPSItem currentItem;
 
@@ -332,7 +349,7 @@ public class GPSSectionFragment extends Fragment {
                         db.updateStatItem(globalStat);
 
                         //save stats online
-                        new putDataTask().execute();
+                        //new putDataTask().execute();
 
                         FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 
@@ -413,56 +430,170 @@ public class GPSSectionFragment extends Fragment {
 
     }
 
+    private static String GET(String url){
+        InputStream inputStream = null;
+        String result = "";
+        try {
 
-    private class putDataTask extends AsyncTask<String, String, JSONObject>{
-        final String TAG = "JSONParse.java";
+            // create HttpClient
+            HttpClient httpclient = new DefaultHttpClient();
 
-        private JSONArray jsonArray = null;
+            // make GET request to the given URL
+            HttpResponse httpResponse = httpclient.execute(new HttpGet(url));
 
-        private static final String TAG_STATS = "statistics";
-        private static final String TAG_ID = "id";
-        private static final String TAG_CURR = "currently_walking";
-        private static final String TAG_WALK_TIME = "walk_time";
-        private static final String TAG_MILES = "miles_walked";
-        private static final String TAG_WALK_COMP = "walks_completed";
-        private static final String TAG_STATS_UPDATE = "'last_updated'";
+            // receive response as inputStream
+            inputStream = httpResponse.getEntity().getContent();
+
+            // convert inputstream to string
+            if(inputStream != null)
+                result = convertInputStreamToString(inputStream);
+            else
+                result = "Did not work!";
+
+        } catch (Exception e) {
+            Log.d("InputStream", e.getLocalizedMessage());
+        }
+
+        return result;
+    }
+
+    private static String convertInputStreamToString(InputStream inputStream) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
+        String line = "";
+        String result = "";
+        while((line = bufferedReader.readLine()) != null)
+            result += line;
+
+        inputStream.close();
+        return result;
+
+    }
+
+    private class HttpAsyncTask extends AsyncTask<String, Void, String> {
 
         private final ProgressDialog dialog = new ProgressDialog(getActivity());
-
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            this.dialog.setMessage("Updating your statistics...");
+            this.dialog.setMessage("Getting your statistics...");
             this.dialog.show();
         }
 
         @Override
-        protected JSONObject doInBackground(String... params) {
-            // TODO Auto-generated method stub
+        protected String doInBackground(String... urls) {
 
-            HTTPRequest httpRequest = new HTTPRequest();
-
-            // create a list to store HTTP variables and their values
-            List nameValuePairs = new ArrayList();
-            // add an HTTP variable and value pair
-            nameValuePairs.add(new BasicNameValuePair("WalkId", String.valueOf(walkNumber)));
-            nameValuePairs.add(new BasicNameValuePair("CurrentlyWalking", "0"));
-            nameValuePairs.add(new BasicNameValuePair("WalkTime", "1"));
-            nameValuePairs.add(new BasicNameValuePair("WalksCompleted", "1"));
-            nameValuePairs.add(new BasicNameValuePair("MilesWalked", "1"));
-
-            return httpRequest.makeHttpRequest("http://146.169.46.77:55000/putStat.php", "POST", nameValuePairs);
+            return GET(urls[0]);
 
         }
 
-        protected void onPostExecute(JSONObject result){
-            if(this.dialog.isShowing())
-            {
-                this.dialog.dismiss();
+        @Override
+        protected void onPostExecute(String result) {
+            JSONObject json = null;
+
+            try {
+                json = new JSONObject(result);
+
+                Log.e("json result", result);
+
+                setGlobalStats(json);
+
+                if(this.dialog.isShowing())
+                {
+                    this.dialog.dismiss();
+                }
+
+            } catch (JSONException e) {
+                Log.e("JSONException: ", e.toString());
             }
+
+        }
+    }
+
+    private void setGlobalStats(JSONObject jsonObject) throws JSONException {
+
+
+        JSONArray jsonArray = jsonObject.getJSONArray("statistics");
+        int i = 0;
+        while (i < jsonArray.length()){
+            JSONObject global = jsonArray.getJSONObject(i);
+            if (global.getString("id").equals(String.valueOf(id))){
+
+                currently_walking = Integer.valueOf(global.getString("currently_walking")) + 1;
+                global_miles = Integer.valueOf(global.getString("miles_walked"));
+                global_time = Integer.valueOf(global.getString("walk_time"));
+                global_walks = Integer.valueOf(global.getString("walks_completed"));
+
+                Log.e("getStats request",
+                        "current: " + currently_walking +
+                                "walked: " + global_miles +
+                                "time: " + global_time +
+                                " completed: " + global_walks);
+
+
+                break;
+            }
+            i++;
+
+        }
+    }
+/*
+    private class insertDATA extends AsyncTask<String, String, String> {
+
+        InputStream is = null;
+        @Override
+        protected String doInBackground(String... arg0) {
+            ArrayList<NameValuePair> values = new ArrayList<NameValuePair>();
+
+            values.add(new BasicNameValuePair("id", String.valueOf(id)));
+            values.add(new BasicNameValuePair("currently_walking", String.valueOf(currently_walking)));
+            values.add(new BasicNameValuePair("miles_walked", String.valueOf(global_miles)));
+            values.add(new BasicNameValuePair("walk_time",String.valueOf(global_time)));
+            values.add(new BasicNameValuePair("walks_completed",String.valueOf(global_walks)));
+
+
+            try {
+                DefaultHttpClient httpclient = new DefaultHttpClient();
+                HttpPost httppost = new HttpPost(POST_URL);
+                httppost.setEntity(new UrlEncodedFormEntity(values));
+                HttpResponse response = httpclient.execute(httppost);
+                HttpEntity entity = response.getEntity();
+                is = entity.getContent();
+                Log.i("TAG", "Connection Successful");
+            } catch (Exception e) {
+                Log.i("TAG", e.toString());
+                //Invalid Address
+            }
+
+            try {
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(is, "iso-8859-1"), 8);
+                StringBuilder sb = new StringBuilder();
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line + "\n");
+                }
+                is.close();
+                result = sb.toString();
+                Log.i(“TAG”, “Result Retrieved”);
+            } catch (Exception e) {
+                Log.i(“TAG”, e.toString());
+            }
+
+            try {
+                JSONObject json = new JSONObject(result);
+                code = (json.getInt(“code”));
+                if (code == 1) {
+                    Log.i(“msg”, “Data Successfully Inserted”);
+                    //Data Successfully Inserted
+                } else {
+                    //Data Not Inserted
+                }
+            } catch (Exception e) {
+                Log.i(“TAG”, e.toString());
+            }
+            return null;
         }
 
     }
-
+*/
 }

@@ -47,13 +47,18 @@ public class RouteListFragment extends ListFragment {
 
     private static String FROM_URL = "/from/lonlat:";
     private static String TO_URL = "/to/lonlat:";
+    private static String TO_STOP = "/to/stop:";
+    private static String TO_POSTCODE = "/to/postcode:";
     private static String RESPONSE_TYPE = ".json?";
 
-    //used as test that code works
-    //private static String test_url = "http://transportapi.com/v3/uk/public/journey/from/lonlat:0.191433,51.516886/to/lonlat:-0.1276250,51.503363051.json?api_key=377843b343d1e052ac4d024fd9b7c93a&app_id=6109f899";
+    private static String test_url = "http://transportapi.com/v3/uk/public/journey/from/lonlat:0.191433,51.516886/to/lonlat:-0.1276250,51.503363051.json?api_key=377843b343d1e052ac4d024fd9b7c93a&app_id=6109f899";
 
     private long walkNumber;
     private String modes;
+
+    private int type;
+
+    private String destination;
 
     private Location mLastLocation;
 
@@ -259,7 +264,12 @@ public class RouteListFragment extends ListFragment {
                 try {
                     Thread.sleep(Long.valueOf(1000));
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    Toast.makeText(getActivity(), "Location not found, please check internet connection and try again", Toast.LENGTH_SHORT).show();
+                    if(this.dialog.isShowing())
+                    {
+                        this.dialog.dismiss();
+                    }
+                    getActivity().getSupportFragmentManager().popBackStack();
                 }
             };
             return null;
@@ -272,8 +282,13 @@ public class RouteListFragment extends ListFragment {
                 this.dialog.dismiss();
             }
 
-            //does the stuff that requires current location
-            planJourney(mLastLocation, sectionItem);
+            if (mLastLocation!=null){
+                //does the stuff that requires current location
+                planJourney(mLastLocation, sectionItem);
+            } else {
+                Toast.makeText(getActivity(), "Location not found, please check internet connection and try again", Toast.LENGTH_SHORT).show();
+                getActivity().getSupportFragmentManager().popBackStack();
+            }
         }
 
     }
