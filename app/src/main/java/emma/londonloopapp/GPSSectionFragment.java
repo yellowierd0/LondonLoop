@@ -51,8 +51,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by Emma on 14/05/2015.
@@ -398,23 +396,29 @@ public class GPSSectionFragment extends Fragment {
             @Override
             public void onInfoWindowClick(Marker marker) {
 
-                int pos = getMarkerPos(marker.getTitle());
+                MarkerItem markerItem = getMarkerPos(marker.getTitle());
+                String link = markerItem.getUrl();
+                Log.e("Link", link);
 
-                if (markerItemList.get(pos).getUrl().equals("")) {
+
+                if (link.equals("")) {
                     //do nothing
                 } else {
-                    Intent browser = new Intent(Intent.ACTION_VIEW, Uri.parse(markerItemList.get(pos).getUrl()));
-                    startActivity(browser);
+                    Intent launchBrowser = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
+                    startActivity(launchBrowser);
                 }
             }
         });
 
     }
 
-    private int getMarkerPos(String s){
-        Matcher matcher = Pattern.compile("\\d+").matcher(s);
-        matcher.find();
-        return Integer.valueOf(matcher.group()) - 1;
+    private MarkerItem getMarkerPos(String s){
+        for (MarkerItem markerItem : markerItemList){
+            if (markerItem.getName().equals(s)){
+                return markerItem;
+            }
+        }
+        return null;
     }
 
     public static GPSSectionFragment newInstance(long walk)
