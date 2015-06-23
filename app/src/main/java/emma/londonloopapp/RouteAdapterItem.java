@@ -22,14 +22,20 @@ public class RouteAdapterItem extends ArrayAdapter<RouteItem> {
 
     private int route_no = 0;
     private int route_max;
-    private long walkNumber;
 
-    public RouteAdapterItem(Context context, List <RouteItem> items, FragmentActivity listFragment, long walkNumber) {
+    //avoid repeats
+    private int current_position = 0;
+
+    private long walkNumber;
+    private int type;
+
+    public RouteAdapterItem(Context context, List <RouteItem> items, FragmentActivity listFragment, long walkNumber, int type) {
 
         super(context, R.layout.route_item, items);
         route_max = items.size();
         this.listFragment = listFragment;
         this.walkNumber = walkNumber;
+        this.type = type;
     }
 
 
@@ -56,15 +62,14 @@ public class RouteAdapterItem extends ArrayAdapter<RouteItem> {
 
         // update the item view
 
-        if (route_no < route_max){
+        if (route_no < route_max && position==current_position){
             // Stop duplicate icons
-            final RouteItem item = getItem(position);
+            final RouteItem item = getItem(current_position);
             RoutePart[] routeParts = item.getRouteParts();
             viewHolder.time.setText("Depart: " + routeParts[0].getDeparture_time() + ", Arrive: " + routeParts[routeParts.length-1].getArrival_time());
             viewHolder.duration.setText("(" + getDuration(item.getDuration()) + ")");
 
             for (int i = 0; i < routeParts.length; i++){
-
 
                 if ((i == 0) || (getModeView(routeParts[i-1].getMode()) != getModeView(routeParts[i].getMode()))) {
                     ImageView imageView = new ImageView(getContext());
@@ -97,6 +102,7 @@ public class RouteAdapterItem extends ArrayAdapter<RouteItem> {
 
             setClickListeners(viewHolder, item);
             route_no++;
+            current_position++;
         }
 
         return convertView;
@@ -109,7 +115,7 @@ public class RouteAdapterItem extends ArrayAdapter<RouteItem> {
                 // Perform action on click
 
                 FragmentManager fragmentManager = listFragment.getSupportFragmentManager();
-                MapNavFragment wdf = MapNavFragment.newInstance(item, walkNumber);
+                MapNavFragment wdf = MapNavFragment.newInstance(item, walkNumber, type);
 
                 fragmentManager.beginTransaction()
                         .add(R.id.container, wdf)
@@ -125,7 +131,7 @@ public class RouteAdapterItem extends ArrayAdapter<RouteItem> {
                 // Perform action on click
 
                 FragmentManager fragmentManager = listFragment.getSupportFragmentManager();
-                MapNavFragment wdf = MapNavFragment.newInstance(item, walkNumber);
+                MapNavFragment wdf = MapNavFragment.newInstance(item, walkNumber, type);
 
                 fragmentManager.beginTransaction()
                         .add(R.id.container, wdf)
@@ -141,7 +147,7 @@ public class RouteAdapterItem extends ArrayAdapter<RouteItem> {
                 // Perform action on click
 
                 FragmentManager fragmentManager = listFragment.getSupportFragmentManager();
-                MapNavFragment wdf = MapNavFragment.newInstance(item, walkNumber);
+                MapNavFragment wdf = MapNavFragment.newInstance(item, walkNumber, type);
 
                 fragmentManager.beginTransaction()
                         .add(R.id.container, wdf)
@@ -157,7 +163,7 @@ public class RouteAdapterItem extends ArrayAdapter<RouteItem> {
                 // Perform action on click
 
                 FragmentManager fragmentManager = listFragment.getSupportFragmentManager();
-                MapNavFragment wdf = MapNavFragment.newInstance(item, walkNumber);
+                MapNavFragment wdf = MapNavFragment.newInstance(item, walkNumber, type);
 
                 fragmentManager.beginTransaction()
                         .add(R.id.container, wdf)

@@ -30,8 +30,8 @@ public class MapNavFragment extends Fragment {
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private RouteItem routeItem;
     private Location mLastLocation;
-    private boolean hasLocation = false;
     private long walkNumber;
+    private int type;
 
     private Button pButton;
     private Button nButton;
@@ -50,7 +50,7 @@ public class MapNavFragment extends Fragment {
 
         routeParts = routeItem.getRouteParts();
         currentRoute = routeParts[0];
-
+        
         mapNavText = (TextView) rootView.findViewById(R.id.gpsMapText);
         mapNavText.setText(buildJourneyText(currentRoute));
         gpsButton = (Button) rootView.findViewById(R.id.gpsButton);
@@ -93,9 +93,14 @@ public class MapNavFragment extends Fragment {
                 if (currentRouteNo == routeParts.length-1) {
                     //do nothing
                     currentRouteNo++;
-                    mapNavText.setText("You have now reached the London Loop.");
-                    gpsButton.setText("What do you want to do now?");
-                    gpsButton.setVisibility(View.VISIBLE);
+                    if (type==0){
+                        mapNavText.setText("You have now reached the London Loop.");
+                        gpsButton.setText("What do you want to do now?");
+                        gpsButton.setVisibility(View.VISIBLE);
+                    } else {
+                        mapNavText.setText("You have now reached your destination!");
+                    }
+
                 } else if (currentRouteNo < routeParts.length-1) {
                     currentRouteNo++;
                     mapNavText.setText(buildJourneyText(routeParts[currentRouteNo]));
@@ -114,7 +119,6 @@ public class MapNavFragment extends Fragment {
             public void onLocationChanged(Location location) {
                 // Called when a new location is found by the network location provider.
                 mLastLocation = location;
-                hasLocation = true;
                 setMapText();
 
             }
@@ -265,14 +269,15 @@ public class MapNavFragment extends Fragment {
     }
 
 
-    public static MapNavFragment newInstance(RouteItem routeItem, long walkNumber) {
+    public static MapNavFragment newInstance(RouteItem routeItem, long walkNumber, int type) {
         MapNavFragment fragment = new MapNavFragment();
-        fragment.setSomeObject(routeItem, walkNumber);
+        fragment.setSomeObject(routeItem, walkNumber, type);
         return fragment;
     }
 
-    public void setSomeObject(RouteItem someObject, long walkNumber) {
+    public void setSomeObject(RouteItem someObject, long walkNumber, int type) {
 
+        this.type = type;
         this.routeItem = someObject;
         this.walkNumber = walkNumber;
     }
@@ -331,17 +336,13 @@ public class MapNavFragment extends Fragment {
                     currentRoute = routeParts[i];
                     currentRouteNo = i;
                 } else {
-                    mapNavText.setText("You have now reached the London Loop.");
-                    gpsButton.setText("What do you want to do now?");
-                    gpsButton.setVisibility(View.VISIBLE);
-                    /*FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                    GPSSectionFragment wdf = GPSSectionFragment.newInstance(walkNumber);
-
-                    fragmentManager.beginTransaction()
-                            .add(R.id.container, wdf)
-                                    // Add this transaction to the back stack
-                            .addToBackStack("routeFrag")
-                            .commit();*/
+                    if (type==0){
+                        mapNavText.setText("You have now reached the London Loop.");
+                        gpsButton.setText("What do you want to do now?");
+                        gpsButton.setVisibility(View.VISIBLE);
+                    } else {
+                        mapNavText.setText("You have now reached your destination!");
+                    }
                 }
 
             }

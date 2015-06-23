@@ -45,20 +45,24 @@ public class RouteListFragment extends ListFragment {
     private static String API_KEY = "api_key=377843b343d1e052ac4d024fd9b7c93a";
     private static String APP_ID = "&app_id=6109f899";
 
-    private static String FROM_URL = "/from/lonlat:";
-    private static String TO_URL = "/to/lonlat:";
+    private static String FROM_LL = "/from/lonlat:";
+    private static String TO_LL = "/to/lonlat:";
+    private static String FROM_STOP = "/from/stop:";
+    private static String FROM_POSTCODE = "/from/postcode:";
     private static String TO_STOP = "/to/stop:";
     private static String TO_POSTCODE = "/to/postcode:";
     private static String RESPONSE_TYPE = ".json?";
 
-    private static String test_url = "http://transportapi.com/v3/uk/public/journey/from/lonlat:0.191433,51.516886/to/lonlat:-0.1276250,51.503363051.json?api_key=377843b343d1e052ac4d024fd9b7c93a&app_id=6109f899";
+    //private static String test_url = "http://transportapi.com/v3/uk/public/journey/from/lonlat:0.191433,51.516886/to/lonlat:-0.1276250,51.503363051.json?api_key=377843b343d1e052ac4d024fd9b7c93a&app_id=6109f899";
 
     private long walkNumber;
     private String modes;
 
-    private int type;
+    //editable location
+    private String location;
 
-    private String destination;
+    //type: 0=to walk, 1=from walk
+    int type;
 
     private Location mLastLocation;
 
@@ -99,7 +103,15 @@ public class RouteListFragment extends ListFragment {
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 
-        new LocationControl().execute();
+        if (type==0){
+            if (location.equals("")){
+                new LocationControl().execute();
+            } else {
+                planCustomJourneyToWalk(location, sectionItem);
+            }
+        } else {
+            planJourneyFromWalk(sectionItem, location);
+        }
 
     }
 
@@ -125,59 +137,152 @@ public class RouteListFragment extends ListFragment {
 
     }
 
-    private void planJourney(Location currentLocation, SectionItem destination){
+    private void planJourneyToWalk(Location currentLocation, SectionItem destination){
 
-        String from = FROM_URL + currentLocation.getLongitude() + "," + currentLocation.getLatitude();
+        String from = FROM_LL + currentLocation.getLongitude() + "," + currentLocation.getLatitude();
         String api_key = API_KEY + APP_ID;
-        String to = TO_URL + destination.getStartNode().getLongitude() + "," + destination.getStartNode().getLatitude();
+        String to = TO_LL + destination.getStartNode().getLongitude() + "," + destination.getStartNode().getLatitude();
 
         String include = "&modes=" + modes;
 
+
         String getURL = BASE_URL + from + to + RESPONSE_TYPE + api_key + include;
-        Log.e("transport api request", getURL);
+
+        Log.e(LOG, getURL);
 
         // call AsynTask to perform network operation on separate thread
         new HttpAsyncTask().execute(getURL);
 
     }
 
+    private void planCustomJourneyToWalk(String currentLocation, SectionItem destination){
 
-    public static String GET(String url){
-        InputStream inputStream = null;
-        String result = "";
-        try {
+        String api_key = API_KEY + APP_ID;
+        String to = TO_LL + destination.getStartNode().getLongitude() + "," + destination.getStartNode().getLatitude();
 
-            // create HttpClient
-            HttpClient httpclient = new DefaultHttpClient();
+        String include = "&modes=" + modes;
 
-            // make GET request to the given URL
-            HttpResponse httpResponse = httpclient.execute(new HttpGet(url));
+        String getURL = BASE_URL + getLocation(currentLocation) + to + RESPONSE_TYPE + api_key + include;
 
-            // receive response as inputStream
-            inputStream = httpResponse.getEntity().getContent();
+        Log.e(LOG, getURL);
 
-            // convert inputstream to string
-            if(inputStream != null)
-                result = convertInputStreamToString(inputStream);
-            else
-                result = "Did not work!";
+        // call AsynTask to perform network operation on separate thread
+        new HttpAsyncTask().execute(getURL);
 
-        } catch (Exception e) {
-            Log.d("InputStream", e.getLocalizedMessage());
-        }
-
-        return result;
     }
 
-    private static String convertInputStreamToString(InputStream inputStream) throws IOException {
-        BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
-        String line = "";
-        String result = "";
-        while((line = bufferedReader.readLine()) != null)
-            result += line;
+    private void planJourneyFromWalk(SectionItem startLocation, String destination){
 
-        inputStream.close();
-        return result;
+        String from = FROM_LL + startLocation.getEndNode().getLongitude() + "," + startLocation.getEndNode().getLatitude();
+        String api_key = API_KEY + APP_ID;
+
+        String to = getLocation(destination);
+
+        String include = "&modes=" + modes;
+
+        String getURL = BASE_URL + from + to + RESPONSE_TYPE + api_key + include;
+
+        Log.e(LOG, getURL);
+
+        // call AsynTask to perform network operation on separate thread
+        new HttpAsyncTask().execute(getURL);
+
+    }
+
+    private String getLocation(String loc){
+
+        String out = "";
+        String pattern = "(([gG][iI][rR] {0,}0[aA]{2})|((([a-pr-uwyzA-PR-UWYZ][a-hk-yA-HK-Y]?[0-9][0-9]?)|(([a-pr-uwyzA-PR-UWYZ][0-9][a-hjkstuwA-HJKSTUW])|([a-pr-uwyzA-PR-UWYZ][a-hk-yA-HK-Y][0-9][abehmnprv-yABEHMNPRV-Y]))) {0,}[0-9][abd-hjlnp-uw-zABD-HJLNP-UW-Z]{2}))$";
+        if (loc.matches(pattern)){
+            if (type==0){
+                out += FROM_POSTCODE;
+            } else {
+                out += TO_POSTCODE;
+            }
+            if (loc.contains(" ")){
+                out += loc.replaceAll("\\s+", "+");
+            } else {
+                if (loc.length() == 5){
+                    out += loc.substring(0, 2) + "+" + loc.substring(2,5);
+                } else if (loc.length() == 6) {
+                    out += loc.substring(0, 3) + "+" + loc.substring(3,6);
+                } else {
+                    out += loc.substring(0, 4) + "+" + loc.substring(4,7);
+                }
+            }
+        } else {
+            if (type==0){
+                out += FROM_STOP;
+            } else {
+                out += TO_STOP;
+            }
+            out += loc.replaceAll("\\s+", "+");
+        }
+        return out;
+
+    }
+
+
+    public static RouteListFragment newInstance(long walk, String modes, String location, int type)
+    {
+        RouteListFragment f = new RouteListFragment();
+        f.setSomeObject(walk, modes, location, type);
+        return f;
+    }
+
+
+    public void setSomeObject(long walk, String modes, String location, int type) {
+
+        this.walkNumber = walk;
+        this.modes= modes;
+        this.location = location;
+        this.type = type;
+    }
+
+    private class LocationControl extends AsyncTask<Context, Void, Void>
+    {
+        private final ProgressDialog dialog = new ProgressDialog(getActivity());
+
+        protected void onPreExecute()
+        {
+            this.dialog.setMessage("Determining your location...");
+            this.dialog.show();
+        }
+
+        protected Void doInBackground(Context... params)
+        {
+
+            Long t = Calendar.getInstance().getTimeInMillis();
+            while (!hasLocation && Calendar.getInstance().getTimeInMillis() - t < 30000) {
+                try {
+                    Thread.sleep(Long.valueOf(1000));
+                } catch (InterruptedException e) {
+                    Toast.makeText(getActivity(), "Location not found, please check internet connection and try again", Toast.LENGTH_SHORT).show();
+                    if(this.dialog.isShowing())
+                    {
+                        this.dialog.dismiss();
+                    }
+                    getActivity().getSupportFragmentManager().popBackStack();
+                }
+            };
+            return null;
+        }
+
+        protected void onPostExecute(final Void unused)
+        {
+            if(this.dialog.isShowing())
+            {
+                this.dialog.dismiss();
+            }
+
+            if (mLastLocation!=null){
+                //does the stuff that requires current location
+                planJourneyToWalk(mLastLocation, sectionItem);
+            } else {
+                Toast.makeText(getActivity(), "Location not found, please check internet connection and try again", Toast.LENGTH_SHORT).show();
+                getActivity().getSupportFragmentManager().popBackStack();
+            }
+        }
 
     }
 
@@ -231,67 +336,45 @@ public class RouteListFragment extends ListFragment {
         return locations;
     }
 
+    public static String GET(String url){
+        InputStream inputStream = null;
+        String result = "";
+        try {
 
-    public static RouteListFragment newInstance(long walk, String modes)
-    {
-        RouteListFragment f = new RouteListFragment();
-        f.setSomeObject(walk, modes);
-        return f;
-    }
+            // create HttpClient
+            HttpClient httpclient = new DefaultHttpClient();
 
+            // make GET request to the given URL
+            HttpResponse httpResponse = httpclient.execute(new HttpGet(url));
 
-    public void setSomeObject(long walk, String modes) {
+            // receive response as inputStream
+            inputStream = httpResponse.getEntity().getContent();
 
-        this.walkNumber = walk;
-        this.modes= modes;
-    }
+            // convert inputstream to string
+            if(inputStream != null)
+                result = convertInputStreamToString(inputStream);
+            else
+                result = "Did not work!";
 
-    private class LocationControl extends AsyncTask<Context, Void, Void>
-    {
-        private final ProgressDialog dialog = new ProgressDialog(getActivity());
-
-        protected void onPreExecute()
-        {
-            this.dialog.setMessage("Determining your location...");
-            this.dialog.show();
+        } catch (Exception e) {
+            Log.d("InputStream", e.getLocalizedMessage());
         }
 
-        protected Void doInBackground(Context... params)
-        {
+        return result;
+    }
 
-            Long t = Calendar.getInstance().getTimeInMillis();
-            while (!hasLocation && Calendar.getInstance().getTimeInMillis() - t < 30000) {
-                try {
-                    Thread.sleep(Long.valueOf(1000));
-                } catch (InterruptedException e) {
-                    Toast.makeText(getActivity(), "Location not found, please check internet connection and try again", Toast.LENGTH_SHORT).show();
-                    if(this.dialog.isShowing())
-                    {
-                        this.dialog.dismiss();
-                    }
-                    getActivity().getSupportFragmentManager().popBackStack();
-                }
-            };
-            return null;
-        }
+    private static String convertInputStreamToString(InputStream inputStream) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
+        String line = "";
+        String result = "";
+        while((line = bufferedReader.readLine()) != null)
+            result += line;
 
-        protected void onPostExecute(final Void unused)
-        {
-            if(this.dialog.isShowing())
-            {
-                this.dialog.dismiss();
-            }
-
-            if (mLastLocation!=null){
-                //does the stuff that requires current location
-                planJourney(mLastLocation, sectionItem);
-            } else {
-                Toast.makeText(getActivity(), "Location not found, please check internet connection and try again", Toast.LENGTH_SHORT).show();
-                getActivity().getSupportFragmentManager().popBackStack();
-            }
-        }
+        inputStream.close();
+        return result;
 
     }
+
     private class HttpAsyncTask extends AsyncTask<String, Void, String> {
 
         private final ProgressDialog dialog = new ProgressDialog(getActivity());
@@ -317,7 +400,7 @@ public class RouteListFragment extends ListFragment {
                 json = new JSONObject(result);
 
                 routeItems = getRouteItems(json);
-                setListAdapter(new RouteAdapterItem(getActivity(), routeItems, getActivity(), sectionItem.getId()));
+                setListAdapter(new RouteAdapterItem(getActivity(), routeItems, getActivity(), sectionItem.getId(), type));
                 if(this.dialog.isShowing())
                 {
                     this.dialog.dismiss();

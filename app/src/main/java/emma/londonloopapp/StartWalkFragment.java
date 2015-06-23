@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 
 /**
  * Created by Emma on 06/05/2015.
@@ -21,6 +22,8 @@ public class StartWalkFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.fragment_start, container, false);
+
+        //checkboxes
 
         CheckBox bus = (CheckBox) rootView.findViewById(R.id.checkbox_bus);
         CheckBox tube = (CheckBox) rootView.findViewById(R.id.checkbox_tube);
@@ -55,28 +58,44 @@ public class StartWalkFragment extends Fragment {
             }
         });
 
-
         bus.setChecked(true);
         tube.setChecked(true);
         train.setChecked(true);
         boat.setChecked(true);
 
+        //get walk number
         final long walkNumber = getArguments().getLong("walkNumber", 0);
+
+        // Destination
+        final EditText start_location  = (EditText) rootView.findViewById(R.id.startWalkText);
 
         final Button navButton = (Button) rootView.findViewById(R.id.gpsButton);
         navButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 // Perform action on click
 
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                if (start_location.getText().toString().trim().length()>0){
+                    // plan new journey
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 
-                RouteListFragment wdf = RouteListFragment.newInstance(walkNumber, modes);
+                    RouteListFragment wdf = RouteListFragment.newInstance(walkNumber, modes, replaceAtTheEnd(start_location.getText().toString()),0);
 
-                fragmentManager.beginTransaction()
-                        .add(R.id.container, wdf)
-                                // Add this transaction to the back stack
-                        .addToBackStack("startFrag")
-                        .commit();
+                    fragmentManager.beginTransaction()
+                            .add(R.id.container, wdf)
+                                    // Add this transaction to the back stack
+                            .addToBackStack("startFrag")
+                            .commit();
+                } else {
+                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+
+                    RouteListFragment wdf = RouteListFragment.newInstance(walkNumber, modes, "",0);
+
+                    fragmentManager.beginTransaction()
+                            .add(R.id.container, wdf)
+                                    // Add this transaction to the back stack
+                            .addToBackStack("startFrag")
+                            .commit();
+                }
             }
         });
 
@@ -98,7 +117,12 @@ public class StartWalkFragment extends Fragment {
         return rootView;
     }
 
-    public void onCheckboxClicked(View view) {
+    private static String replaceAtTheEnd(String input){
+        input = input.replaceAll("\\s+$", "");
+        return input;
+    }
+
+    private void onCheckboxClicked(View view) {
         // Is the view now checked?
         boolean checked = ((CheckBox) view).isChecked();
 

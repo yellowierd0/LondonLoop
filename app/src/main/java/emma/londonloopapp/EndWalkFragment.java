@@ -57,6 +57,7 @@ public class EndWalkFragment extends Fragment {
 
         final View rootView = inflater.inflate(R.layout.fragment_end, container, false);
 
+        // transport mode checkboxes
         CheckBox bus = (CheckBox) rootView.findViewById(R.id.end_checkbox_bus);
         CheckBox tube = (CheckBox) rootView.findViewById(R.id.end_checkbox_tube);
         CheckBox train = (CheckBox) rootView.findViewById(R.id.end_checkbox_train);
@@ -90,15 +91,19 @@ public class EndWalkFragment extends Fragment {
             }
         });
 
-
+        // set checkbox to true
         bus.setChecked(true);
         tube.setChecked(true);
         train.setChecked(true);
         boat.setChecked(true);
 
+        //get info from db
         db = new MySQLiteHelper(getActivity());
-        sectionItem = db.getSection(walkNumber+1);
+        sectionItem = db.getSection(walkNumber + 1);
         new_miles = sectionItem.getMiles();
+
+        // Destination
+        final EditText destination = (EditText) rootView.findViewById(R.id.leaveWalkText);
 
         final Button navButton = (Button) rootView.findViewById(R.id.nextWalkButton);
         navButton.setOnClickListener(new View.OnClickListener() {
@@ -126,8 +131,6 @@ public class EndWalkFragment extends Fragment {
             }
         });
 
-        final EditText destination = (EditText) rootView.findViewById(R.id.leaveWalkText);
-
         final Button leaveButton = (Button) rootView.findViewById(R.id.leaveWalkButton);
         leaveButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
@@ -140,8 +143,7 @@ public class EndWalkFragment extends Fragment {
                     // plan new journey
                     FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 
-                    EndRouteListFragment wdf = EndRouteListFragment.newInstance(walkNumber, modes, replaceAtTheEnd(destination.getText().toString()));
-                    System.out.println(destination.getText().toString());
+                    RouteListFragment wdf = RouteListFragment.newInstance(walkNumber, modes, replaceAtTheEnd(destination.getText().toString()), 1);
 
                     fragmentManager.beginTransaction()
                             .add(R.id.container, wdf)
