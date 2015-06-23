@@ -16,26 +16,24 @@
         android:layout_marginLeft="10dp">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:textColor="@color/primary_500"><TextView
         android:layout_width="300dp"
         android:layout_gravity="center"
         android:gravity="center"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
+        android:padding="10dp"
         android:textColor="@color/primary_500"
         android:textSize="40sp"
         android:id="@+id/userCount"
-        android:layout_height="60dp" /><TextView
+        android:layout_height="wrap_content" /><TextView
         android:layout_width="250dp"
         android:gravity="center"
-        android:layout_marginLeft="12dp"
         android:layout_gravity="center"
         android:textColor="@color/primary_500"
-        android:layout_marginRight="12dp"
+        android:padding="10dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:layout_height="60dp"
+        android:layout_height="wrap_content"
         android:text="@string/currently_walking"/></LinearLayout>
     </android.support.v7.widget.CardView>
     <android.support.v7.widget.CardView
@@ -46,28 +44,26 @@
         android:layout_marginLeft="10dp">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="wrap_content"
         android:textColor="@color/primary_500"
         android:orientation="vertical">
         <TextView
         android:layout_width="300dp"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
+            android:padding="10dp"
         android:layout_gravity="center"
         android:textColor="@color/primary_500"
         android:gravity="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:layout_height="60dp"
+        android:layout_height="wrap_content"
         android:text="@string/total_miles"/><TextView
         android:layout_width="300dp"
         android:id="@+id/total_miles"
         android:layout_gravity="center"
         android:gravity="center"
         android:textColor="@color/primary_500"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
+        android:padding="10dp"
         android:textSize="40sp"
-        android:layout_height="60dp" />
+        android:layout_height="wrap_content" />
     </LinearLayout>
     </android.support.v7.widget.CardView>
     <android.support.v7.widget.CardView
@@ -78,27 +74,25 @@
         android:layout_marginLeft="10dp">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="wrap_content"
         android:textColor="@color/primary_500"
         android:orientation="vertical"><TextView
         android:layout_width="300dp"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
+        android:padding="10dp"
         android:textColor="@color/primary_500"
         android:layout_gravity="center"
         android:gravity="center"
         android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:layout_height="60dp"
+        android:layout_height="wrap_content"
         android:text="@string/total_time"/><TextView
         android:layout_width="300dp"
         android:id="@+id/total_time"
         android:layout_gravity="center"
         android:gravity="center"
-        android:layout_marginLeft="12dp"
-        android:layout_marginRight="12dp"
+        android:padding="10dp"
         android:textColor="@color/primary_500"
         android:textSize="40sp"
-        android:layout_height="60dp" />
+        android:layout_height="wrap_content" />
     </LinearLayout>
     </android.support.v7.widget.CardView>
     <android.support.v7.widget.CardView
@@ -109,15 +103,14 @@
         android:layout_marginLeft="10dp">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:textColor="@color/primary_500">
         <TextView
             android:layout_width="340dp"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="12dp"
+            android:padding="10dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:layout_height="60dp"
+            android:layout_height="wrap_content"
             android:textColor="@color/primary_500"
             android:layout_gravity="center"
             android:gravity="center"
@@ -125,11 +118,10 @@
         <TextView
             android:layout_width="300dp"
             android:id="@+id/total_walks"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="12dp"
+            android:padding="10dp"
             android:textColor="@color/primary_500"
             android:textSize="40sp"
-            android:layout_height="60dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center" />
     </LinearLayout>
@@ -142,15 +134,14 @@
         android:layout_marginLeft="10dp">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:textColor="@color/primary_500">
         <TextView
             android:layout_width="340dp"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="12dp"
+            android:padding="10dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:layout_height="60dp"
+            android:layout_height="wrap_content"
             android:textColor="@color/primary_500"
             android:layout_gravity="center"
             android:gravity="center"
@@ -158,11 +149,10 @@
         <TextView
             android:layout_width="300dp"
             android:id="@+id/global_time"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="12dp"
+            android:padding="10dp"
             android:textColor="@color/primary_500"
             android:textSize="40sp"
-            android:layout_height="60dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center" />
     </LinearLayout>
@@ -175,15 +165,14 @@
         android:layout_marginLeft="10dp">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:textColor="@color/primary_500">
         <TextView
             android:layout_width="340dp"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="12dp"
+            android:padding="10dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:layout_height="60dp"
+            android:layout_height="wrap_content"
             android:textColor="@color/primary_500"
             android:layout_gravity="center"
             android:gravity="center"
@@ -191,11 +180,10 @@
         <TextView
             android:layout_width="300dp"
             android:id="@+id/global_miles"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="12dp"
+            android:padding="10dp"
             android:textColor="@color/primary_500"
             android:textSize="40sp"
-            android:layout_height="60dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center" />
     </LinearLayout>
@@ -206,27 +194,25 @@
         android:layout_margin="10dp">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:textColor="@color/primary_500">
         <TextView
             android:layout_width="340dp"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="12dp"
             android:textAppearance="@style/TextAppearance.AppCompat.Large"
-            android:layout_height="60dp"
+            android:layout_height="wrap_content"
             android:textColor="@color/primary_500"
             android:layout_gravity="center"
+            android:padding="10dp"
             android:gravity="center"
             android:text="@string/global_walks"/>
         <TextView
             android:layout_width="300dp"
             android:id="@+id/global_walks"
-            android:layout_marginLeft="12dp"
-            android:layout_marginRight="12dp"
             android:textColor="@color/primary_500"
             android:textSize="40sp"
-            android:layout_height="60dp"
+            android:layout_height="wrap_content"
+            android:padding="10dp"
             android:layout_gravity="center"
             android:gravity="center" />
     </LinearLayout>

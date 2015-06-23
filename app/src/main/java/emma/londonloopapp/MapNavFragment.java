@@ -50,7 +50,7 @@ public class MapNavFragment extends Fragment {
 
         routeParts = routeItem.getRouteParts();
         currentRoute = routeParts[0];
-        
+
         mapNavText = (TextView) rootView.findViewById(R.id.gpsMapText);
         mapNavText.setText(buildJourneyText(currentRoute));
         gpsButton = (Button) rootView.findViewById(R.id.gpsButton);
